@@ -1,0 +1,62 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build output
+dist/
+build/
+*.js.map
+*.d.ts.map
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# IDE
+*.swp
+*.swo
+*~
+.project
+.classpath
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+__pycache__/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE Settings
+*.sublime-project
+*.sublime-workspace
+
+# Private keys
+private_key
+*.pem
+
+# Generated files
+server.js
+server.d.ts
