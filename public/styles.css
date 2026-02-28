@@ -55,11 +55,13 @@ body {
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 4px;
 }
 
 .logo img {
-    height: 45px;
+    height: 80px;
+    width: auto;
+    object-fit: contain;
 }
 
 .logo-text {
@@ -104,7 +106,7 @@ body {
 }
 
 .cart-icon {
-    background: #009432;
+    background: #059669;
     color: white;
     width: 48px;
     height: 48px;
@@ -161,14 +163,14 @@ body {
 .hero-content {
     position: relative;
     z-index: 2; /* Sits on top of the overlay */
-    max-width: 850px;
+    max-width: 750px;
     padding: 0 20px;
 }
 
 /* Lato Heading Styles */
 .hero h1 {
     font-family: 'Lato', sans-serif;
-    font-size: 4.5rem; /* Large impact */
+    font-size: 72px;
     font-weight: 900;  /* "Black" weight for Lato */
     margin-bottom: 20px;
     line-height: 1.1;
@@ -177,17 +179,17 @@ body {
 
 /* Highlighted "Bohol Adventure" text */
 .accent-text {
-    color: #10ac84; 
+    color: #34D399; 
 }
 
 /* Lato Paragraph Styles */
 .hero p {
     font-family: 'Lato', sans-serif;
-    font-size: 1.25rem;
+    font-size: 20px;
     font-weight: 400;
     line-height: 1.6;
     margin-bottom: 40px;
-    color: rgba(255, 255, 255, 0.9); /* Soft white for readability */
+    color:#CBD5E1; /* Soft white for readability */
 }
 
 /* Button Layout */
