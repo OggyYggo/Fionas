@@ -21,6 +21,10 @@
     
     <title>Bohol Travel Agency | Book Tours & Explore Tourist Spots</title>
     
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
     <!-- Canonical URL for SEO -->
     <link rel="canonical" href="https://boholtravelagency.ph/">
     
@@ -79,204 +83,129 @@
 </section>
 
     <!-- Tourist Spots Section -->
-
     <section id="tours" class="tours-section">
-    <div class="container">
-        <div class="section-header reveal">
-            <span class="subtitle">CURATED EXPERIENCES</span>
-            <h2>Popular Tour Packages</h2>
-            <p>Handpicked adventures designed to showcase the best of Bohol's natural wonders and cultural heritage</p>
-        </div>
-
-<div class="tour-grid">
-    <div class="tour-card reveal">
-        <div class="card-image">
-            <img src="https://i.pinimg.com/1200x/ca/ab/91/caab91c6b26d164d8200815391de75c3.jpg" alt="Panglao">
-            <span class="badge-featured">⭐ Featured</span>
-            <span class="tag">Island Hopping</span>
-        </div>
-        <div class="card-content">
-            <h3>Panglao Island Hopping</h3>
-            <p>Explore Balicasag Island, snorkel with sea turtles, and visit the stunning Virgin Island sandbar.</p>
-            <div class="tour-meta">
-                <span><i class="far fa-clock"></i> Full Day</span>
-                <span><i class="fas fa-users"></i> Max 10</span>
-            </div>
-            <div class="card-footer">
-                <div class="price-box">
-                    <span class="from-text">From</span>
-                    <span class="price-amount">₱3,500</span>
-                </div>
-                <a href="#" class="btn-details">View Details →</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="tour-card reveal">
-        <div class="card-image">
-            <img src="https://images.unsplash.com/photo-1570481662006-a3a1374699e8?q=80&w=384&h=310&fit=crop" alt="Dolphins">
-            <span class="badge-featured">⭐ Featured</span>
-            <span class="tag">Adventure</span>
-        </div>
-        <div class="card-content">
-            <h3>Dolphin & Whale Watching</h3>
-            <p>Early morning dolphin watching cruise with Pamilacan Island snorkeling adventure.</p>
-            <div class="tour-meta">
-                <span><i class="far fa-clock"></i> Half Day</span>
-                <span><i class="fas fa-users"></i> Max 8</span>
-            </div>
-            <div class="card-footer">
-                <div class="price-box">
-                    <span class="from-text">From</span>
-                    <span class="price-amount">₱3,000</span>
-                </div>
-                <a href="#" class="btn-details">View Details →</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="tour-card reveal">
-        <div class="card-image">
-            <img src="https://i.pinimg.com/1200x/77/53/eb/7753ebaef1a8f68011ef52b39b2c0cec.jpg" alt="Fireflies">
-            <span class="tag">Eco Tour</span>
-        </div>
-        <div class="card-content">
-            <h3>Firefly Watching Tour</h3>
-            <p>Magical evening boat ride to see thousands of fireflies in the Abatan mangrove forest.</p>
-            <div class="tour-meta">
-                <span><i class="far fa-clock"></i> Evening</span>
-                <span><i class="fas fa-users"></i> Max 12</span>
-            </div>
-            <div class="card-footer">
-                <div class="price-box">
-                    <span class="from-text">From</span>
-                    <span class="price-amount">₱1,800</span>
-                </div>
-                <a href="#" class="btn-details">View Details →</a>
-            </div>
-        </div>
-    </div>
-</div>
-</section>
-
-    <!-- Booking Section with Schema Markup -->
-    <section id="booking" class="booking-section">
         <div class="container">
-            <h2>Book Your Perfect Tour</h2>
-            <p class="section-subtitle">Reserve your Bohol adventure today</p>
-            
-            <form id="bookingForm" class="booking-form" itemscope itemtype="https://schema.org/Order">
-                <div class="form-group">
-                    <label for="fullname">Full Name *</label>
-                    <input type="text" id="fullname" name="fullname" required placeholder="Enter your full name">
+            <div class="section-header reveal">
+                <span class="subtitle">CURATED EXPERIENCES</span>
+                <h2>Popular Tour Packages</h2>
+                <p>Handpicked adventures designed to showcase the best of Bohol's natural wonders and cultural heritage</p>
+            </div>
+
+            <div class="tour-grid">
+                <div class="tour-card reveal">
+                    <div class="card-image">
+                        <img src="https://i.pinimg.com/1200x/ca/ab/91/caab91c6b26d164d8200815391de75c3.jpg" alt="Panglao">
+                        <span class="badge-featured">⭐ Featured</span>
+                        <span class="tag">Island Hopping</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>Panglao Island Hopping</h3>
+                        <p>Explore Balicasag Island, snorkel with sea turtles, and visit the stunning Virgin Island sandbar.</p>
+                        <div class="tour-meta">
+                            <span><i class="far fa-clock"></i> Full Day</span>
+                            <span><i class="fas fa-users"></i> Max 10</span>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box">
+                                <span class="from-text">For as Low as</span>
+                                <span class="price-amount">₱3,500</span>
+                            </div>
+                            <a href="#" class="btn-details">View <i class="fa-solid fa-circle-chevron-right btn-icon"></i></a>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                <div class="tour-card reveal">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1570481662006-a3a1374699e8?q=80&w=384&h=310&fit=crop" alt="Dolphins">
+                        <span class="badge-featured">⭐ Featured</span>
+                        <span class="tag">Adventure</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>Dolphin & Whale Watching</h3>
+                        <p>Early morning dolphin watching cruise with Pamilacan Island snorkeling adventure.</p>
+                        <div class="tour-meta">
+                            <span><i class="far fa-clock"></i> Half Day</span>
+                            <span><i class="fas fa-users"></i> Max 8</span>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box">
+                                <span class="from-text">For as Low as</span>
+                                <span class="price-amount">₱3,000</span>
+                            </div>
+                            <a href="#" class="btn-details">View <i class="fa-solid fa-circle-chevron-right btn-icon"></i></a>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="phone">Phone Number *</label>
-                    <input type="tel" id="phone" name="phone" required placeholder="+63 9xx xxx xxxx">
-                </div>
-
-                <div class="form-group">
-                    <label for="spot">Select Tourist Spot *</label>
-                    <select id="spot" name="spot" required>
-                        <option value="">-- Choose a destination --</option>
-                        <option value="Chocolate Hills - ₱1,500">Chocolate Hills - ₱1,500</option>
-                        <option value="Panglao Island - ₱2,000">Panglao Island - ₱2,000</option>
-                        <option value="Tarsier Sanctuary - ₱1,200">Tarsier Sanctuary - ₱1,200</option>
-                        <option value="Bol-Anon Falls - ₱800">Bol-Anon Falls - ₱800</option>
-                        <option value="Hinagdanan Cave - ₱1,300">Hinagdanan Cave - ₱1,300</option>
-                        <option value="Baclayon Church - ₱600">Baclayon Church - ₱600</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="date">Preferred Date *</label>
-                    <input type="date" id="date" name="date" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="guests">Number of Guests *</label>
-                    <input type="number" id="guests" name="guests" min="1" max="50" required value="1">
-                </div>
-
-                <div class="form-group">
-                    <label for="packageType">Package Type *</label>
-                    <select id="packageType" name="packageType" required>
-                        <option value="">-- Select package --</option>
-                        <option value="Regular">Regular (6 hours)</option>
-                        <option value="Premium">Premium (Full day)</option>
-                        <option value="Deluxe">Deluxe (Full day + meals)</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="notes">Special Requests (Optional)</label>
-                    <textarea id="notes" name="notes" rows="4" placeholder="Any special requests or dietary preferences?"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label class="checkbox">
-                        <input type="checkbox" name="terms" required>
-                        I agree to the terms and conditions
-                    </label>
-                </div>
-
-                <button type="submit" class="submit-button">Book Now</button>
-                <div id="bookingMessage" class="message"></div>
-            </form>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact-section">
-        <div class="container">
-            <h2>Get in Touch</h2>
-            <div class="contact-info">
-                <div class="contact-card">
-                    <h3>📍 Address</h3>
-                    <p>Tagbilaran City, Bohol<br>Philippines 6300</p>
-                </div>
-                <div class="contact-card">
-                    <h3>📞 Phone</h3>
-                    <p>+63 (38) 501-9999<br>+63 917-XXX-XXXX</p>
-                </div>
-                <div class="contact-card">
-                    <h3>📧 Email</h3>
-                    <p>info@boholtravelagency.ph<br>bookings@boholtravelagency.ph</p>
-                </div>
-                <div class="contact-card">
-                    <h3>🕒 Hours</h3>
-                    <p>Mon-Fri: 8:00 AM - 6:00 PM<br>Sat-Sun: 9:00 AM - 5:00 PM</p>
+                <div class="tour-card reveal">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=384&h=310&fit=crop" alt="Tarsier">
+                        <span class="badge-featured">⭐ Featured</span>
+                        <span class="tag">Wildlife</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>Philippine Tarsier Sanctuary</h3>
+                        <p>Get up close with the world's smallest primate in their natural rainforest habitat.</p>
+                        <div class="tour-meta">
+                            <span><i class="far fa-clock"></i> Half Day</span>
+                            <span><i class="fas fa-users"></i> Max 12</span>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box">
+                                <span class="from-text">For as Low as</span>
+                                <span class="price-amount">₱2,500</span>
+                            </div>
+                            <a href="#" class="btn-details">View <i class="fa-solid fa-circle-chevron-right btn-icon"></i></a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
+    <!-- Iconic Destinations Section -->
+    <section id="destinations" class="destinations-section">
         <div class="container">
-            <p>&copy; 2026 Bohol Travel Agency. All rights reserved. | Browse | Book | Explore Bohol</p>
-            <p>
-                <a href="#home">Privacy Policy</a> | 
-                <a href="#home">Terms of Service</a> | 
-                <a href="#home">Sitemap</a>
-            </p>
-        </div>
-    </footer>
+            <div class="destinations-header">
+                <div class="destinations-content">
+                    <span class="destinations-label">🗺️ Must-Visit Places</span>
+                    <h2>Iconic <span class="accent-green">Destinations</span></h2>
+                    <p>Explore Bohol's most breathtaking attractions that have captivated travelers from around the world.</p>
+                </div>
+            </div>
 
-    <script type="module" src="app.js"></script>
-    <script>
-        // Register service worker for PWA if available
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(() => {
-                // Service worker registration failed, app will continue to work
-            });
-        }
-    </script>
-</body>
+            <div class="destinations-layout">
+                <!-- Featured Large Left Image -->
+                <div class="featured-card">
+                    <img src="https://i.pinimg.com/736x/3f/8f/fa/3f8ffaded6ac0f091eebbe77b07c4903.jpg" alt="Chocolate Hills">
+                    <div class="featured-overlay">
+                        <span class="location"><i class="fas fa-map-marker-alt"></i> Carmen, Bohol</span>
+                        <h3>Chocolate Hills</h3>
+                        <p>The Chocolate Hills are Bohol's most famous landmark. Over 1,268 perfectly cone-shaped hills spread across 50 square kilometers.</p>
+                    </div>
+                </div>
+
+                <!-- Right Side 2x2 Grid -->
+                <div class="destinations-grid">
+                    <div class="destination-item">
+                        <img src="https://i.pinimg.com/736x/ad/33/21/ad3321f6240a398d7ff6d409707d8ffa.jpg" alt="Alona Beach">
+                        <span class="dest-number">02</span>
+                    </div>
+                    <div class="destination-item">
+                        <img src="https://i.pinimg.com/736x/e3/34/1d/e3341d85ec0257e5915a60cf5fe12a55.jpg" alt="Virgin Island">
+                        <span class="dest-number">03</span>
+                    </div>
+                    <div class="destination-item">
+                        <img src="https://i.pinimg.com/1200x/82/d7/0f/82d70f25c7259855536b6177ebb69fe7.jpg" alt="Loboc River">
+                        <span class="dest-number">04</span>
+                    </div>
+                    <div class="destination-item">
+                        <img src="https://i.pinimg.com/1200x/04/09/39/04093982c4017a5394a8710ca2596357.jpg" alt="Tarsier">
+                        <span class="dest-number">05</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </html>
