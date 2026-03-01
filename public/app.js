@@ -1,3 +1,156 @@
+// ========== GSAP Animations ==========
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
+
+// Hero section animations
+function initHeroAnimations() {
+    const timeline = gsap.timeline();
+    
+    // Animate hero heading with stagger
+    timeline.fromTo('.hero h1', 
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }
+    )
+    // Animate accent text with color change
+    .fromTo('.accent-text', 
+        { opacity: 0, scale: 0.8 },
+        { opacity: 1, scale: 1, duration: 0.8, ease: 'elastic.out(1, 0.5)' },
+        '<0.3'
+    )
+    // Animate paragraph
+    .fromTo('.hero p', 
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' },
+        '<0.2'
+    )
+    // Animate buttons with stagger
+    .fromTo('.hero-btns a', 
+        { opacity: 0, scale: 0.8 },
+        { opacity: 1, scale: 1, duration: 0.6, stagger: 0.2, ease: 'back.out(1.7)' },
+        '<0.3'
+    );
+    
+    // Add hover animation to buttons
+    document.querySelectorAll('.hero-btns a').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            gsap.to(this, {
+                scale: 1.1,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+        });
+        btn.addEventListener('mouseleave', function() {
+            gsap.to(this, {
+                scale: 1,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+        });
+    });
+}
+
+// Tour package card animations on scroll
+function initTourCardAnimations() {
+    const tourCards = gsap.utils.toArray('.tour-card');
+    
+    tourCards.forEach((card, index) => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 80%',
+                end: 'top 50%',
+                scrub: false,
+                markers: false
+            },
+            opacity: 0,
+            y: 60,
+            rotation: -5,
+            duration: 0.8,
+            delay: index * 0.1,
+            ease: 'power3.out'
+        });
+        
+        // Add hover animation
+        card.addEventListener('mouseenter', function() {
+            gsap.to(this, {
+                y: -10,
+                boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            gsap.to(this, {
+                y: 0,
+                boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+        });
+    });
+}
+
+// Section header animations
+function initSectionHeaderAnimations() {
+    gsap.from('.section-header .subtitle', {
+        scrollTrigger: {
+            trigger: '.section-header',
+            start: 'top 80%'
+        },
+        opacity: 0,
+        x: -30,
+        duration: 0.6,
+        ease: 'power3.out'
+    });
+    
+    gsap.from('.section-header h2', {
+        scrollTrigger: {
+            trigger: '.section-header',
+            start: 'top 80%'
+        },
+        opacity: 0,
+        y: 30,
+        duration: 0.8,
+        delay: 0.2,
+        ease: 'power3.out'
+    });
+    
+    gsap.from('.section-header p', {
+        scrollTrigger: {
+            trigger: '.section-header',
+            start: 'top 80%'
+        },
+        opacity: 0,
+        y: 20,
+        duration: 0.8,
+        delay: 0.4,
+        ease: 'power3.out'
+    });
+}
+
+// Destination card animations on scroll
+function initDestinationCardAnimations() {
+    const destinationCards = gsap.utils.toArray('.destination-card');
+    
+    destinationCards.forEach((card, index) => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 80%',
+                end: 'top 50%',
+                scrub: false,
+                markers: false
+            },
+            opacity: 0,
+            y: 60,
+            duration: 0.8,
+            delay: index * 0.1,
+            ease: 'power3.out'
+        });
+    });
+}
+
 // Get DOM elements
 const bookingForm = document.getElementById('bookingForm');
 const messageDiv = document.getElementById('bookingMessage');
@@ -153,6 +306,14 @@ if (bookingForm) {
 document.addEventListener('DOMContentLoaded', () => {
     trackPageView();
     console.log('Bohol Travel Agency website loaded successfully!');
+    
+    // Initialize GSAP animations
+    setTimeout(() => {
+        initHeroAnimations();
+        initSectionHeaderAnimations();
+        initTourCardAnimations();
+        initDestinationCardAnimations();
+    }, 100);
 });
 // ========== Mobile Navigation ==========
 function setupMobileMenu() {
