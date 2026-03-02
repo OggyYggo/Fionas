@@ -862,7 +862,7 @@ body {
 }
 
 .contact-item i {
-    color: var(--accent-green);
+    color: var(--white);
     width: 16px;
     margin-top: 3px;
     flex-shrink: 0;
