@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -12,6 +14,12 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const isActive = (path: string) => {
+    if (path === '/' && pathname === '/') return true
+    if (path !== '/' && pathname.startsWith(path)) return true
+    return false
+  }
 
   return (
     <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
@@ -26,12 +34,12 @@ export default function Header() {
           </div>
 
           <ul className="nav-links list-none flex gap-10">
-            <li><a href="#home" className="active no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal">Home</a></li>
-            <li><a href="#tours" className="no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal">Tours</a></li>
-            <li><a href="#custom-tour" className="no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal">Custom</a></li>
-            <li><a href="#destinations" className="no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal">Destinations</a></li>
-            <li><a href="#about" className="no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal">About</a></li>
-            <li><a href="#contact" className="no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal">Contact</a></li>
+            <li><a href="/" className={`${isActive('/') ? 'active' : ''} no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal`}>Home</a></li>
+            <li><a href="/tours" className={`${isActive('/tours') ? 'active' : ''} no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal`}>Tours</a></li>
+            <li><a href="/custom" className={`${isActive('/custom') ? 'active' : ''} no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal`}>Custom</a></li>
+            <li><a href="/destinations" className={`${isActive('/destinations') ? 'active' : ''} no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal`}>Destinations</a></li>
+            <li><a href="/about" className={`${isActive('/about') ? 'active' : ''} no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal`}>About</a></li>
+            <li><a href="/contact" className={`${isActive('/contact') ? 'active' : ''} no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal`}>Contact</a></li>
           </ul>
 
           <div className="nav-actions flex items-center gap-5">
