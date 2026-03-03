@@ -1,0 +1,625 @@
+/* ========== Global Styles ========== */
+:root {
+    --primary-color: #0066cc;
+    --secondary-color: #ff6600;
+    --light-bg: #f5f5f5;
+    --dark-text: #333;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    line-height: 1.6;
+    color: var(--dark-text);
+    background-color: #fff;
+}
+
+.container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ========== Header & Navigation ========== */
+/* General Navbar Styling */
+.navbar {
+    background: #fff;
+    height: 100px;
+    padding: 15px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Spreads Logo, Links, and Button */
+    max-width: 1700px;
+    margin: 0 auto;
+    padding: 0 20px;
+    height: 100%;
+}
+
+/* Logo Section */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.logo img {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-name {
+    font-weight: 700;
+    color: #2d3436;
+    font-size: 1.1rem;
+}
+
+.tagline {
+    font-size: 0.75rem;
+    color: #636e72;
+}
+
+/* Nav Links */
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 40px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #636e72;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: #10ac84; /* The teal color from your image */
+}
+
+/* Right Actions & Button */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.cart-icon {
+    background: #059669;
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.btn-book {
+    background-color: #10ac84;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-book:hover {
+    background-color: #0d8a6a;
+}
+
+
+
+.hero {
+    position: relative;
+    /* Calculating height to account for your 100px navbar */
+    height: 470px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #ffffff;
+    /* Updated to your new Unsplash URL */
+    background: url('https://images.unsplash.com/photo-1615185403293-a8fb0482d24e?q=80&w=1075&auto=format&fit=crop') no-repeat center center/cover;
+    overflow: hidden;
+}
+
+/* The dark overlay: #223544 at 80% opacity */
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Hex 223544 = RGB(34, 53, 68). 0.8 = 80% opacity */
+    background-color: rgba(34, 53, 68, 0.8); 
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2; /* Sits on top of the overlay */
+    max-width: 750px;
+    padding: 0 20px;
+}
+
+/* Lato Heading Styles */
+.hero h1 {
+    font-family: 'Lato', sans-serif;
+    font-size: 72px;
+    font-weight: 900;  /* "Black" weight for Lato */
+    margin-bottom: 20px;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+}
+
+/* Highlighted "Bohol Adventure" text */
+.accent-text {
+    color: #34D399; 
+}
+
+/* Lato Paragraph Styles */
+.hero p {
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    color:#CBD5E1; /* Soft white for readability */
+}
+
+/* Button Layout */
+/* Container for the buttons */
+.hero-btns {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+/* Base styles for both Hero buttons */
+.btn-explore, .btn-outline {
+    /* Dimensions requested */
+    width: 150px;
+    height: 48px;
+    border-radius: 10px; /* Radius 10 */
+    
+    /* Font and Alignment */
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    
+    /* Centering the text inside the fixed width/height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-sizing: border-box; /* Ensures padding doesn't break the 150px width */
+}
+
+/* Solid Teal Button */
+.btn-explore {
+    background-color: #10ac84;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-explore:hover {
+    background-color: #0d8a6a;
+}
+
+/* Outline White Button */
+.btn-outline {
+    background-color: transparent;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+}
+
+.btn-outline:hover {
+    background-color: #ffffff;
+    color: #223544; /* Swaps to your overlay color on hover */
+}
+
+
+/* ========== Tourist Spots Section ========== */
+/* Section Header */
+
+.tours-section {
+    padding: 80px 0;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Lato', sans-serif;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.subtitle {
+    color: #059669;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.section-header h2 {
+    color: #1E293B;
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin: 10px 0;
+}
+
+.section-header p {
+    color: #475569;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Tour Grid */
+.tour-grid {
+    display: grid;
+    /* This tells the cards to be equal width and fill the 1200px container */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 30px; /* Reduced gap slightly to fit 1200px better */
+    justify-content: center;
+}
+
+/* Catalog Card */
+.tour-card {
+    width: 100%;
+    
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 15px; /* Radius 15 */
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.card-image {
+    position: relative;
+    height: 310px; /* Fixed height 310 */
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Badges */
+.badge-featured {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #f59e0b;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.tag {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    background: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: #1E293B;
+}
+
+/* Card Content */
+.card-content {
+    padding: 24px;
+}
+
+.card-content h3 {
+    color: #1E293B;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+}
+
+/* change title color on card hover */
+.tour-card:hover .card-content h3 {
+    color: #11B981;
+}
+
+.card-content p {
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.tour-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.85rem;
+    color: #636774;
+    margin-bottom: 25px;
+}
+
+/* add spacing between icon and its label inside meta items */
+.tour-meta i {
+    margin-right: 4px;
+    color: inherit; /* ensure icon matches text color */
+}
+
+
+/* Footer & Buttons */
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 20px;
+}
+
+.price-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.from-text {
+    display: block;
+    font-size: 0.8rem;
+    color: #636774;
+}
+
+.price-amount {
+    color: #059669;
+    font-size: 1.8rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.price {
+    color: #059669;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.btn-details {
+    width: 160px; /* Fixed width 155 */
+    height: 48px; /* Fixed height 48 */
+    background: #1E293B; /* Navy Button */
+    color: white;
+    text-decoration: none;
+    border-radius: 10px; /* Radius 10 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+.btn-details:hover {
+    background: #0f172a;
+}
+
+/* Icon inside detail button */
+.btn-details .btn-icon {
+    margin-left: 12px;
+    font-size: 1.1rem;
+    vertical-align: middle;
+}
+
+/* ========== Iconic Destinations Section ========== */
+.destinations-section {
+    padding: 80px 0;
+    background-color: #ffffff;
+   
+}
+
+.destinations-header {
+    margin-bottom: 60px;
+}
+
+.destinations-content {
+    text-align: left;
+}
+
+.destinations-label {
+    display: inline-block;
+    background: #e0f7f0;
+    color: #059669;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.destinations-content h2 {
+    color: #1E293B;
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin-bottom: 15px;
+}
+
+.accent-green {
+    color: #059669;
+}
+
+.destinations-content p {
+    color: #475569;
+    font-size: 1.1rem;
+    max-width: 500px;
+    line-height: 1.6;
+}
+
+.destinations-layout {
+    display: grid;
+    /* Use 1fr 1fr to split the 1200px container exactly in half */
+    grid-template-columns: 1fr 1fr; 
+    gap: 40px;
+    align-items: stretch;
+    width: 100%; /* Ensures it doesn't exceed the container */
+}
+
+/* Featured Card (Left) */
+.featured-card {
+    position: relative;
+    height: 480px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.featured-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.featured-card:hover img {
+    transform: scale(1.05);
+}
+
+.featured-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 40px;
+    background: linear-gradient(to top, rgba(34, 53, 68, 0.95), transparent);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.featured-overlay .location {
+    color: #9ee7cc;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.featured-overlay h3 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.featured-overlay p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+    opacity: 0.95;
+}
+
+/* Destinations Grid (Right) - 2x2 */
+.destinations-grid {
+    display: grid;
+    /* Use 1fr to make the small cards fill their half of the layout */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 24px;
+}
+
+.destination-item {
+    position: relative;
+    height: 228px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #f5f5f5;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.destination-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.destination-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.destination-item:hover img {
+    transform: scale(1.08);
+}
+
+.dest-number {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #1E293B;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 1.2rem;
+    z-index: 10;
+}
+
+
+/* ========== Footer ========== */
+.footer {
+    background: linear-gradient(135deg, #0066cc 0%, #00a3ff 100%);
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 3rem;
+}
+
+.footer a {
+    color: white;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.footer a:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+.footer p {
+    margin: 0.5rem 0;
+}
+
+
