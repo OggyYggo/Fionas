@@ -73,32 +73,32 @@ export default function PhotoGallery() {
   const visibleItems = galleryItems.slice(currentIndex, currentIndex + 4)
 
   return (
-    <section className="photo-gallery-section">
-      <div className="container">
-        <div className="gallery-header">
-          <span className="subtitle">BEHIND THE LENS</span>
-          <h2>Photo Gallery of The Agency</h2>
-          <p>
+    <section className="photo-gallery-section py-[44px] bg-white text-gray-800 relative overflow-hidden">
+      <div className="container max-w-[1440px] mx-auto px-5">
+        <div className="gallery-header text-center mb-20 max-w-[800px] mx-auto">
+          <span className="subtitle text-accent-green font-bold text-sm tracking-wider">BEHIND THE LENS</span>
+          <h2 className="text-[40px] font-black mb-8 leading-tight text-gray-800">Photo Gallery of The Agency</h2>
+          <p className="text-lg leading-[1.8] text-gray-600 max-w-[700px] mx-auto">
             Explore our stunning collection of travel memories and destinations. 
             Each image tells a story of adventure, discovery, and unforgettable experiences 
             that await you with our travel agency.
           </p>
         </div>
 
-        <div className="gallery-wrapper">
-          <button className="gallery-nav gallery-nav-prev" onClick={handlePrev}>
-            <i className="fas fa-chevron-left"></i>
+        <div className="gallery-wrapper relative flex items-center justify-center">
+          <button className="gallery-nav absolute top-1/2 -translate-y-1/2 w-12 h-12 bg-white shadow-md border-2 border-gray-200 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 z-10 text-gray-600 text-xl -left-20 hover:bg-accent-teal hover:border-accent-teal hover:text-white hover:scale-110" onClick={handlePrev}>
+            <i className="fas fa-chevron-left transition-transform duration-200 hover:scale-125"></i>
           </button>
           
-          <div className="gallery-grid">
+          <div className="gallery-grid grid grid-cols-4 gap-8 mb-16 w-full">
             {visibleItems.map((item) => (
-              <div key={item.id} className="gallery-item">
-                <div className="gallery-image-wrapper">
-                  <img src={item.image} alt={item.title} />
-                  <div className="gallery-overlay">
-                    <div className="item-content">
-                      <span className="item-number">{item.number}</span>
-                      <h3>{item.title}</h3>
+              <div key={item.id} className="gallery-item relative h-[400px] rounded-2xl overflow-hidden cursor-pointer transition-all duration-400 hover:-translate-y-2.5 hover:shadow-2xl">
+                <div className="gallery-image-wrapper relative w-full h-full overflow-hidden">
+                  <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-600 hover:scale-110" />
+                  <div className="gallery-overlay absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-gray-900/90 via-gray-900/60 to-transparent flex flex-col justify-end p-8 opacity-0 transition-opacity duration-400 hover:opacity-100">
+                    <div className="item-content relative">
+                      <span className="item-number absolute -top-16 right-0 text-[4rem] font-black text-white/15 leading-none">{item.number}</span>
+                      <h3 className="text-[1.4rem] font-bold mb-2.5 text-white">{item.title}</h3>
                     </div>
                   </div>
                 </div>
@@ -106,8 +106,8 @@ export default function PhotoGallery() {
             ))}
           </div>
 
-          <button className="gallery-nav gallery-nav-next" onClick={handleNext}>
-            <i className="fas fa-chevron-right"></i>
+          <button className="gallery-nav absolute top-1/2 -translate-y-1/2 w-12 h-12 bg-white shadow-md border-2 border-gray-200 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 z-10 text-gray-600 text-xl -right-20 hover:bg-accent-teal hover:border-accent-teal hover:text-white hover:scale-110" onClick={handleNext}>
+            <i className="fas fa-chevron-right transition-transform duration-200 hover:scale-125"></i>
           </button>
         </div>
       </div>

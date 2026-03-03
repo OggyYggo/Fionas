@@ -1,0 +1,43 @@
+{
+  "name": "Bohol Travel Agency",
+  "short_name": "Bohol Tours",
+  "description": "Explore and book unforgettable tours in Bohol, Philippines",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0066cc",
+  "orientation": "portrait-primary",
+  
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1599580676039-c9a3e1e6d0a2?w=192&h=192&fit=crop",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1599580676039-c9a3e1e6d0a2?w=512&h=512&fit=crop",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ],
+  
+  "screenshots": [
+    {
+      "src": "https://images.unsplash.com/photo-1599580676039-c9a3e1e6d0a2?w=540&h=720&fit=crop",
+      "sizes": "540x720",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1024&h=600&fit=crop",
+      "sizes": "1024x600",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ],
+  
+  "categories": ["travel", "tourism"],
+  "prefer_related_applications": false
+}
