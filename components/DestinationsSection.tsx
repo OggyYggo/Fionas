@@ -49,9 +49,11 @@ export default function DestinationsSection() {
               <span className="subtitle text-accent-green font-bold text-sm tracking-wider">MUST VISIT PLACES</span>
               <h2 className="text-gray-800 text-[40px] font-black mb-4">Iconic Destinations</h2>
               <p className="text-gray-600 text-lg max-w-[500px] leading-relaxed mx-auto">Explore Bohol's most breathtaking attractions that have captivated travelers from around the world.</p>
-              <button className="view-all-btn flex gap-2 border-none text-gray-900 rounded-lg text-lg font-medium mt-5 bg-transparent ml-auto cursor-pointer no-underline transition-colors duration-300 hover:text-accent-green">
-                View All <i className="fa-solid fa-circle-chevron-right btn-icon ml-3 text-base align-middle"></i>
-              </button>
+              <div className="flex justify-center mt-5">
+                <button className="view-all-btn flex items-center gap-2 border-none text-gray-900 rounded-lg text-lg font-medium bg-transparent cursor-pointer no-underline transition-colors duration-300 hover:text-accent-green">
+                  View All <i className="fa-solid fa-circle-chevron-right btn-icon text-base"></i>
+                </button>
+              </div>
             </div>
           </div>
 

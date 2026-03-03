@@ -60,9 +60,11 @@ export default function ToursSection() {
           <span className="subtitle text-accent-green font-bold text-sm tracking-wider">CURATED EXPERIENCES</span>
           <h2 className="text-gray-800 text-[2.5rem] font-black my-2">Popular Tour Packages</h2>
           <p className="text-gray-600 text-lg max-w-[600px] mx-auto">Handpicked adventures designed to showcase best of Bohol's natural wonders and cultural heritage</p>
-          <button className="view-all-btn flex gap-2 border-none text-gray-900 rounded-lg text-lg font-medium mt-5 bg-transparent ml-auto cursor-pointer no-underline transition-colors duration-300 hover:text-accent-green">
-            View All <i className="fa-solid fa-circle-chevron-right btn-icon ml-3 text-base align-middle"></i>
-          </button>
+          <div className="flex justify-center mt-5">
+            <button className="view-all-btn flex items-center gap-2 border-none text-gray-900 rounded-lg text-lg font-medium bg-transparent cursor-pointer no-underline transition-colors duration-300 hover:text-accent-green">
+              View All <i className="fa-solid fa-circle-chevron-right btn-icon text-base"></i>
+            </button>
+          </div>
         </div>
 
         <div className="tour-grid grid grid-cols-3 gap-8 justify-center">
