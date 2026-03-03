@@ -799,11 +799,14 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sweetalert2$2f$dist$2f$sweetalert2$2e$all$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/sweetalert2/dist/sweetalert2.all.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$datepicker$2f$dist$2f$index$2e$es$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react-datepicker/dist/index.es.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Header$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/Header.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Footer$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/Footer.tsx [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 'use client';
+;
+;
 ;
 ;
 ;
@@ -816,8 +819,8 @@ function Custom() {
         fullName: '',
         email: '',
         phone: '',
-        startDate: '',
-        endDate: '',
+        startDate: null,
+        endDate: null,
         numberOfGuests: '1 Guest',
         budgetRange: 'Standard (₱5,000 - ₱10,000/person)',
         interests: [],
@@ -833,6 +836,12 @@ function Custom() {
         setFormData((prev)=>({
                 ...prev,
                 [name]: value
+            }));
+    };
+    const handleDateChange = (date, fieldName)=>{
+        setFormData((prev)=>({
+                ...prev,
+                [fieldName]: date
             }));
     };
     const handleContinue = ()=>{
@@ -882,8 +891,8 @@ function Custom() {
             fullName: '',
             email: '',
             phone: '',
-            startDate: '',
-            endDate: '',
+            startDate: null,
+            endDate: null,
             numberOfGuests: '1 Guest',
             budgetRange: 'Standard (₱5,000 - ₱10,000/person)',
             interests: [],
@@ -895,7 +904,7 @@ function Custom() {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Header$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/app/custom/page.tsx",
-                lineNumber: 98,
+                lineNumber: 107,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -908,7 +917,7 @@ function Custom() {
                             children: "Design Your Dream Tour"
                         }, void 0, false, {
                             fileName: "[project]/app/custom/page.tsx",
-                            lineNumber: 103,
+                            lineNumber: 112,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -916,18 +925,18 @@ function Custom() {
                             children: "Tell us your pereferences and we'll create a personalized iterinary for you"
                         }, void 0, false, {
                             fileName: "[project]/app/custom/page.tsx",
-                            lineNumber: 106,
+                            lineNumber: 115,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/custom/page.tsx",
-                    lineNumber: 102,
+                    lineNumber: 111,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/custom/page.tsx",
-                lineNumber: 101,
+                lineNumber: 110,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -964,40 +973,40 @@ function Custom() {
                                                             d: "M5 13l4 4L19 7"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/custom/page.tsx",
-                                                            lineNumber: 131,
+                                                            lineNumber: 140,
                                                             columnNumber: 27
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 130,
+                                                        lineNumber: 139,
                                                         columnNumber: 25
                                                     }, this) : step
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 120,
+                                                    lineNumber: 129,
                                                     columnNumber: 21
                                                 }, this),
                                                 step < 4 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: `w-8 h-0.5 mx-2 ${currentStep > step ? 'bg-teal-600' : 'bg-gray-200'}`
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 138,
+                                                    lineNumber: 147,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, step, true, {
                                             fileName: "[project]/app/custom/page.tsx",
-                                            lineNumber: 119,
+                                            lineNumber: 128,
                                             columnNumber: 19
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/custom/page.tsx",
-                                    lineNumber: 117,
+                                    lineNumber: 126,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/custom/page.tsx",
-                                lineNumber: 116,
+                                lineNumber: 125,
                                 columnNumber: 13
                             }, this),
                             currentStep === 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1008,7 +1017,7 @@ function Custom() {
                                         children: "Contact Information"
                                     }, void 0, false, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 152,
+                                        lineNumber: 161,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -1021,7 +1030,7 @@ function Custom() {
                                                         children: "Full Name *"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 156,
+                                                        lineNumber: 165,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1033,13 +1042,13 @@ function Custom() {
                                                         placeholder: "Enter your full name"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 157,
+                                                        lineNumber: 166,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 155,
+                                                lineNumber: 164,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1049,7 +1058,7 @@ function Custom() {
                                                         children: "Email Address *"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 168,
+                                                        lineNumber: 177,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1061,13 +1070,13 @@ function Custom() {
                                                         placeholder: "your@email.com"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 169,
+                                                        lineNumber: 178,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 167,
+                                                lineNumber: 176,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1077,7 +1086,7 @@ function Custom() {
                                                         children: "Phone Number *"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 180,
+                                                        lineNumber: 189,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1089,13 +1098,13 @@ function Custom() {
                                                         placeholder: "+63 XXX XXX XXXX"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 181,
+                                                        lineNumber: 190,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 179,
+                                                lineNumber: 188,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1108,7 +1117,7 @@ function Custom() {
                                                         children: "Cancel"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 193,
+                                                        lineNumber: 202,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1118,25 +1127,25 @@ function Custom() {
                                                         children: "Continue"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 200,
+                                                        lineNumber: 209,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 192,
+                                                lineNumber: 201,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 154,
+                                        lineNumber: 163,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/custom/page.tsx",
-                                lineNumber: 151,
+                                lineNumber: 160,
                                 columnNumber: 15
                             }, this),
                             currentStep === 2 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1147,7 +1156,7 @@ function Custom() {
                                         children: "Trip Details"
                                     }, void 0, false, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 215,
+                                        lineNumber: 224,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -1160,60 +1169,26 @@ function Custom() {
                                                         children: "Start Date *"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 219,
+                                                        lineNumber: 228,
                                                         columnNumber: 21
                                                     }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "relative",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                                type: "date",
-                                                                name: "startDate",
-                                                                value: formData.startDate,
-                                                                onChange: handleInputChange,
-                                                                className: "w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 221,
-                                                                columnNumber: 23
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none",
-                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
-                                                                    className: "w-5 h-5 text-gray-400",
-                                                                    fill: "none",
-                                                                    stroke: "currentColor",
-                                                                    viewBox: "0 0 24 24",
-                                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
-                                                                        strokeLinecap: "round",
-                                                                        strokeLinejoin: "round",
-                                                                        strokeWidth: 2,
-                                                                        d: "M6 2v6m0-4h12m-6 4v8m-6 0h12"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 230,
-                                                                        columnNumber: 27
-                                                                    }, this)
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/app/custom/page.tsx",
-                                                                    lineNumber: 229,
-                                                                    columnNumber: 25
-                                                                }, this)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 228,
-                                                                columnNumber: 23
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
+                                                    isClient && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$datepicker$2f$dist$2f$index$2e$es$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                                                        selected: formData.startDate,
+                                                        onChange: (date)=>handleDateChange(date, 'startDate'),
+                                                        className: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600",
+                                                        placeholderText: "Select start date",
+                                                        minDate: new Date(),
+                                                        dateFormat: "MMMM d, yyyy",
+                                                        wrapperClassName: "w-full"
+                                                    }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 220,
-                                                        columnNumber: 21
+                                                        lineNumber: 230,
+                                                        columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 218,
+                                                lineNumber: 227,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1223,60 +1198,26 @@ function Custom() {
                                                         children: "End Date (Optional)"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 237,
+                                                        lineNumber: 243,
                                                         columnNumber: 21
                                                     }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "relative",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                                type: "date",
-                                                                name: "endDate",
-                                                                value: formData.endDate,
-                                                                onChange: handleInputChange,
-                                                                className: "w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 239,
-                                                                columnNumber: 23
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none",
-                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
-                                                                    className: "w-5 h-5 text-gray-400",
-                                                                    fill: "none",
-                                                                    stroke: "currentColor",
-                                                                    viewBox: "0 0 24 24",
-                                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
-                                                                        strokeLinecap: "round",
-                                                                        strokeLinejoin: "round",
-                                                                        strokeWidth: 2,
-                                                                        d: "M6 2v6m0-4h12m-6 4v8m-6 0h12"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 248,
-                                                                        columnNumber: 27
-                                                                    }, this)
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/app/custom/page.tsx",
-                                                                    lineNumber: 247,
-                                                                    columnNumber: 25
-                                                                }, this)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 246,
-                                                                columnNumber: 23
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
+                                                    isClient && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$datepicker$2f$dist$2f$index$2e$es$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                                                        selected: formData.endDate,
+                                                        onChange: (date)=>handleDateChange(date, 'endDate'),
+                                                        className: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600",
+                                                        placeholderText: "Select end date",
+                                                        minDate: formData.startDate || new Date(),
+                                                        dateFormat: "MMMM d, yyyy",
+                                                        wrapperClassName: "w-full"
+                                                    }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 238,
-                                                        columnNumber: 21
+                                                        lineNumber: 245,
+                                                        columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 236,
+                                                lineNumber: 242,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1286,7 +1227,7 @@ function Custom() {
                                                         children: "Number of Guests *"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 255,
+                                                        lineNumber: 258,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1302,48 +1243,48 @@ function Custom() {
                                                                         children: "1 Guest"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 263,
+                                                                        lineNumber: 266,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                         children: "2 Guests"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 264,
+                                                                        lineNumber: 267,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                         children: "3 Guests"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 265,
+                                                                        lineNumber: 268,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                         children: "4 Guests"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 266,
+                                                                        lineNumber: 269,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                         children: "5 Guests"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 267,
+                                                                        lineNumber: 270,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                         children: "6+ Guests"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 268,
+                                                                        lineNumber: 271,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 257,
+                                                                lineNumber: 260,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1356,29 +1297,29 @@ function Custom() {
                                                                         d: "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 272,
+                                                                        lineNumber: 275,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/custom/page.tsx",
-                                                                    lineNumber: 271,
+                                                                    lineNumber: 274,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 270,
+                                                                lineNumber: 273,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 256,
+                                                        lineNumber: 259,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 254,
+                                                lineNumber: 257,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1388,7 +1329,7 @@ function Custom() {
                                                         children: "Budget Range"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 279,
+                                                        lineNumber: 282,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1404,34 +1345,34 @@ function Custom() {
                                                                         children: "Standard (₱5,000 - ₱10,000/person)"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 287,
+                                                                        lineNumber: 290,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                         children: "Premium (₱10,000 - ₱15,000/person)"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 288,
+                                                                        lineNumber: 291,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                         children: "Luxury (₱15,000 - ₱25,000/person)"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 289,
+                                                                        lineNumber: 292,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                         children: "Ultra Luxury (₱25,000+/person)"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 290,
+                                                                        lineNumber: 293,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 281,
+                                                                lineNumber: 284,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1448,29 +1389,29 @@ function Custom() {
                                                                         d: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/custom/page.tsx",
-                                                                        lineNumber: 294,
+                                                                        lineNumber: 297,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/custom/page.tsx",
-                                                                    lineNumber: 293,
+                                                                    lineNumber: 296,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 292,
+                                                                lineNumber: 295,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 280,
+                                                        lineNumber: 283,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 278,
+                                                lineNumber: 281,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1483,7 +1424,7 @@ function Custom() {
                                                         children: "Back"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 302,
+                                                        lineNumber: 305,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1504,36 +1445,36 @@ function Custom() {
                                                                     d: "M13 7l5 5m0 0l-5 5m5-5H6"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/custom/page.tsx",
-                                                                    lineNumber: 316,
+                                                                    lineNumber: 319,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 315,
+                                                                lineNumber: 318,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 309,
+                                                        lineNumber: 312,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 301,
+                                                lineNumber: 304,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 217,
+                                        lineNumber: 226,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/custom/page.tsx",
-                                lineNumber: 214,
+                                lineNumber: 223,
                                 columnNumber: 15
                             }, this),
                             currentStep === 3 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1544,7 +1485,7 @@ function Custom() {
                                         children: "Your Interests"
                                     }, void 0, false, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 327,
+                                        lineNumber: 330,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1552,7 +1493,7 @@ function Custom() {
                                         children: "What interests you? *"
                                     }, void 0, false, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 328,
+                                        lineNumber: 331,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1616,7 +1557,7 @@ function Custom() {
                                                         children: interest.icon
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 355,
+                                                        lineNumber: 358,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1624,18 +1565,18 @@ function Custom() {
                                                         children: interest.name
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 356,
+                                                        lineNumber: 359,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, interest.id, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 341,
+                                                lineNumber: 344,
                                                 columnNumber: 21
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 330,
+                                        lineNumber: 333,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -1643,7 +1584,7 @@ function Custom() {
                                         children: "Must-visit Destinations (Optional)"
                                     }, void 0, false, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 361,
+                                        lineNumber: 364,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1676,17 +1617,17 @@ function Custom() {
                                                     children: destination
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 390,
+                                                    lineNumber: 393,
                                                     columnNumber: 23
                                                 }, this)
                                             }, destination, false, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 376,
+                                                lineNumber: 379,
                                                 columnNumber: 21
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 363,
+                                        lineNumber: 366,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1699,7 +1640,7 @@ function Custom() {
                                                 children: "Back"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 397,
+                                                lineNumber: 400,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1720,30 +1661,30 @@ function Custom() {
                                                             d: "M13 7l5 5m0 0l-5 5m5-5H6"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/custom/page.tsx",
-                                                            lineNumber: 411,
+                                                            lineNumber: 414,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 410,
+                                                        lineNumber: 413,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 404,
+                                                lineNumber: 407,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 396,
+                                        lineNumber: 399,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/custom/page.tsx",
-                                lineNumber: 326,
+                                lineNumber: 329,
                                 columnNumber: 15
                             }, this),
                             currentStep === 4 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1754,7 +1695,7 @@ function Custom() {
                                         children: "Review Your Tour Request"
                                     }, void 0, false, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 421,
+                                        lineNumber: 424,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1762,7 +1703,7 @@ function Custom() {
                                         children: "Please review your information before submitting your request."
                                     }, void 0, false, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 422,
+                                        lineNumber: 425,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1773,7 +1714,7 @@ function Custom() {
                                                 children: "Contact Information"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 426,
+                                                lineNumber: 429,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1787,7 +1728,7 @@ function Custom() {
                                                                 children: "Full Name:"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 429,
+                                                                lineNumber: 432,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1795,13 +1736,13 @@ function Custom() {
                                                                 children: formData.fullName
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 430,
+                                                                lineNumber: 433,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 428,
+                                                        lineNumber: 431,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1812,7 +1753,7 @@ function Custom() {
                                                                 children: "Email:"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 433,
+                                                                lineNumber: 436,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1820,13 +1761,13 @@ function Custom() {
                                                                 children: formData.email
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 434,
+                                                                lineNumber: 437,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 432,
+                                                        lineNumber: 435,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1837,7 +1778,7 @@ function Custom() {
                                                                 children: "Phone:"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 437,
+                                                                lineNumber: 440,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1845,25 +1786,25 @@ function Custom() {
                                                                 children: formData.phone
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 438,
+                                                                lineNumber: 441,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 436,
+                                                        lineNumber: 439,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 427,
+                                                lineNumber: 430,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 425,
+                                        lineNumber: 428,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1874,7 +1815,7 @@ function Custom() {
                                                 children: "Trip Details"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 445,
+                                                lineNumber: 448,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1888,21 +1829,25 @@ function Custom() {
                                                                 children: "Start Date:"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 448,
+                                                                lineNumber: 451,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 className: "font-medium",
-                                                                children: formData.startDate
+                                                                children: formData.startDate ? formData.startDate.toLocaleDateString('en-US', {
+                                                                    month: 'long',
+                                                                    day: 'numeric',
+                                                                    year: 'numeric'
+                                                                }) : 'Not selected'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 449,
+                                                                lineNumber: 452,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 447,
+                                                        lineNumber: 450,
                                                         columnNumber: 21
                                                     }, this),
                                                     formData.endDate && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1913,21 +1858,25 @@ function Custom() {
                                                                 children: "End Date:"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 453,
+                                                                lineNumber: 456,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 className: "font-medium",
-                                                                children: formData.endDate
+                                                                children: formData.endDate.toLocaleDateString('en-US', {
+                                                                    month: 'long',
+                                                                    day: 'numeric',
+                                                                    year: 'numeric'
+                                                                })
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 454,
+                                                                lineNumber: 457,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 452,
+                                                        lineNumber: 455,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1938,7 +1887,7 @@ function Custom() {
                                                                 children: "Number of Guests:"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 458,
+                                                                lineNumber: 461,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1946,13 +1895,13 @@ function Custom() {
                                                                 children: formData.numberOfGuests
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 459,
+                                                                lineNumber: 462,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 457,
+                                                        lineNumber: 460,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1963,7 +1912,7 @@ function Custom() {
                                                                 children: "Budget Range:"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 462,
+                                                                lineNumber: 465,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1971,25 +1920,25 @@ function Custom() {
                                                                 children: formData.budgetRange
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/custom/page.tsx",
-                                                                lineNumber: 463,
+                                                                lineNumber: 466,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 461,
+                                                        lineNumber: 464,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 446,
+                                                lineNumber: 449,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 444,
+                                        lineNumber: 447,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2000,7 +1949,7 @@ function Custom() {
                                                 children: "Your Interests"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 470,
+                                                lineNumber: 473,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2059,24 +2008,24 @@ function Custom() {
                                                             ]
                                                         }, interest.id, true, {
                                                             fileName: "[project]/app/custom/page.tsx",
-                                                            lineNumber: 485,
+                                                            lineNumber: 488,
                                                             columnNumber: 27
                                                         }, this) : null;
                                                     })
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 472,
+                                                    lineNumber: 475,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 471,
+                                                lineNumber: 474,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 469,
+                                        lineNumber: 472,
                                         columnNumber: 17
                                     }, this),
                                     formData.destinations.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2087,7 +2036,7 @@ function Custom() {
                                                 children: "Must-visit Destinations"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 497,
+                                                lineNumber: 500,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2099,23 +2048,23 @@ function Custom() {
                                                             children: destination
                                                         }, destination, false, {
                                                             fileName: "[project]/app/custom/page.tsx",
-                                                            lineNumber: 501,
+                                                            lineNumber: 504,
                                                             columnNumber: 27
                                                         }, this))
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 499,
+                                                    lineNumber: 502,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 498,
+                                                lineNumber: 501,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 496,
+                                        lineNumber: 499,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2126,7 +2075,7 @@ function Custom() {
                                                 children: "Additional Notes (Optional)"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 512,
+                                                lineNumber: 515,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -2135,13 +2084,13 @@ function Custom() {
                                                 placeholder: "Any special requests or additional information..."
                                             }, void 0, false, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 513,
+                                                lineNumber: 516,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 511,
+                                        lineNumber: 514,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2154,7 +2103,7 @@ function Custom() {
                                                 children: "Back"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 522,
+                                                lineNumber: 525,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2187,30 +2136,30 @@ function Custom() {
                                                             d: "M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/custom/page.tsx",
-                                                            lineNumber: 548,
+                                                            lineNumber: 551,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 547,
+                                                        lineNumber: 550,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/custom/page.tsx",
-                                                lineNumber: 529,
+                                                lineNumber: 532,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 521,
+                                        lineNumber: 524,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/custom/page.tsx",
-                                lineNumber: 420,
+                                lineNumber: 423,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2235,17 +2184,17 @@ function Custom() {
                                                             d: "M5 13l4 4L19 7"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/custom/page.tsx",
-                                                            lineNumber: 561,
+                                                            lineNumber: 564,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 560,
+                                                        lineNumber: 563,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 559,
+                                                    lineNumber: 562,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -2253,7 +2202,7 @@ function Custom() {
                                                     children: "Free Consultation"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 564,
+                                                    lineNumber: 567,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2261,18 +2210,18 @@ function Custom() {
                                                     children: "No obligation. We'll review your request and get back to you within 24 hours"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 565,
+                                                    lineNumber: 568,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/custom/page.tsx",
-                                            lineNumber: 558,
+                                            lineNumber: 561,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 557,
+                                        lineNumber: 560,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2294,17 +2243,17 @@ function Custom() {
                                                             d: "M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/custom/page.tsx",
-                                                            lineNumber: 573,
+                                                            lineNumber: 576,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 572,
+                                                        lineNumber: 575,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 571,
+                                                    lineNumber: 574,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -2312,7 +2261,7 @@ function Custom() {
                                                     children: "Personalized Itinerary"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 576,
+                                                    lineNumber: 579,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2320,18 +2269,18 @@ function Custom() {
                                                     children: "Get a custom tour designed specifically for your preferences and budget"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 577,
+                                                    lineNumber: 580,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/custom/page.tsx",
-                                            lineNumber: 570,
+                                            lineNumber: 573,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 569,
+                                        lineNumber: 572,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2353,17 +2302,17 @@ function Custom() {
                                                             d: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/custom/page.tsx",
-                                                            lineNumber: 585,
+                                                            lineNumber: 588,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/custom/page.tsx",
-                                                        lineNumber: 584,
+                                                        lineNumber: 587,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 583,
+                                                    lineNumber: 586,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -2371,7 +2320,7 @@ function Custom() {
                                                     children: "Flexible Options"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 588,
+                                                    lineNumber: 591,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2379,51 +2328,51 @@ function Custom() {
                                                     children: "Make changes until it's perfect. Your dream tour, your way"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/custom/page.tsx",
-                                                    lineNumber: 589,
+                                                    lineNumber: 592,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/custom/page.tsx",
-                                            lineNumber: 582,
+                                            lineNumber: 585,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/custom/page.tsx",
-                                        lineNumber: 581,
+                                        lineNumber: 584,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/custom/page.tsx",
-                                lineNumber: 556,
+                                lineNumber: 559,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/custom/page.tsx",
-                        lineNumber: 114,
+                        lineNumber: 123,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/custom/page.tsx",
-                    lineNumber: 113,
+                    lineNumber: 122,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/custom/page.tsx",
-                lineNumber: 112,
+                lineNumber: 121,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Footer$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/app/custom/page.tsx",
-                lineNumber: 596,
+                lineNumber: 599,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true);
 }
-_s(Custom, "9K5hy66C9gojUIeefG9q+Z6LLNY=");
+_s(Custom, "u0LrmsMszLl2Xl1K2wmF+X3Eeeg=");
 _c = Custom;
 var _c;
 __turbopack_context__.k.register(_c, "Custom");

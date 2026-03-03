@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Swal from 'sweetalert2'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
@@ -13,8 +15,8 @@ export default function Custom() {
     fullName: '',
     email: '',
     phone: '',
-    startDate: '',
-    endDate: '',
+    startDate: null as Date | null,
+    endDate: null as Date | null,
     numberOfGuests: '1 Guest',
     budgetRange: 'Standard (₱5,000 - ₱10,000/person)',
     interests: [] as string[],
@@ -30,6 +32,13 @@ export default function Custom() {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }))
+  }
+
+  const handleDateChange = (date: Date | null, fieldName: 'startDate' | 'endDate') => {
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: date
     }))
   }
 
@@ -83,8 +92,8 @@ export default function Custom() {
       fullName: '',
       email: '',
       phone: '',
-      startDate: '',
-      endDate: '',
+      startDate: null,
+      endDate: null,
       numberOfGuests: '1 Guest',
       budgetRange: 'Standard (₱5,000 - ₱10,000/person)',
       interests: [],
@@ -217,38 +226,32 @@ export default function Custom() {
                 <form className="space-y-6">
                   <div>
                     <label className="block text-gray-700 font-medium mb-2">Start Date *</label>
-                    <div className="relative">
-                      <input
-                        type="date"
-                        name="startDate"
-                        value={formData.startDate}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                    {isClient && (
+                      <DatePicker
+                        selected={formData.startDate}
+                        onChange={(date: Date | null) => handleDateChange(date, 'startDate')}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                        placeholderText="Select start date"
+                        minDate={new Date()}
+                        dateFormat="MMMM d, yyyy"
+                        wrapperClassName="w-full"
                       />
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 2v6m0-4h12m-6 4v8m-6 0h12" />
-                        </svg>
-                      </div>
-                    </div>
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-gray-700 font-medium mb-2">End Date (Optional)</label>
-                    <div className="relative">
-                      <input
-                        type="date"
-                        name="endDate"
-                        value={formData.endDate}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                    {isClient && (
+                      <DatePicker
+                        selected={formData.endDate}
+                        onChange={(date: Date | null) => handleDateChange(date, 'endDate')}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
+                        placeholderText="Select end date"
+                        minDate={formData.startDate || new Date()}
+                        dateFormat="MMMM d, yyyy"
+                        wrapperClassName="w-full"
                       />
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 2v6m0-4h12m-6 4v8m-6 0h12" />
-                        </svg>
-                      </div>
-                    </div>
+                    )}
                   </div>
 
                   <div>
@@ -446,12 +449,12 @@ export default function Custom() {
                   <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Start Date:</span>
-                      <span className="font-medium">{formData.startDate}</span>
+                      <span className="font-medium">{formData.startDate ? formData.startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Not selected'}</span>
                     </div>
                     {formData.endDate && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">End Date:</span>
-                        <span className="font-medium">{formData.endDate}</span>
+                        <span className="font-medium">{formData.endDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
