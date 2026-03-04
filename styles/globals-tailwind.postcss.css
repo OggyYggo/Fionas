@@ -36,7 +36,7 @@
   }
   
   .hero-content {
-    @apply relative z-10 max-w-[750px] px-5;
+    @apply relative z-10 max-w-[900px] px-5;
   }
 
   .hero-custom {
@@ -216,7 +216,12 @@
   }
   
   .price-amount {
-    @apply text-accent-green text-[1.8rem] font-semibold leading-none;
+    @apply text-green-600 text-[1.8rem] font-semibold leading-none;
+    color: #059669 !important;
+    opacity: 1 !important;
+    display: block !important;
+    visibility: visible !important;
+    animation: none !important;
   }
   
   .btn-details {
