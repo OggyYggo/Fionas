@@ -102,6 +102,78 @@ export default function Custom() {
     setCurrentStep(1)
   }
 
+  const handleSubmitRequest = async () => {
+    try {
+      // Prepare booking data
+      const bookingData = {
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        tourType: 'Custom Tour',
+        startDate: formData.startDate?.toISOString().split('T')[0],
+        endDate: formData.endDate?.toISOString().split('T')[0],
+        numberOfGuests: formData.numberOfGuests,
+        budgetRange: formData.budgetRange,
+        interests: formData.interests,
+        destinations: formData.destinations,
+        additionalNotes: document.querySelector('textarea')?.value || ''
+      }
+
+      // Send to API
+      const response = await fetch('/api/booking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData)
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Request Submitted!',
+          html: `
+            <div class="text-left">
+              <p>Your tour request has been successfully submitted!</p>
+              <p class="mt-2"><strong>Booking ID:</strong> ${result.data.bookingId}</p>
+              <p class="mt-2"><strong>Status:</strong> ${result.data.status}</p>
+              <p class="mt-2">We will contact you within ${result.data.estimatedResponseTime}.</p>
+            </div>
+          `,
+          confirmButtonColor: '#14b8a6',
+          confirmButtonText: 'Great!',
+          showCancelButton: true,
+          cancelButtonText: 'View My Booking',
+          cancelButtonColor: '#6b7280'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            handleCancel()
+          } else if (result.isDismissed) {
+            // Could navigate to booking status page
+            console.log('Navigate to booking status')
+          }
+        })
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Submission Failed',
+          text: result.message || 'Something went wrong. Please try again.',
+          confirmButtonColor: '#14b8a6'
+        })
+      }
+    } catch (error) {
+      console.error('Booking submission error:', error)
+      Swal.fire({
+        icon: 'error',
+        title: 'Network Error',
+        text: 'Unable to connect to server. Please check your connection and try again.',
+        confirmButtonColor: '#14b8a6'
+      })
+    }
+  }
+
   return (
     <>
       <Header />
@@ -531,19 +603,7 @@ export default function Custom() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      Swal.fire({
-                        icon: 'success',
-                        title: 'Request Submitted!',
-                        text: 'Your tour request has been successfully submitted. We will contact you within 24 hours.',
-                        confirmButtonColor: '#14b8a6',
-                        confirmButtonText: 'Great!'
-                      }).then((result) => {
-                        if (result.isConfirmed) {
-                          handleCancel()
-                        }
-                      })
-                    }}
+                    onClick={handleSubmitRequest}
                     className="flex-1 px-6 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors flex items-center justify-center"
                   >
                     Submit Request
