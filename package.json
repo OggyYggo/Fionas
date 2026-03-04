@@ -21,16 +21,20 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@radix-ui/react-alert-dialog": "^1.1.15",
     "@supabase/supabase-js": "^2.98.0",
     "body-parser": "^1.20.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dotenv": "^17.3.1",
     "express": "^4.18.2",
     "gsap": "^3.14.2",
+    "lucide-react": "^0.576.0",
     "next": "^16.1.6",
     "react": "^19.2.4",
     "react-datepicker": "^9.1.0",
     "react-dom": "^19.2.4",
-    "sweetalert2": "^11.26.21",
+    "tailwind-merge": "^3.5.0",
     "tailwindcss": "^3.4.19"
   },
   "devDependencies": {
