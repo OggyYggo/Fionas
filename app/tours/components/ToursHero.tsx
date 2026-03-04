@@ -21,7 +21,7 @@ export default function ToursHero({
   }, [])
 
   return (
-    <section className="relative min-h-[600px] bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
+    <section className="relative min-h-[450px] bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
       <div className="container max-w-6xl mx-auto px-5 py-20">
         <h1 className="font-primary text-[64px] font-black mb-5 leading-tight tracking-[-1.5px] text-white text-center">
           Discover Our Amazing Tours
