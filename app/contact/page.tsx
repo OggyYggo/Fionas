@@ -46,7 +46,7 @@ export default function Contact() {
 
                 <div>
                   <label className="block text-gray-700 font-medium mb-2">Message *</label>
-                  <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-accent-teal" rows="5" placeholder="Tell us how we can help you..." required></textarea>
+                  <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-accent-teal" rows={5} placeholder="Tell us how we can help you..." required></textarea>
                 </div>
 
                 <button type="submit" className="w-full bg-accent-teal text-white py-3 px-6 rounded-lg font-semibold hover:bg-accent-teal-dark transition-colors">
