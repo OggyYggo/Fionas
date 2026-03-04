@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { toursAnimations } from '@/animations/toursAnimations'
+import { tours } from '../data/tours'
 
 export default function TourPackages({ searchTerm, selectedCategory }: { 
   searchTerm: string
@@ -19,43 +20,7 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
     }
   }, [isClient])
 
-  const tours = [
-    {
-      id: 1,
-      title: 'Panglao Island Hopping',
-      description: 'Explore Balicasag Island, snorkel with sea turtles, and visit the stunning Virgin Island sandbar.',
-      image: 'https://i.pinimg.com/1200x/ca/ab/91/caab91c6b26d164d8200815391de75c3.jpg',
-      duration: 'Full Day',
-      maxPeople: 'Max 10',
-      price: '₱3,500',
-      tag: 'Island Hopping',
-      featured: true
-    },
-    {
-      id: 2,
-      title: 'Dolphin & Whale Watching',
-      description: 'Early morning dolphin watching cruise with Pamilacan Island snorkeling adventure.',
-      image: 'https://images.unsplash.com/photo-1570481662006-a3a1374699e8?q=80&w=384&h=310&fit=crop',
-      duration: 'Half Day',
-      maxPeople: 'Max 8',
-      price: '₱3,000',
-      tag: 'Adventure',
-      featured: true
-    },
-    {
-      id: 3,
-      title: 'Philippine Tarsier Sanctuary',
-      description: 'Get up close with the world\'s smallest primate in their natural rainforest habitat.',
-      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=384&h=310&fit=crop',
-      duration: 'Half Day',
-      maxPeople: 'Max 12',
-      price: '₱2,500',
-      tag: 'Wildlife',
-      featured: true
-    }
-  ]
-
-  const filteredTours = tours.filter(tour => {
+  const filteredTours = tours.filter((tour) => {
     const matchesSearch = tour.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          tour.description.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = selectedCategory === 'All Categories' || 
@@ -92,7 +57,7 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
                       <span className="from-text block text-xs text-gray-500">For as Low as</span>
                       <span className="price-amount text-green-600 text-[1.8rem] font-semibold leading-none">{tour.price}</span>
                     </div>
-                    <a href="#" className="btn-details w-[145px] h-12 bg-gray-900 text-white no-underline rounded-lg flex items-center justify-center font-bold p-4 gap-11 transition-all duration-300 hover:bg-gray-900">View <i className="fa-solid fa-circle-chevron-right btn-icon ml-3 text-base align-middle"></i></a>
+                    <a href={`/tours/${tour.id}`} className="btn-details w-[145px] h-12 bg-gray-900 text-white no-underline rounded-lg flex items-center justify-center font-bold p-4 gap-11 transition-all duration-300 hover:bg-gray-900">View <i className="fa-solid fa-circle-chevron-right btn-icon ml-3 text-base align-middle"></i></a>
                   </div>
                   </div>
                 </div>

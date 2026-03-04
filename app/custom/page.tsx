@@ -154,7 +154,7 @@ export default function Custom() {
       {/* Alert Component */}
       {alert && (
         <div className="fixed top-20 right-4 z-[9999] max-w-md animate-in slide-in-from-top-2">
-          <Alert variant={alert.type === 'warning' ? 'warning' : alert.type === 'success' ? 'success' : 'destructive'} className="shadow-xl border-2">
+          <Alert variant={alert.type === 'error' ? 'destructive' : 'default'} className="shadow-xl border-2">
             <div className="flex items-center">
               {alert.type === 'warning' && <AlertCircle className="h-4 w-4 flex-shrink-0" />}
               {alert.type === 'success' && <CheckCircle className="h-4 w-4 flex-shrink-0" />}
