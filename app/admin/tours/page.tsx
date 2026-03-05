@@ -5,23 +5,40 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { MapPin, Plus, Search, Filter, Star, Eye, Edit, Trash2 } from 'lucide-react'
+import { MapPin, Plus, Search, Filter, Star, Eye, Edit, Trash2, ChevronDown } from 'lucide-react'
 import { SimpleTourService } from '@/lib/simpleTourService'
 import { Tour } from '@/types/tour'
 import TourForm from '@/components/admin/TourForm'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 export default function ToursPage() {
   const [tours, setTours] = useState<Tour[]>([])
+  const [filteredTours, setFilteredTours] = useState<Tour[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingTour, setEditingTour] = useState<Tour | null>(null)
   const [formLoading, setFormLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [filter, setFilter] = useState<'all' | 'featured' | 'standard'>('all')
 
   useEffect(() => {
     fetchTours()
   }, [])
+
+  useEffect(() => {
+    applyFilter()
+  }, [tours, filter])
+
+  const applyFilter = () => {
+    if (filter === 'all') {
+      setFilteredTours(tours)
+    } else if (filter === 'featured') {
+      setFilteredTours(tours.filter(tour => tour.featured))
+    } else if (filter === 'standard') {
+      setFilteredTours(tours.filter(tour => !tour.featured))
+    }
+  }
 
   const fetchTours = async () => {
     try {
@@ -190,11 +207,11 @@ export default function ToursPage() {
           <p className="text-gray-600">Manage your tour packages and activities</p>
         </div>
         <div className="flex space-x-2">
-          <Button variant="outline">
+          <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400">
             <Search className="h-4 w-4 mr-2" />
             Search
           </Button>
-          <Button onClick={() => setShowForm(true)}>
+          <Button onClick={() => setShowForm(true)} className="bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700">
             <Plus className="h-4 w-4 mr-2" />
             Add New Tour
           </Button>
@@ -249,28 +266,44 @@ export default function ToursPage() {
               <CardTitle>All Tours</CardTitle>
               <CardDescription>Manage your tour packages</CardDescription>
             </div>
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400">
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filter
+                  <ChevronDown className="h-4 w-4 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setFilter('all')} className={filter === 'all' ? 'bg-blue-50 text-blue-700' : ''}>
+                  All Tours
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setFilter('featured')} className={filter === 'featured' ? 'bg-amber-50 text-amber-700' : ''}>
+                  Featured Only
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setFilter('standard')} className={filter === 'standard' ? 'bg-gray-100 text-gray-700' : ''}>
+                  Standard Only
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <Table>
+            <Table className="min-w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead>Tour Name</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Duration</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Capacity</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="w-[300px]">Tour Name</TableHead>
+                  <TableHead className="w-[100px]">Price</TableHead>
+                  <TableHead className="w-[120px]">Duration</TableHead>
+                  <TableHead className="w-[120px]">Category</TableHead>
+                  <TableHead className="w-[120px]">Type</TableHead>
+                  <TableHead className="w-[100px]">Capacity</TableHead>
+                  <TableHead className="w-[150px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
             <TableBody>
-              {tours.map((tour) => (
+              {filteredTours.map((tour) => (
                 <TableRow key={tour.id}>
                   <TableCell>
                     <div className="flex items-center space-x-3">
@@ -286,22 +319,22 @@ export default function ToursPage() {
                   <TableCell className="font-medium">{tour.price}</TableCell>
                   <TableCell>{tour.duration}</TableCell>
                   <TableCell>
-                    <Badge variant="default">
+                    <Badge variant="default" className="bg-blue-100 text-blue-800 hover:bg-blue-200">
                       {tour.tag}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={tour.featured ? 'default' : 'secondary'}>
+                    <Badge variant={tour.featured ? 'default' : 'secondary'} className={tour.featured ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}>
                       {tour.featured ? 'Featured' : 'Standard'}
                     </Badge>
                   </TableCell>
-                  <TableCell>{tour.maxPeople}</TableCell>
+                  <TableCell className="font-medium text-gray-900">{tour.maxPeople}</TableCell>
                   <TableCell>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => window.open(`/tours/${tour.id}`, '_blank')}>
+                    <div className="flex items-center space-x-2">
+                      <Button variant="outline" size="sm" onClick={() => window.open(`/tours/${tour.id}`, '_blank')} title="View Tour" className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300">
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleEditTour(tour)}>
+                      <Button variant="outline" size="sm" onClick={() => handleEditTour(tour)} title="Edit Tour" className="border-green-200 text-green-600 hover:bg-green-50 hover:border-green-300">
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button 
@@ -309,7 +342,7 @@ export default function ToursPage() {
                         size="sm" 
                         onClick={() => handleDeleteTour(tour.id)} 
                         title="Delete Tour"
-                        className="bg-red-600 hover:bg-red-700 text-white"
+                        className="bg-red-500 hover:bg-red-600 text-white border-red-500 hover:border-red-600"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

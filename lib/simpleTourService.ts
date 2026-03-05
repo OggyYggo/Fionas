@@ -36,7 +36,8 @@ export class SimpleTourService {
 
       return (data || []).map(tour => ({
         ...tour,
-        maxPeople: tour.max_people
+        maxPeople: tour.max_people,
+        notIncluded: tour.not_included
       }))
     } catch (error) {
       console.error('❌ Error in getAllTours:', error)
@@ -60,7 +61,8 @@ export class SimpleTourService {
 
       return {
         ...data,
-        maxPeople: data.max_people
+        maxPeople: data.max_people,
+        notIncluded: data.not_included
       }
     } catch (error) {
       console.error('❌ Error in getTourById:', error)
@@ -84,7 +86,11 @@ export class SimpleTourService {
         max_people: tourData.maxPeople,
         price: tourData.price,
         tag: tourData.tag,
-        featured: tourData.featured
+        featured: tourData.featured,
+        highlights: tourData.highlights || [],
+        included: tourData.included || [],
+        not_included: tourData.notIncluded || [],
+        pricing: tourData.pricing || {}
       }
 
       console.log('🔍 SimpleTourService: Prepared data for DB:', dbData)
@@ -112,7 +118,8 @@ export class SimpleTourService {
 
       return {
         ...data,
-        maxPeople: data.max_people
+        maxPeople: data.max_people,
+        notIncluded: data.not_included
       }
     } catch (error) {
       console.error('❌ SimpleTourService: Error creating tour:', error)
@@ -137,6 +144,10 @@ export class SimpleTourService {
       if (tourData.price) dbData.price = tourData.price
       if (tourData.tag) dbData.tag = tourData.tag
       if (tourData.featured !== undefined) dbData.featured = tourData.featured
+      if (tourData.highlights) dbData.highlights = tourData.highlights
+      if (tourData.included) dbData.included = tourData.included
+      if (tourData.notIncluded) dbData.not_included = tourData.notIncluded
+      if (tourData.pricing) dbData.pricing = tourData.pricing
 
       console.log('🔍 SimpleTourService: Prepared update data:', dbData)
 
@@ -163,7 +174,8 @@ export class SimpleTourService {
 
       return {
         ...data,
-        maxPeople: data.max_people
+        maxPeople: data.max_people,
+        notIncluded: data.not_included
       }
     } catch (error) {
       console.error('❌ SimpleTourService: Error in updateTour:', error)

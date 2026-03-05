@@ -10,4 +10,11 @@ export interface Tour {
   featured: boolean
   created_at?: string
   updated_at?: string
+  highlights?: string[]
+  included?: string[]
+  notIncluded?: string[]
+  pricing?: {
+    local: Array<{ pax: number | string; price: string }>
+    foreigner: Array<{ pax: number | string; price: string }>
+  }
 }

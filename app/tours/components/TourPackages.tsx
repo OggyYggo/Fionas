@@ -27,9 +27,24 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
     const fetchTours = async () => {
       try {
         const toursData = await SimpleTourService.getAllTours()
-        setTours(toursData)
+        
+        // If no data from Supabase, try fallback
+        if (!toursData || toursData.length === 0) {
+          const { tours } = await import('@/app/tours/data/tours')
+          setTours(tours)
+        } else {
+          setTours(toursData)
+        }
       } catch (error) {
         console.error('Error fetching tours:', error)
+        // Try fallback on error
+        try {
+          const { tours } = await import('@/app/tours/data/tours')
+          setTours(tours)
+        } catch (fallbackError) {
+          console.error('Fallback also failed:', fallbackError)
+          setTours([])
+        }
       } finally {
         setLoading(false)
       }
