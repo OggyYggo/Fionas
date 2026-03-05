@@ -14,8 +14,8 @@ export async function GET() {
       description: 'A test tour for debugging',
       image: 'https://example.com/test.jpg',
       duration: '2 hours',
-      maxPeople: 10,
-      price: 50.00,
+      maxPeople: '10',
+      price: '50.00',
       tag: 'adventure',
       featured: false
     }

@@ -45,7 +45,7 @@ export async function GET() {
       data: data
     })
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ API route error:', error)
     return NextResponse.json({
       success: false,

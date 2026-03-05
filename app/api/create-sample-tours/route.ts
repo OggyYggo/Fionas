@@ -13,8 +13,8 @@ export async function POST() {
         description: 'Experience the iconic Chocolate Hills with a guided tour that includes hiking, photography spots, and breathtaking panoramic views of Bohol\'s most famous geological formation.',
         image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
         duration: 'Full Day',
-        maxPeople: 15,
-        price: 89.99,
+        maxPeople: '15',
+        price: '89.99',
         tag: 'nature',
         featured: true
       },
@@ -23,8 +23,8 @@ export async function POST() {
         description: 'Enjoy a relaxing floating restaurant cruise along the scenic Loboc River, complete with live music, buffet lunch, and stunning views of tropical landscapes.',
         image: 'https://images.unsplash.com/photo-1540206395-68808572332f?w=800&h=600&fit=crop',
         duration: 'Half Day',
-        maxPeople: 20,
-        price: 65.00,
+        maxPeople: '20',
+        price: '65.00',
         tag: 'nature',
         featured: true
       },
@@ -33,8 +33,8 @@ export async function POST() {
         description: 'Discover pristine beaches, vibrant coral reefs, and marine life on this exciting island hopping adventure around Panglao and nearby islands.',
         image: 'https://images.unsplash.com/photo-1540206395-68808572332f?w=800&h=600&fit=crop',
         duration: 'Full Day',
-        maxPeople: 12,
-        price: 120.00,
+        maxPeople: '12',
+        price: '120.00',
         tag: 'beach',
         featured: true
       }
