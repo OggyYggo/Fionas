@@ -1,7 +1,9 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import { tours } from '../data/tours'
+import { useState, useEffect } from 'react'
+import { tourService } from '@/lib/tourService'
+import { Tour } from '@/types/tour'
 import Header from '@/components/Landing Page/Header'
 import Footer from '@/components/Footer'
 import Map from '@/components/ui/map'
@@ -17,8 +19,37 @@ import {
 export default function TourDetail() {
   const params = useParams()
   const tourId = parseInt(params.id as string)
-  
-  const tour = tours.find(t => t.id === tourId)
+  const [tour, setTour] = useState<Tour | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchTour = async () => {
+      try {
+        const tourData = await tourService.getTourById(tourId)
+        setTour(tourData)
+      } catch (error) {
+        console.error('Error fetching tour:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTour()
+  }, [tourId])
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-white flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-gray-500 text-lg">Loading tour details...</p>
+          </div>
+        </main>
+        <Footer />
+      </>
+    )
+  }
 
   if (!tour) {
     return (
