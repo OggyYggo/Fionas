@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { tourService } from '@/lib/tourService'
+import { SimpleTourService } from '@/lib/simpleTourService'
 import { Tour } from '@/types/tour'
 import Header from '@/components/Landing Page/Header'
 import Footer from '@/components/Footer'
@@ -25,10 +25,27 @@ export default function TourDetail() {
   useEffect(() => {
     const fetchTour = async () => {
       try {
-        const tourData = await tourService.getTourById(tourId)
-        setTour(tourData)
+        const tourData = await SimpleTourService.getTourById(tourId)
+        
+        // If no data from Supabase, try fallback
+        if (!tourData) {
+          const { tours } = await import('@/app/tours/data/tours')
+          const fallbackTour = tours.find(t => t.id === tourId)
+          setTour(fallbackTour || null)
+        } else {
+          setTour(tourData)
+        }
       } catch (error) {
         console.error('Error fetching tour:', error)
+        // Try fallback on error
+        try {
+          const { tours } = await import('@/app/tours/data/tours')
+          const fallbackTour = tours.find(t => t.id === tourId)
+          setTour(fallbackTour || null)
+        } catch (fallbackError) {
+          console.error('Fallback also failed:', fallbackError)
+          setTour(null)
+        }
       } finally {
         setLoading(false)
       }
@@ -123,7 +140,11 @@ export default function TourDetail() {
               <div className="flex flex-wrap gap-6 mb-8">
                 <div className="flex items-center gap-2 text-gray-600">
                   <i className="far fa-clock text-lg"></i>
-                  <span>Half Day (5-6 hours)</span>
+                  <span>{tour.duration}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <i className="fas fa-users text-lg"></i>
+                  <span>{tour.maxPeople}</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
                   <i className="fas fa-map-marker-alt text-lg"></i>
@@ -135,14 +156,7 @@ export default function TourDetail() {
               <section className="mb-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Tour</h2>
                 <p className="text-[#575757] leading-relaxed text-lg">
-                 The Balicasag & Virgin Island Hopping Tour offers a thrilling mix of marine adventure and relaxation.
-                 The tour kicks off with an early morning dolphin watching experience, where you’ll get the chance to see playful
-                 dolphins in their natural habitat as they swim and leap through the crystal-clear waters. Afterward, you’ll head
-                 to Balicasag Island, a premier snorkeling and diving destination, where you can explore vibrant coral reefs teeming
-                 with colorful fish, sea turtles, and other marine life. The final stop is the serene Virgin Island, famous for its
-                 stunning white sandbar that emerges during low tide. Here, you can unwind, wade in the shallow waters, and take in
-                 the breathtaking surroundings. This tour is perfect for those who want to combine wildlife encounters with the
-                 beauty of Bohol’s marine treasures.
+                  {tour.description}
                 </p>
               </section>
 
@@ -150,36 +164,19 @@ export default function TourDetail() {
               <section className="mb-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Tour Highlights</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 bg-green-50 p-3 rounded-lg">
-                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <i className="fas fa-check text-white text-xs"></i>
+                  {(tour.highlights || [
+                    'Professional tour guide',
+                    'Hotel pickup and drop-off',
+                    'All entrance fees included',
+                    'Small group experience'
+                  ]).map((highlight, index) => (
+                    <div key={index} className="flex items-center gap-3 bg-green-50 p-3 rounded-lg">
+                      <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i className="fas fa-check text-white text-xs"></i>
+                      </div>
+                      <span className="text-gray-700">{highlight}</span>
                     </div>
-                    <span className="text-gray-700">Sunrise dolphin watching</span>
-                  </div>
-                  <div className="flex items-center gap-3 bg-green-50 p-3 rounded-lg">
-                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <i className="fas fa-check text-white text-xs"></i>
-                    </div>
-                    <span className="text-gray-700">Multiple dolphin species</span>
-                  </div>
-                  <div className="flex items-center gap-3 bg-green-50 p-3 rounded-lg">
-                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <i className="fas fa-check text-white text-xs"></i>
-                    </div>
-                    <span className="text-gray-700">Pamilacan Island visit</span>
-                  </div>
-                  <div className="flex items-center gap-3 bg-green-50 p-3 rounded-lg">
-                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <i className="fas fa-check text-white text-xs"></i>
-                    </div>
-                    <span className="text-gray-700">Snorkeling in marine sanctuary</span>
-                  </div>
-                  <div className="flex items-center gap-3 bg-green-50 p-3 rounded-lg">
-                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <i className="fas fa-check text-white text-xs"></i>
-                    </div>
-                    <span className="text-gray-700">Local fishing village tour</span>
-                  </div>
+                  ))}
                 </div>
               </section>
 
@@ -200,66 +197,39 @@ export default function TourDetail() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableRow>
-                      <TableCell className="text-center p-4">1</TableCell>
-                      <TableCell className="text-center p-4">₱3,500</TableCell>
-                      <TableCell className="text-center p-4">1</TableCell>
-                      <TableCell className="text-center p-4">$70</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="text-center p-4">2</TableCell>
-                      <TableCell className="text-center p-4">₱2,000</TableCell>
-                      <TableCell className="text-center p-4">2</TableCell>
-                      <TableCell className="text-center p-4">$40</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="text-center p-4">3</TableCell>
-                      <TableCell className="text-center p-4">₱1,500</TableCell>
-                      <TableCell className="text-center p-4">3</TableCell>
-                      <TableCell className="text-center p-4">$30</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="text-center p-4">4</TableCell>
-                      <TableCell className="text-center p-4">₱1,200</TableCell>
-                      <TableCell className="text-center p-4">4</TableCell>
-                      <TableCell className="text-center p-4">$25</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="text-center p-4">5</TableCell>
-                      <TableCell className="text-center p-4">₱1,000</TableCell>
-                      <TableCell className="text-center p-4">5</TableCell>
-                      <TableCell className="text-center p-4">$20</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="text-center p-4">6</TableCell>
-                      <TableCell className="text-center p-4">₱900</TableCell>
-                      <TableCell className="text-center p-4">6</TableCell>
-                      <TableCell className="text-center p-4">$18</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="text-center p-4">7</TableCell>
-                      <TableCell className="text-center p-4">₱800</TableCell>
-                      <TableCell className="text-center p-4">7</TableCell>
-                      <TableCell className="text-center p-4">$16</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="text-center p-4">8</TableCell>
-                      <TableCell className="text-center p-4">₱750</TableCell>
-                      <TableCell className="text-center p-4">8</TableCell>
-                      <TableCell className="text-center p-4">$15</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="text-center p-4">9</TableCell>
-                      <TableCell className="text-center p-4">₱700</TableCell>
-                      <TableCell className="text-center p-4">9</TableCell>
-                      <TableCell className="text-center p-4">$14</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="text-center p-4">10+</TableCell>
-                      <TableCell className="text-center p-4">₱650</TableCell>
-                      <TableCell className="text-center p-4">10+</TableCell>
-                      <TableCell className="text-center p-4">$13</TableCell>
-                    </TableRow>
+                    {(tour.pricing?.local || [
+                      { pax: 1, price: '₱3,500' },
+                      { pax: 2, price: '₱2,000' },
+                      { pax: 3, price: '₱1,500' },
+                      { pax: 4, price: '₱1,200' },
+                      { pax: 5, price: '₱1,000' },
+                      { pax: 6, price: '₱900' },
+                      { pax: 7, price: '₱800' },
+                      { pax: 8, price: '₱750' },
+                      { pax: 9, price: '₱700' },
+                      { pax: '10+', price: '₱650' }
+                    ]).map((localRate, index) => {
+                      const foreignerRate = tour.pricing?.foreigner?.[index] || [
+                        { pax: 1, price: '$70' },
+                        { pax: 2, price: '$40' },
+                        { pax: 3, price: '$30' },
+                        { pax: 4, price: '$25' },
+                        { pax: 5, price: '$20' },
+                        { pax: 6, price: '$18' },
+                        { pax: 7, price: '$16' },
+                        { pax: 8, price: '$15' },
+                        { pax: 9, price: '$14' },
+                        { pax: '10+', price: '$13' }
+                      ][index]
+                      return (
+                        <TableRow key={index}>
+                          <TableCell className="text-center p-4">{localRate.pax}</TableCell>
+                          <TableCell className="text-center p-4">{localRate.price}</TableCell>
+                          <TableCell className="text-center p-4">{foreignerRate.pax}</TableCell>
+                          <TableCell className="text-center p-4">{foreignerRate.price}</TableCell>
+                        </TableRow>
+                      )
+                    })}
                   </TableBody>
                 </Table>
               </section>
@@ -271,42 +241,21 @@ export default function TourDetail() {
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-4">What's Included</h2>
                     <ul className="space-y-3">
-                      <li className="flex items-center gap-3">
-                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fas fa-check text-white text-xs"></i>
-                        </div>
-                        <span className="text-gray-700">Hotel pickup and drop-off</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fas fa-check text-white text-xs"></i>
-                        </div>
-                        <span className="text-gray-700">Boat transfers</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fas fa-check text-white text-xs"></i>
-                        </div>
-                        <span className="text-gray-700">Snorkeling equipment</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fas fa-check text-white text-xs"></i>
-                        </div>
-                        <span className="text-gray-700">Local guide</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fas fa-check text-white text-xs"></i>
-                        </div>
-                        <span className="text-gray-700">Morning snacks</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fas fa-check text-white text-xs"></i>
-                        </div>
-                        <span className="text-gray-700">Environmental fees</span>
-                      </li>
+                      {(tour.included || [
+                        'Hotel pickup and drop-off',
+                        'Boat transfers',
+                        'Snorkeling equipment',
+                        'Local guide',
+                        'Morning snacks',
+                        'Environmental fees'
+                      ]).map((item, index) => (
+                        <li key={index} className="flex items-center gap-3">
+                          <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i className="fas fa-check text-white text-xs"></i>
+                          </div>
+                          <span className="text-gray-700">{item}</span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
 
@@ -314,30 +263,19 @@ export default function TourDetail() {
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-4">Not Included</h2>
                     <ul className="space-y-3">
-                      <li className="flex items-center gap-3">
-                        <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fas fa-times text-white text-xs"></i>
-                        </div>
-                        <span className="text-gray-700">Lunch</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fas fa-times text-white text-xs"></i>
-                        </div>
-                        <span className="text-gray-700">Underwater camera</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fas fa-times text-white text-xs"></i>
-                        </div>
-                        <span className="text-gray-700">Tips and gratuities</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fas fa-times text-white text-xs"></i>
-                        </div>
-                        <span className="text-gray-700">Personal expenses</span>
-                      </li>
+                      {(tour.notIncluded || [
+                        'Lunch',
+                        'Underwater camera',
+                        'Tips and gratuities',
+                        'Personal expenses'
+                      ]).map((item, index) => (
+                        <li key={index} className="flex items-center gap-3">
+                          <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i className="fas fa-times text-white text-xs"></i>
+                          </div>
+                          <span className="text-gray-700">{item}</span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>

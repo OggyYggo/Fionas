@@ -22,11 +22,57 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
     title: tour?.title || '',
     description: tour?.description || '',
     image: tour?.image || '',
-    duration: tour?.duration || 'Full Day', // Set default duration
+    duration: tour?.duration || 'Full Day',
     maxPeople: tour?.maxPeople || '',
     price: tour?.price || '',
-    tag: tour?.tag || 'Island Hopping', // Set default tag
-    featured: tour?.featured || false
+    tag: tour?.tag || 'Island Hopping',
+    featured: tour?.featured || false,
+    highlights: tour?.highlights || [
+      'Professional tour guide',
+      'Hotel pickup and drop-off',
+      'All entrance fees included',
+      'Small group experience'
+    ],
+    included: tour?.included || [
+      'Hotel pickup and drop-off',
+      'Boat transfers',
+      'Snorkeling equipment',
+      'Local guide',
+      'Morning snacks',
+      'Environmental fees'
+    ],
+    notIncluded: tour?.notIncluded || [
+      'Lunch',
+      'Underwater camera',
+      'Tips and gratuities',
+      'Personal expenses'
+    ],
+    pricing: tour?.pricing || {
+      local: [
+        { pax: 1, price: '₱3,500' },
+        { pax: 2, price: '₱2,000' },
+        { pax: 3, price: '₱1,500' },
+        { pax: 4, price: '₱1,200' },
+        { pax: 5, price: '₱1,000' },
+        { pax: 6, price: '₱900' },
+        { pax: 7, price: '₱800' },
+        { pax: 8, price: '₱750' },
+        { pax: 9, price: '₱700' },
+        { pax: '10+', price: '₱650' }
+      ],
+      foreigner: [
+        { pax: 1, price: '$70' },
+        { pax: 2, price: '$40' },
+        { pax: 3, price: '$30' },
+        { pax: 4, price: '$25' },
+        { pax: 5, price: '$20' },
+        { pax: 6, price: '$18' },
+        { pax: 7, price: '$16' },
+        { pax: 8, price: '$15' },
+        { pax: 9, price: '$14' },
+        { pax: '10+', price: '$13' }
+      ]
+    }
   })
 
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -230,6 +276,194 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
                   Current image: {tour.image}
                 </p>
               )}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Tour Highlights</Label>
+            <div className="space-y-2">
+              {formData.highlights.map((highlight, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={highlight}
+                    onChange={(e) => {
+                      const newHighlights = [...formData.highlights]
+                      newHighlights[index] = e.target.value
+                      setFormData(prev => ({ ...prev, highlights: newHighlights }))
+                    }}
+                    placeholder="Enter tour highlight"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newHighlights = formData.highlights.filter((_, i) => i !== index)
+                      setFormData(prev => ({ ...prev, highlights: newHighlights }))
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setFormData(prev => ({ 
+                  ...prev, 
+                  highlights: [...prev.highlights, ''] 
+                }))}
+              >
+                Add Highlight
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>What's Included</Label>
+              <div className="space-y-2">
+                {formData.included.map((item, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input
+                      value={item}
+                      onChange={(e) => {
+                        const newIncluded = [...formData.included]
+                        newIncluded[index] = e.target.value
+                        setFormData(prev => ({ ...prev, included: newIncluded }))
+                      }}
+                      placeholder="Enter included item"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newIncluded = formData.included.filter((_, i) => i !== index)
+                        setFormData(prev => ({ ...prev, included: newIncluded }))
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFormData(prev => ({ 
+                    ...prev, 
+                    included: [...prev.included, ''] 
+                  }))}
+                >
+                  Add Item
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Not Included</Label>
+              <div className="space-y-2">
+                {formData.notIncluded.map((item, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input
+                      value={item}
+                      onChange={(e) => {
+                        const newNotIncluded = [...formData.notIncluded]
+                        newNotIncluded[index] = e.target.value
+                        setFormData(prev => ({ ...prev, notIncluded: newNotIncluded }))
+                      }}
+                      placeholder="Enter not included item"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newNotIncluded = formData.notIncluded.filter((_, i) => i !== index)
+                        setFormData(prev => ({ ...prev, notIncluded: newNotIncluded }))
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFormData(prev => ({ 
+                    ...prev, 
+                    notIncluded: [...prev.notIncluded, ''] 
+                  }))}
+                >
+                  Add Item
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <Label>Package Pricing</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium">Local Rates</Label>
+                <div className="space-y-2 mt-2">
+                  {formData.pricing.local.map((rate, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={rate.pax}
+                        onChange={(e) => {
+                          const newPricing = { ...formData.pricing }
+                          newPricing.local[index].pax = e.target.value
+                          setFormData(prev => ({ ...prev, pricing: newPricing }))
+                        }}
+                        placeholder="Pax"
+                        className="w-20"
+                      />
+                      <Input
+                        value={rate.price}
+                        onChange={(e) => {
+                          const newPricing = { ...formData.pricing }
+                          newPricing.local[index].price = e.target.value
+                          setFormData(prev => ({ ...prev, pricing: newPricing }))
+                        }}
+                        placeholder="Price"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Foreigner Rates</Label>
+                <div className="space-y-2 mt-2">
+                  {formData.pricing.foreigner.map((rate, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={rate.pax}
+                        onChange={(e) => {
+                          const newPricing = { ...formData.pricing }
+                          newPricing.foreigner[index].pax = e.target.value
+                          setFormData(prev => ({ ...prev, pricing: newPricing }))
+                        }}
+                        placeholder="Pax"
+                        className="w-20"
+                      />
+                      <Input
+                        value={rate.price}
+                        onChange={(e) => {
+                          const newPricing = { ...formData.pricing }
+                          newPricing.foreigner[index].price = e.target.value
+                          setFormData(prev => ({ ...prev, pricing: newPricing }))
+                        }}
+                        placeholder="Price"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
