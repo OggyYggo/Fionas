@@ -74,7 +74,7 @@ export default function TestimonialsSection() {
       <div className="container max-w-[1440px] mx-auto px-5">
         <div className="testimonials-header text-center mb-20 max-w-[800px] mx-auto">
           <span className="subtitle inline-block text-accent-green py-2.5">TRAVELER STORIES</span>
-          <h2 className="text-gray-800 text-[40px] font-black mb-5 leading-tight">What Our Clients Are Saying</h2>
+          <h2 className="text-gray-800 text-[40px] font-black mb-3 leading-tight">What Our Clients Are Saying</h2>
           <p className="text-gray-600 text-[18px] leading-[1.7]">Don't just take our word for it hear from travelers who've experienced the magic of Bohol with us</p>
           <div className="rating-info">
           </div>

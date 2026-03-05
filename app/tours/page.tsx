@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Header from '@/components/Header'
+import Header from '@/components/Landing Page/Header'
 import ToursHero from './components/ToursHero'
 import TourPackages from './components/TourPackages'
 import Footer from '@/components/Footer'

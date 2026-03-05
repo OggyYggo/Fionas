@@ -58,7 +58,7 @@ export default function ToursSection() {
       <div className="container max-w-[1440px] mx-auto px-5">
         <div className="section-header text-center mb-12 reveal">
           <span className="subtitle text-accent-green font-bold text-sm tracking-wider">CURATED EXPERIENCES</span>
-          <h2 className="text-gray-800 text-[2.5rem] font-black my-2">Popular Tour Packages</h2>
+          <h2 className="text-gray-800 text-[2.5rem] font-black mb-20 my-2">Popular Tour Packages</h2>
           <p className="text-gray-600 text-lg max-w-[600px] mx-auto">Handpicked adventures designed to showcase best of Bohol's natural wonders and cultural heritage</p>
           <div className="flex justify-center mt-5">
             <button className="view-all-btn flex items-center gap-2 border-none text-gray-900 rounded-lg text-lg font-medium bg-transparent cursor-pointer no-underline transition-colors duration-300 hover:text-accent-green">
@@ -76,15 +76,15 @@ export default function ToursSection() {
                 <span className="tag absolute bottom-4 left-4 bg-white py-1 px-3 rounded-2xl text-xs text-gray-800">{tour.tag}</span>
               </div>
               <div className="card-content p-6">
-                <h3 className="text-gray-800 text-[1.4rem] mb-2 transition-colors duration-300">{tour.title}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed mb-5">{tour.description}</p>
-                <div className="tour-meta flex gap-4 text-xs text-gray-500 mb-6">
+                <h3 className="text-gray-800 text-[1.4rem] mb-2 transition-colors duration-300 font-semibold">{tour.title}</h3>
+                <p className="text-[#575757] text-sm leading-relaxed mb-5">{tour.description}</p>
+                <div className="tour-meta flex gap-4 text-xs text-[#A8A9B7] mb-6">
                   <span><i className="far fa-clock mr-1"></i> {tour.duration}</span>
                   <span><i className="fas fa-users mr-1"></i> {tour.maxPeople}</span>
                 </div>
                 <div className="card-footer flex justify-between items-center border-t border-gray-100 pt-5">
                   <div className="price-box flex flex-col items-start gap-1">
-                    <span className="from-text block text-xs text-gray-500">For as Low as</span>
+                    <span className="from-text block text-xs text-[#A8A9B7]">For as Low as</span>
                     <span className="price-amount text-accent-green text-[1.8rem] font-semibold leading-none">{tour.price}</span>
                   </div>
                   <a href="#" className="btn-details w-[145px] h-12 bg-gray-900 text-white no-underline rounded-lg flex items-center justify-center font-bold p-4 gap-11 transition-all duration-300 hover:bg-gray-900">View <i className="fa-solid fa-circle-chevron-right btn-icon ml-3 text-base align-middle"></i></a>

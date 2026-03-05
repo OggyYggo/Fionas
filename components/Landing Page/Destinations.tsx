@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { destinationsAnimations } from '@/animations/destinationsAnimations'
 import PhotoGallery from './PhotoGallery'
-import TestimonialsSection from './TestimonialsSection'
+import TestimonialsSection from './Testimonials'
 
 export default function DestinationsSection() {
   const [isClient, setIsClient] = useState(false)
@@ -47,7 +47,7 @@ export default function DestinationsSection() {
           <div className="destinations-header mb-16">
             <div className="destinations-content text-center">
               <span className="subtitle text-accent-green font-bold text-sm tracking-wider">MUST VISIT PLACES</span>
-              <h2 className="text-gray-800 text-[40px] font-black mb-4">Iconic Destinations</h2>
+              <h2 className="text-gray-800 text-[40px] font-black mb-3">Iconic Destinations</h2>
               <p className="text-gray-600 text-lg max-w-[500px] leading-relaxed mx-auto">Explore Bohol's most breathtaking attractions that have captivated travelers from around the world.</p>
               <div className="flex justify-center mt-5">
                 <button className="view-all-btn flex items-center gap-2 border-none text-gray-900 rounded-lg text-lg font-medium bg-transparent cursor-pointer no-underline transition-colors duration-300 hover:text-accent-green">

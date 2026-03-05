@@ -1,4 +1,4 @@
-import Header from '@/components/Header'
+import Header from '@/components/Landing Page/Header'
 import Footer from '@/components/Footer'
 
 export default function Contact() {
