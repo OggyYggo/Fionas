@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { toursAnimations } from '@/animations/toursAnimations'
-import { tours } from '../data/tours'
+import { SimpleTourService } from '@/lib/simpleTourService'
+import { Tour } from '@/types/tour'
 
 export default function TourPackages({ searchTerm, selectedCategory }: { 
   searchTerm: string
   selectedCategory: string 
 }) {
   const [isClient, setIsClient] = useState(false)
+  const [tours, setTours] = useState<Tour[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     setIsClient(true)
@@ -20,6 +23,21 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
     }
   }, [isClient])
 
+  useEffect(() => {
+    const fetchTours = async () => {
+      try {
+        const toursData = await SimpleTourService.getAllTours()
+        setTours(toursData)
+      } catch (error) {
+        console.error('Error fetching tours:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTours()
+  }, [])
+
   const filteredTours = tours.filter((tour) => {
     const matchesSearch = tour.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          tour.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -27,6 +45,21 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
                             tour.tag === selectedCategory.replace(' Tours', '')
     return matchesSearch && matchesCategory
   })
+
+  if (loading) {
+    return (
+      <>
+        <div className="h-20"></div>
+        <section className="tours-section py-20 pt-20 pb-11 bg-white flex items-center justify-center font-primary">
+          <div className="container max-w-[1440px] mx-auto px-5">
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">Loading tours...</p>
+            </div>
+          </div>
+        </section>
+      </>
+    )
+  }
 
   return (
     <>
