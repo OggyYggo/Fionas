@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import Header from '@/components/Header'
+import Header from '@/components/Landing Page/Header'
 import Footer from '@/components/Footer'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle, CheckCircle, XCircle } from 'lucide-react'

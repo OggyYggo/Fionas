@@ -254,7 +254,7 @@
   }
   
   .destinations-content h2 {
-    @apply text-gray-800 text-[40px] font-black mb-4;
+    @apply text-gray-800 text-[40px] font-black mb-3;
   }
   
   .destinations-content p {
@@ -580,7 +580,7 @@
   }
   
   .gallery-header h2 {
-    @apply text-[40px] font-black mb-8 leading-tight text-gray-800;
+    @apply text-[40px] font-black mb-3 leading-tight text-gray-800;
   }
   
   .gallery-header p {
@@ -797,7 +797,7 @@
   }
   
   .testimonials-header h2 {
-    @apply text-gray-800 text-[40px] font-black mb-5 leading-tight;
+    @apply text-gray-800 text-[40px] font-black mb-3 leading-tight;
   }
   
   .testimonials-header p {

@@ -62,3 +62,5 @@ private_key
 # Generated files
 server.js
 server.d.ts
+.vercel
+.env*.local
