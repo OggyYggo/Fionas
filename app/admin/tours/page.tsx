@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { MapPin, Plus, Search, Filter, Star, Eye, Edit, Trash2, ChevronDown } from 'lucide-react'
 import { SimpleTourService } from '@/lib/simpleTourService'
 import { Tour } from '@/types/tour'
@@ -20,7 +22,10 @@ export default function ToursPage() {
   const [formLoading, setFormLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState<'all' | 'featured' | 'standard'>('all')
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [tourToDelete, setTourToDelete] = useState<Tour | null>(null)
 
   useEffect(() => {
     fetchTours()
@@ -28,15 +33,27 @@ export default function ToursPage() {
 
   useEffect(() => {
     applyFilter()
-  }, [tours, filter])
+  }, [tours, filter, searchTerm])
 
   const applyFilter = () => {
+    let filtered = tours
+    
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(tour => 
+        tour.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tour.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tour.tag.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+    
+    // Apply type filter
     if (filter === 'all') {
-      setFilteredTours(tours)
+      setFilteredTours(filtered)
     } else if (filter === 'featured') {
-      setFilteredTours(tours.filter(tour => tour.featured))
+      setFilteredTours(filtered.filter(tour => tour.featured))
     } else if (filter === 'standard') {
-      setFilteredTours(tours.filter(tour => !tour.featured))
+      setFilteredTours(filtered.filter(tour => !tour.featured))
     }
   }
 
@@ -115,17 +132,19 @@ export default function ToursPage() {
     }
   }
 
-  const handleDeleteTour = async (id: number) => {
-    const tour = tours.find(t => t.id === id)
-    if (!tour) return
-    
-    if (!confirm(`Are you sure you want to delete "${tour.title}"?`)) return
+  const handleDeleteTour = (tour: Tour) => {
+    setTourToDelete(tour)
+    setDeleteDialogOpen(true)
+  }
+
+  const confirmDeleteTour = async () => {
+    if (!tourToDelete) return
     
     try {
-      const success = await SimpleTourService.deleteTour(id)
+      const success = await SimpleTourService.deleteTour(tourToDelete.id)
       if (success) {
         await fetchTours()
-        setSuccess(`Tour "${tour.title}" deleted successfully!`)
+        setSuccess(`Tour "${tourToDelete.title}" deleted successfully!`)
         setTimeout(() => setSuccess(null), 3000)
       } else {
         setError('Failed to delete tour')
@@ -133,7 +152,15 @@ export default function ToursPage() {
     } catch (error) {
       console.error('Error deleting tour:', error)
       setError(error instanceof Error ? error.message : 'Failed to delete tour')
+    } finally {
+      setDeleteDialogOpen(false)
+      setTourToDelete(null)
     }
+  }
+
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false)
+    setTourToDelete(null)
   }
 
   const handleEditTour = (tour: Tour) => {
@@ -148,9 +175,9 @@ export default function ToursPage() {
 
   if (showForm) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
+      <div className="space-y-6 pt-20">
+        <div className="flex items-center justify-center">
+          <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900">
               {editingTour ? 'Edit Tour' : 'Add New Tour'}
             </h1>
@@ -206,155 +233,225 @@ export default function ToursPage() {
           <h1 className="text-3xl font-bold text-gray-900">Tours Management</h1>
           <p className="text-gray-600">Manage your tour packages and activities</p>
         </div>
-        <div className="flex space-x-2">
-          <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400">
-            <Search className="h-4 w-4 mr-2" />
-            Search
-          </Button>
-          <Button onClick={() => setShowForm(true)} className="bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700">
+        <div className="flex items-center space-x-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search tours..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-64 h-10 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+            />
+          </div>
+          <Button onClick={() => setShowForm(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 hover:border-emerald-700 h-10">
             <Plus className="h-4 w-4 mr-2" />
             Add New Tour
           </Button>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Tours</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{tours.length}</div>
-            <p className="text-xs text-gray-500">Active packages</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Bookings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1,072</div>
-            <p className="text-xs text-gray-500">All time bookings</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Avg Rating</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">4.7</div>
-            <p className="text-xs text-gray-500">From 2,341 reviews</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Revenue</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₱2.8M</div>
-            <p className="text-xs text-gray-500">From tour sales</p>
-          </CardContent>
-        </Card>
-      </div>
+     
 
       {/* Tours Table */}
-      <Card>
-        <CardHeader>
+      <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
+        <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>All Tours</CardTitle>
-              <CardDescription>Manage your tour packages</CardDescription>
+            <div className="space-y-1">
+              <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+                  <MapPin className="h-4 w-4 text-white" />
+                </div>
+                All Tours
+              </CardTitle>
+              <CardDescription className="text-gray-600">Manage and organize your tour packages</CardDescription>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filter
-                  <ChevronDown className="h-4 w-4 ml-2" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setFilter('all')} className={filter === 'all' ? 'bg-blue-50 text-blue-700' : ''}>
-                  All Tours
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilter('featured')} className={filter === 'featured' ? 'bg-amber-50 text-amber-700' : ''}>
-                  Featured Only
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilter('standard')} className={filter === 'standard' ? 'bg-gray-100 text-gray-700' : ''}>
-                  Standard Only
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full border">
+                {filteredTours.length} of {tours.length} tours
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 shadow-sm">
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filter
+                    <ChevronDown className="h-4 w-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white border-gray-200 shadow-xl">
+                  <DropdownMenuItem onClick={() => setFilter('all')} className={`transition-colors ${filter === 'all' ? 'bg-emerald-50 text-emerald-700 font-medium' : 'hover:bg-gray-50'}`}>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${filter === 'all' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                      All Tours
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setFilter('featured')} className={`transition-colors ${filter === 'featured' ? 'bg-amber-50 text-amber-700 font-medium' : 'hover:bg-gray-50'}`}>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${filter === 'featured' ? 'bg-amber-500' : 'bg-gray-300'}`}></div>
+                      Featured Only
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setFilter('standard')} className={`transition-colors ${filter === 'standard' ? 'bg-gray-100 text-gray-700 font-medium' : 'hover:bg-gray-50'}`}>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${filter === 'standard' ? 'bg-gray-500' : 'bg-gray-300'}`}></div>
+                      Standard Only
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table className="min-w-full">
+        <CardContent className="p-0">
+          <div className="overflow-hidden">
+            <Table className="border-separate border-spacing-0 w-full">
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[300px]">Tour Name</TableHead>
-                  <TableHead className="w-[100px]">Price</TableHead>
-                  <TableHead className="w-[120px]">Duration</TableHead>
-                  <TableHead className="w-[120px]">Category</TableHead>
-                  <TableHead className="w-[120px]">Type</TableHead>
-                  <TableHead className="w-[100px]">Capacity</TableHead>
-                  <TableHead className="w-[150px]">Actions</TableHead>
+                <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100/80 border-b border-gray-200">
+                  <TableHead className="w-[400px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Tour Details</TableHead>
+                  <TableHead className="w-[140px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Price</TableHead>
+                  <TableHead className="w-[140px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Duration</TableHead>
+                  <TableHead className="w-[140px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Category</TableHead>
+                  <TableHead className="w-[140px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Type</TableHead>
+                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Capacity</TableHead>
+                  <TableHead className="w-[180px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
-            <TableBody>
-              {filteredTours.map((tour) => (
-                <TableRow key={tour.id}>
-                  <TableCell>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-                        <img src={tour.image} alt={tour.title} className="w-full h-full object-cover" />
+              <TableBody className="divide-y divide-gray-100">
+                {filteredTours.map((tour, index) => (
+                  <TableRow 
+                    key={tour.id} 
+                    className={`hover:bg-gradient-to-r hover:from-emerald-50/30 hover:to-teal-50/30 transition-all duration-200 ${
+                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                    }`}
+                  >
+                    <TableCell className="py-4 px-6">
+                      <div className="flex items-center space-x-4">
+                        <div className="relative group">
+                          <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 shadow-md group-hover:shadow-lg transition-shadow duration-200">
+                            <img src={tour.image} alt={tour.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+                          </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-gray-900 text-base mb-1 truncate">{tour.title}</div>
+                          <div className="text-sm text-gray-500 line-clamp-2 leading-relaxed">
+                            {tour.description.length > 90 ? `${tour.description.substring(0, 90)}...` : tour.description}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-medium">{tour.title}</div>
-                        <div className="text-sm text-gray-500">{tour.description}</div>
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
+                      <div className="font-bold text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                        {tour.price}
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-medium">{tour.price}</TableCell>
-                  <TableCell>{tour.duration}</TableCell>
-                  <TableCell>
-                    <Badge variant="default" className="bg-blue-100 text-blue-800 hover:bg-blue-200">
-                      {tour.tag}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={tour.featured ? 'default' : 'secondary'} className={tour.featured ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}>
-                      {tour.featured ? 'Featured' : 'Standard'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-medium text-gray-900">{tour.maxPeople}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => window.open(`/tours/${tour.id}`, '_blank')} title="View Tour" className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleEditTour(tour)} title="Edit Tour" className="border-green-200 text-green-600 hover:bg-green-50 hover:border-green-300">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        variant="destructive" 
-                        size="sm" 
-                        onClick={() => handleDeleteTour(tour.id)} 
-                        title="Delete Tour"
-                        className="bg-red-500 hover:bg-red-600 text-white border-red-500 hover:border-red-600"
+                    </TableCell>
+                    <TableCell className="py-4 px-6 text-center">
+                      <span className="font-medium text-gray-700">{tour.duration}</span>
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
+                      <Badge variant="default" className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-md hover:shadow-lg transition-shadow duration-200 px-3 py-1">
+                        {tour.tag}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
+                      <Badge 
+                        variant={tour.featured ? 'default' : 'secondary'} 
+                        className={`border-0 shadow-md hover:shadow-lg transition-shadow duration-200 px-3 py-1 ${
+                          tour.featured 
+                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white' 
+                            : 'bg-gradient-to-r from-gray-400 to-gray-500 text-white'
+                        }`}
                       >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                        <div className="flex items-center gap-1">
+                          {tour.featured && <Star className="w-3 h-3 fill-current" />}
+                          {tour.featured ? 'Featured' : 'Standard'}
+                        </div>
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-4 px-6 text-center">
+                      <span className="font-bold text-gray-900">{tour.maxPeople}</span>
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
+                      <div className="flex items-center justify-center gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => window.open(`/tours/${tour.id}`, '_blank')} 
+                          title="View Tour" 
+                          className="border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 shadow-sm hover:shadow-md transition-all duration-200 h-8 w-8 p-0"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleEditTour(tour)} 
+                          title="Edit Tour" 
+                          className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 shadow-sm hover:shadow-md transition-all duration-200 h-8 w-8 p-0"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="destructive" 
+                          size="sm" 
+                          onClick={() => handleDeleteTour(tour)} 
+                          title="Delete Tour"
+                          className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 h-8 w-8 p-0"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            
+            {/* Empty State */}
+            {filteredTours.length === 0 && (
+              <div className="text-center py-16 px-6">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="h-10 w-10 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No tours found</h3>
+                <p className="text-gray-500 mb-6">
+                  {searchTerm ? 'Try adjusting your search terms' : 'Get started by creating your first tour package'}
+                </p>
+                {!searchTerm && (
+                  <Button 
+                    onClick={() => setShowForm(true)} 
+                    className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Your First Tour
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the tour "{tourToDelete?.title}" and remove all of its data from the server.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeleteTour}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
