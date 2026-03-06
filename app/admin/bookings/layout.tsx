@@ -1,6 +1,5 @@
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import AppSidebar from '@/components/layout/app-sidebar'
-import Header from '@/components/layout/header'
 
 export default function BookingsLayout({
   children,
@@ -11,14 +10,11 @@ export default function BookingsLayout({
     <div className="flex h-screen overflow-hidden bg-gray-50">
       <SidebarProvider defaultOpen={true}>
         <AppSidebar />
-        <SidebarInset className="flex-1">
-          <Header />
-          <div className="flex-1 overflow-auto">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              {children}
-            </div>
+        <main className="flex-1 overflow-auto w-full" style={{ width: 'calc(100% - 288px) !important', marginLeft: '288px' }}>
+          <div className="w-full px-4 sm:px-6 lg:px-8 pt-[50px]" style={{ width: '100% !important', maxWidth: 'none !important' }}>
+            {children}
           </div>
-        </SidebarInset>
+        </main>
       </SidebarProvider>
     </div>
   )

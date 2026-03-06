@@ -179,25 +179,36 @@ export class BookingService {
   // Delete booking
   static async deleteBooking(bookingId: string): Promise<{ success: boolean; message: string }> {
     try {
+      console.log('🔍 BookingService: Attempting to delete booking:', bookingId)
+      
       const { error } = await supabase
         .from('bookings')
         .delete()
         .eq('id', bookingId)
 
+      console.log('🔍 BookingService: Delete result:', { error })
+
       if (error) {
-        console.error('Supabase error:', error)
+        console.error('❌ BookingService: Supabase error:', error)
+        console.error('❌ Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        })
         return {
           success: false,
           message: error.message || 'Failed to delete booking'
         }
       }
 
+      console.log('✅ BookingService: Delete successful')
       return {
         success: true,
         message: 'Booking deleted successfully!'
       }
     } catch (error) {
-      console.error('Booking service error:', error)
+      console.error('❌ BookingService: Booking service error:', error)
       return {
         success: false,
         message: 'Internal server error'

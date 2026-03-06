@@ -1,79 +1,258 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Calendar, Search, Filter, Download, Users, DollarSign, CheckCircle, Clock, XCircle } from 'lucide-react'
-
-const bookings = [
-  { 
-    id: 'BK001', 
-    customer: 'Juan Dela Cruz', 
-    email: 'juan@email.com',
-    tour: 'Chocolate Hills Tour', 
-    date: '2024-03-04', 
-    status: 'confirmed', 
-    amount: '₱2,500',
-    participants: 4
-  },
-  { 
-    id: 'BK002', 
-    customer: 'Maria Santos', 
-    email: 'maria@email.com',
-    tour: 'Loboc River Cruise', 
-    date: '2024-03-04', 
-    status: 'pending', 
-    amount: '₱1,800',
-    participants: 2
-  },
-  { 
-    id: 'BK003', 
-    customer: 'Jose Reyes', 
-    email: 'jose@email.com',
-    tour: 'Panglao Island Hopping', 
-    date: '2024-03-03', 
-    status: 'confirmed', 
-    amount: '₱3,200',
-    participants: 6
-  },
-  { 
-    id: 'BK004', 
-    customer: 'Ana Garcia', 
-    email: 'ana@email.com',
-    tour: 'Tarsier Sanctuary', 
-    date: '2024-03-03', 
-    status: 'completed', 
-    amount: '₱800',
-    participants: 3
-  },
-  { 
-    id: 'BK005', 
-    customer: 'Carlos Mendoza', 
-    email: 'carlos@email.com',
-    tour: 'Chocolate Hills Tour', 
-    date: '2024-03-02', 
-    status: 'cancelled', 
-    amount: '₱2,500',
-    participants: 2
-  },
-]
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Calendar, Search, Filter, Download, Users, DollarSign, CheckCircle, Clock, XCircle, Eye, Edit, Trash2 } from 'lucide-react'
+import { BookingService } from '@/lib/supabase'
+import { Booking } from '@/types/booking'
 
 export default function BookingsPage() {
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'confirmed' | 'pending' | 'completed' | 'cancelled'>('all')
+  const [stats, setStats] = useState({
+    total: 0,
+    confirmed: 0,
+    pending: 0,
+    completed: 0,
+    cancelled: 0,
+    revenue: '₱0'
+  })
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [editingBooking, setEditingBooking] = useState<Booking | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    applyFilters()
+  }, [bookings, searchTerm, statusFilter])
+
+  const fetchData = async () => {
+    try {
+      console.log('🔍 Page: Fetching bookings data using BookingService')
+      
+      const bookingsResult = await BookingService.getBookings()
+      console.log('🔍 Page: Bookings result:', bookingsResult)
+      
+      if (bookingsResult.success && bookingsResult.data) {
+        const mappedBookings = bookingsResult.data.map(booking => ({
+          id: booking.id,
+          customer: booking.full_name || 'Unknown',
+          email: booking.email,
+          tour: booking.tour_type || 'Unknown Tour',
+          tourId: booking.tour_id || 0,
+          date: booking.start_date || new Date().toISOString().split('T')[0],
+          status: booking.status,
+          amount: String(booking.total_price || '₱0'),
+          participants: booking.number_of_guests || 1,
+          createdAt: booking.created_at,
+          updatedAt: booking.updated_at
+        }))
+        
+        setBookings(mappedBookings)
+        
+        // Calculate stats
+        const statsData = {
+          total: mappedBookings.length,
+          confirmed: mappedBookings.filter(b => b.status === 'confirmed').length,
+          pending: mappedBookings.filter(b => b.status === 'pending').length,
+          completed: 0, // The existing service might not have 'completed' status
+          cancelled: mappedBookings.filter(b => b.status === 'cancelled').length,
+          revenue: mappedBookings
+            .filter(b => b.status === 'confirmed')
+            .reduce((total, booking) => {
+              const amount = parseFloat(booking.amount.replace('₱', '').replace(',', ''))
+              return total + amount
+            }, 0)
+            .toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })
+        }
+        
+        setStats(statsData)
+      } else {
+        console.error('❌ Page: Failed to fetch bookings:', bookingsResult)
+        setBookings([])
+        setStats({
+          total: 0,
+          confirmed: 0,
+          pending: 0,
+          completed: 0,
+          cancelled: 0,
+          revenue: '₱0'
+        })
+      }
+    } catch (error) {
+      console.error('❌ Page: Error fetching data:', error)
+      setBookings([])
+      setStats({
+        total: 0,
+        confirmed: 0,
+        pending: 0,
+        completed: 0,
+        cancelled: 0,
+        revenue: '₱0'
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const applyFilters = () => {
+    let filtered = bookings
+    
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(booking => 
+        booking.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.tour.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.id.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+    
+    // Apply status filter
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(booking => booking.status === statusFilter)
+    }
+    
+    setFilteredBookings(filtered)
+  }
+
+  const handleEditBooking = (booking: Booking) => {
+    setEditingBooking(booking)
+    setEditDialogOpen(true)
+  }
+
+  const handleDeleteBooking = (booking: Booking) => {
+    setBookingToDelete(booking)
+    setDeleteDialogOpen(true)
+  }
+
+  const confirmDeleteBooking = async () => {
+    if (!bookingToDelete) return
+    
+    console.log('🔍 Page: Attempting to delete booking using BookingService:', bookingToDelete.id, bookingToDelete.customer)
+    
+    try {
+      const deleteResult = await BookingService.deleteBooking(bookingToDelete.id)
+      console.log('🔍 Page: Delete result from BookingService:', deleteResult)
+      
+      if (deleteResult.success) {
+        console.log('✅ Page: Booking deleted successfully, refreshing data')
+        await fetchData()
+        setDeleteDialogOpen(false)
+        setBookingToDelete(null)
+        
+        // Show success message
+        setSuccessMessage(`Booking for "${bookingToDelete.customer}" has been successfully deleted.`)
+        
+        // Hide success message after 5 seconds
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
+      } else {
+        console.error('❌ Page: Delete failed - BookingService returned false')
+        console.error('❌ Delete message:', deleteResult.message)
+        alert(`Failed to delete booking: ${deleteResult.message}`)
+      }
+    } catch (error) {
+      console.error('❌ Page: Error deleting booking:', error)
+      alert('Error deleting booking. Please check the console for details.')
+    }
+  }
+
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false)
+    setBookingToDelete(null)
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Bookings Management</h1>
+            <p className="text-gray-600">Manage and track all tour bookings</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader className="pb-3">
+                <div className="h-6 bg-gray-200 rounded w-24"></div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 bg-gray-200 rounded w-16 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="max-w-[1440px] mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
+    <div className="space-y-6">
+      {/* Success Toast Notification */}
+      {successMessage && (
+        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-300">
+          <div className="bg-white border border-green-200 rounded-lg shadow-lg p-4 flex items-center space-x-3 min-w-[300px]">
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+            <div className="flex-1">
+              <h4 className="text-sm font-semibold text-gray-900">Success!</h4>
+              <p className="text-sm text-gray-600">{successMessage}</p>
+            </div>
+            <button
+              onClick={() => setSuccessMessage(null)}
+              className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Bookings Management</h1>
-          <p className="text-gray-600 mt-2 text-lg">Manage and track all tour bookings</p>
+          <h1 className="text-3xl font-bold text-gray-900">Bookings Management</h1>
+          <p className="text-gray-600">Manage and track all tour bookings</p>
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline" className="h-10 px-4">
+        <div className="flex items-center space-x-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search bookings..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-64 h-10 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+            />
+          </div>
+          <Button variant="outline" className="h-10 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400">
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button className="h-10 px-4 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700">
+          <Button className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 hover:border-emerald-700 h-10">
             <Calendar className="h-4 w-4 mr-2" />
             New Booking
           </Button>
@@ -81,7 +260,7 @@ export default function BookingsPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="border-0 shadow-lg bg-gradient-to-br from-teal-500 to-teal-600 text-white">
           <CardHeader className="pb-3">
             <CardTitle className="text-teal-100 font-medium flex items-center gap-2">
@@ -90,8 +269,8 @@ export default function BookingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">1,234</div>
-            <p className="text-teal-100 text-sm mt-1">+12% from last month</p>
+            <div className="text-3xl font-bold text-white">{stats.total}</div>
+            <p className="text-teal-100 text-sm mt-1">All bookings</p>
           </CardContent>
         </Card>
 
@@ -103,8 +282,8 @@ export default function BookingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">892</div>
-            <p className="text-green-100 text-sm mt-1">72.3% of total</p>
+            <div className="text-3xl font-bold text-white">{stats.confirmed}</div>
+            <p className="text-green-100 text-sm mt-1">{stats.total > 0 ? `${((stats.confirmed / stats.total) * 100).toFixed(1)}%` : '0%'} of total</p>
           </CardContent>
         </Card>
 
@@ -116,7 +295,7 @@ export default function BookingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">156</div>
+            <div className="text-3xl font-bold text-white">{stats.pending}</div>
             <p className="text-yellow-100 text-sm mt-1">Awaiting confirmation</p>
           </CardContent>
         </Card>
@@ -129,94 +308,284 @@ export default function BookingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">₱458,290</div>
-            <p className="text-blue-100 text-sm mt-1">+18.7% from last month</p>
+            <div className="text-3xl font-bold text-white">{stats.revenue}</div>
+            <p className="text-blue-100 text-sm mt-1">From confirmed bookings</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Bookings Table */}
-      <Card className="border-0 shadow-lg">
-        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+      <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
+        <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-xl flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-100 text-teal-600">
-                  <Calendar className="h-5 w-5" />
+            <div className="space-y-1">
+              <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
+                  <Calendar className="h-4 w-4 text-white" />
                 </div>
                 All Bookings
               </CardTitle>
               <CardDescription className="text-gray-600">Manage your tour bookings</CardDescription>
             </div>
-            <div className="flex gap-3">
-              <Button variant="outline" size="sm" className="h-9 px-4">
-                <Search className="h-4 w-4 mr-2" />
-                Search
-              </Button>
-              <Button variant="outline" size="sm" className="h-9 px-4">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full border">
+                {filteredBookings.length} of {bookings.length} bookings
+              </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as any)}
+                className="border-gray-200 text-gray-700 bg-white border px-3 py-1.5 rounded-lg text-sm shadow-sm"
+              >
+                <option value="all">All Status</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="overflow-x-auto">
-            <Table>
+        <CardContent className="p-0">
+          <div className="overflow-hidden">
+            <Table className="border-separate border-spacing-0 w-full">
               <TableHeader>
-                <TableRow className="border-b border-gray-100">
-                  <TableHead className="font-semibold text-gray-900">Booking ID</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Customer</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Tour</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Date</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Participants</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Amount</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Status</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Actions</TableHead>
+                <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100/80 border-b border-gray-200">
+                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Booking ID</TableHead>
+                  <TableHead className="w-[200px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Customer</TableHead>
+                  <TableHead className="w-[180px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Tour</TableHead>
+                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Date</TableHead>
+                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Participants</TableHead>
+                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Amount</TableHead>
+                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Status</TableHead>
+                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                {bookings.map((booking) => (
-                  <TableRow key={booking.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <TableCell className="font-medium text-gray-900">{booking.id}</TableCell>
-                    <TableCell>
+              <TableBody className="divide-y divide-gray-100">
+                {filteredBookings.map((booking, index) => (
+                  <TableRow 
+                    key={booking.id} 
+                    className={`hover:bg-gradient-to-r hover:from-teal-50/30 hover:to-emerald-50/30 transition-all duration-200 ${
+                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                    }`}
+                  >
+                    <TableCell className="py-4 px-6">
+                      <div className="font-bold text-gray-900">{booking.id}</div>
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
                       <div>
                         <div className="font-semibold text-gray-900">{booking.customer}</div>
                         <div className="text-sm text-gray-500">{booking.email}</div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-700">{booking.tour}</TableCell>
-                    <TableCell className="text-gray-700">{booking.date}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
+                    <TableCell className="py-4 px-6">
+                      <div className="text-gray-700">{booking.tour}</div>
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
+                      <div className="text-gray-700">{booking.date}</div>
+                    </TableCell>
+                    <TableCell className="py-4 px-6 text-center">
+                      <div className="flex items-center justify-center gap-2">
                         <Users className="h-4 w-4 text-gray-500" />
                         <span className="text-gray-700">{booking.participants}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="font-bold text-gray-900">{booking.amount}</TableCell>
-                    <TableCell>
+                    <TableCell className="py-4 px-6">
+                      <div className="font-bold text-lg bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+                        {booking.amount}
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
                       <Badge className={
-                        booking.status === 'confirmed' ? 'bg-green-100 text-green-700 border-green-200' :
-                        booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
-                        booking.status === 'completed' ? 'bg-blue-100 text-blue-700 border-blue-200' :
-                        'bg-red-100 text-red-700 border-red-200'
+                        booking.status === 'confirmed' ? 'bg-green-500 text-white border-0 shadow-md' :
+                        booking.status === 'pending' ? 'bg-yellow-500 text-white border-0 shadow-md' :
+                        booking.status === 'completed' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-md' :
+                        'bg-gradient-to-r from-red-500 to-red-600 text-white border-0 shadow-md'
                       }>
                         {booking.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="h-8 px-3">View</Button>
-                        <Button variant="outline" size="sm" className="h-8 px-3">Edit</Button>
+                    <TableCell className="py-4 px-6">
+                      <div className="flex items-center justify-center gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleEditBooking(booking)}
+                          title="Edit Booking"
+                          className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 shadow-sm hover:shadow-md transition-all duration-200 h-8 w-8 p-0"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="destructive" 
+                          size="sm" 
+                          onClick={() => handleDeleteBooking(booking)} 
+                          title="Delete Booking"
+                          className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 h-8 w-8 p-0"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+            
+            {/* Empty State */}
+            {filteredBookings.length === 0 && (
+              <div className="text-center py-16 px-6">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Calendar className="h-10 w-10 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No bookings found</h3>
+                <p className="text-gray-500 mb-6">
+                  {searchTerm || statusFilter !== 'all' ? 'Try adjusting your filters' : 'No bookings have been created yet'}
+                </p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the booking "{bookingToDelete?.customer}" for "{bookingToDelete?.tour}" and remove all of its data from the server.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeleteBooking}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Edit Booking Dialog */}
+      <AlertDialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <AlertDialogContent className="max-w-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Edit Booking</AlertDialogTitle>
+            <AlertDialogDescription>
+              Modify the booking details for "{editingBooking?.customer}"
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          {editingBooking && (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Customer Name</label>
+                  <Input 
+                    value={editingBooking.customer}
+                    onChange={(e) => setEditingBooking({...editingBooking, customer: e.target.value})}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Email</label>
+                  <Input 
+                    value={editingBooking.email}
+                    onChange={(e) => setEditingBooking({...editingBooking, email: e.target.value})}
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Tour</label>
+                  <Input 
+                    value={editingBooking.tour}
+                    onChange={(e) => setEditingBooking({...editingBooking, tour: e.target.value})}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Date</label>
+                  <Input 
+                    value={editingBooking.date}
+                    onChange={(e) => setEditingBooking({...editingBooking, date: e.target.value})}
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Amount</label>
+                  <Input 
+                    value={editingBooking.amount}
+                    onChange={(e) => setEditingBooking({...editingBooking, amount: e.target.value})}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Participants</label>
+                  <Input 
+                    type="number"
+                    value={editingBooking.participants}
+                    onChange={(e) => setEditingBooking({...editingBooking, participants: parseInt(e.target.value) || 1})}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Status</label>
+                  <select 
+                    value={editingBooking.status}
+                    onChange={(e) => setEditingBooking({...editingBooking, status: e.target.value as 'pending' | 'confirmed' | 'cancelled'})}
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setEditDialogOpen(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={async () => {
+                if (editingBooking) {
+                  try {
+                    const updateResult = await BookingService.updateBooking({
+                      bookingId: editingBooking.id,
+                      status: editingBooking.status,
+                      adminNotes: `Updated booking for ${editingBooking.customer}`,
+                      additionalNotes: `Modified via admin panel`
+                    })
+                    
+                    if (updateResult.success) {
+                      await fetchData()
+                      setEditDialogOpen(false)
+                      setEditingBooking(null)
+                    } else {
+                      console.error('❌ Page: Update failed:', updateResult.message)
+                      alert(`Failed to update booking: ${updateResult.message}`)
+                    }
+                  } catch (error) {
+                    console.error('❌ Page: Error updating booking:', error)
+                    alert('Error updating booking. Please check the console for details.')
+                  }
+                }
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Save Changes
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
