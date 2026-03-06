@@ -1,5 +1,12 @@
 import { Tour } from '@/types/tour'
 
+export interface PaginatedToursResponse {
+  tours: Tour[]
+  totalCount: number
+  currentPage: number
+  totalPages: number
+}
+
 export class SimpleTourService {
   private static async getSupabase() {
     try {
@@ -17,6 +24,60 @@ export class SimpleTourService {
       return supabase
     } catch (error) {
       console.error('❌ SimpleTourService: Failed to get Supabase client:', error)
+      throw error
+    }
+  }
+
+  static async getToursPaginated(
+    page: number = 1,
+    limit: number = 9,
+    search?: string,
+    category?: string
+  ): Promise<PaginatedToursResponse> {
+    try {
+      const supabase = await this.getSupabase()
+      
+      let query = supabase
+        .from('tours')
+        .select('*', { count: 'exact' })
+      
+      // Apply filters
+      if (search) {
+        query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`)
+      }
+      
+      if (category && category !== 'All Categories') {
+        query = query.eq('tag', category)
+      }
+      
+      // Apply pagination and ordering
+      const { data, error, count } = await query
+        .order('featured', { ascending: false })
+        .order('created_at', { ascending: false })
+        .range((page - 1) * limit, page * limit - 1)
+
+      if (error) {
+        console.error('❌ Error fetching paginated tours:', error)
+        throw new Error(error.message)
+      }
+
+      const tours = (data || []).map(tour => ({
+        ...tour,
+        maxPeople: tour.max_people,
+        notIncluded: tour.not_included
+      }))
+      
+      const totalCount = count || 0
+      const totalPages = Math.ceil(totalCount / limit)
+
+      return {
+        tours,
+        totalCount,
+        currentPage: page,
+        totalPages
+      }
+    } catch (error) {
+      console.error('❌ Error in getToursPaginated:', error)
       throw error
     }
   }
