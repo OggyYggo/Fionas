@@ -2,6 +2,12 @@ import { Tour } from '@/types/tour'
 
 export interface TourService {
   getAllTours(): Promise<Tour[]>
+  getToursPaginated(page: number, limit: number, search?: string, category?: string): Promise<{
+    tours: Tour[]
+    totalCount: number
+    currentPage: number
+    totalPages: number
+  }>
   getTourById(id: number): Promise<Tour | null>
   createTour(tourData: Omit<Tour, 'id'>): Promise<Tour>
   updateTour(id: number, tourData: Partial<Tour>): Promise<Tour | null>
@@ -63,6 +69,19 @@ class HybridTourService implements TourService {
     }
   }
 
+  async getToursPaginated(page: number, limit: number, search?: string, category?: string): Promise<{
+    tours: Tour[]
+    totalCount: number
+    currentPage: number
+    totalPages: number
+  }> {
+    if (this.isSupabaseAvailable) {
+      return this.getSupabaseToursPaginated(page, limit, search, category)
+    } else {
+      return this.getFallbackToursPaginated(page, limit, search, category)
+    }
+  }
+
   async getAllTours(): Promise<Tour[]> {
     if (this.isSupabaseAvailable) {
       return this.getSupabaseTours()
@@ -117,6 +136,69 @@ class HybridTourService implements TourService {
   }
 
   // Supabase methods
+  private async getSupabaseToursPaginated(page: number, limit: number, search?: string, category?: string): Promise<{
+    tours: Tour[]
+    totalCount: number
+    currentPage: number
+    totalPages: number
+  }> {
+    try {
+      const { supabase } = await import('@/lib/supabase')
+      
+      let query = supabase
+        .from('tours')
+        .select('*', { count: 'exact' })
+      
+      // Apply filters
+      if (search) {
+        query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`)
+      }
+      
+      if (category) {
+        query = query.eq('tag', category)
+      }
+      
+      // Apply pagination and ordering
+      const { data, error, count } = await query
+        .order('featured', { ascending: false })
+        .order('created_at', { ascending: false })
+        .range((page - 1) * limit, page * limit - 1)
+
+      if (error) {
+        console.error('Error fetching paginated tours:', error)
+        return {
+          tours: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0
+        }
+      }
+
+      const tours = (data || []).map(tour => ({
+        ...tour,
+        maxPeople: tour.max_people
+      }))
+      
+      const totalCount = count || 0
+      const totalPages = Math.ceil(totalCount / limit)
+
+      return {
+        tours,
+        totalCount,
+        currentPage: page,
+        totalPages
+      }
+    } catch (error) {
+      console.error('Error fetching paginated tours:', error)
+      return {
+        tours: [],
+        totalCount: 0,
+        currentPage: page,
+        totalPages: 0
+      }
+    }
+  }
+
   private async getSupabaseTours(): Promise<Tour[]> {
     try {
       const { supabase } = await import('@/lib/supabase')
@@ -288,6 +370,59 @@ class HybridTourService implements TourService {
   }
 
   // Fallback methods
+  private async getFallbackToursPaginated(page: number, limit: number, search?: string, category?: string): Promise<{
+    tours: Tour[]
+    totalCount: number
+    currentPage: number
+    totalPages: number
+  }> {
+    try {
+      let filteredTours = [...this.fallbackTours]
+      
+      // Apply filters
+      if (search) {
+        filteredTours = filteredTours.filter(tour => 
+          tour.title.toLowerCase().includes(search.toLowerCase()) ||
+          tour.description.toLowerCase().includes(search.toLowerCase())
+        )
+      }
+      
+      if (category) {
+        filteredTours = filteredTours.filter(tour => 
+          tour.tag.toLowerCase() === category.toLowerCase()
+        )
+      }
+      
+      // Sort by featured first
+      filteredTours.sort((a, b) => {
+        if (a.featured && !b.featured) return -1
+        if (!a.featured && b.featured) return 1
+        return 0
+      })
+      
+      const totalCount = filteredTours.length
+      const totalPages = Math.ceil(totalCount / limit)
+      const startIndex = (page - 1) * limit
+      const endIndex = startIndex + limit
+      const paginatedTours = filteredTours.slice(startIndex, endIndex)
+      
+      return {
+        tours: paginatedTours,
+        totalCount,
+        currentPage: page,
+        totalPages
+      }
+    } catch (error) {
+      console.error('Error fetching fallback paginated tours:', error)
+      return {
+        tours: [],
+        totalCount: 0,
+        currentPage: page,
+        totalPages: 0
+      }
+    }
+  }
+
   private createFallbackTour(tourData: Omit<Tour, 'id'>): Promise<Tour> {
     return new Promise((resolve) => {
       const newId = Math.max(...this.fallbackTours.map(t => t.id), 0) + 1

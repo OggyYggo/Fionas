@@ -1,9 +1,27 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { toursAnimations } from '@/animations/toursAnimations'
-import { SimpleTourService } from '@/lib/simpleTourService'
+import Image from 'next/image'
+import { TourGridSkeleton } from '@/components/ui/tour-card-skeleton'
+import { CardSpinner } from '@/components/ui/spinner'
 import { Tour } from '@/types/tour'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis
+} from '@/components/ui/pagination'
+
+interface ToursResponse {
+  tours: Tour[]
+  totalCount: number
+  currentPage: number
+  totalPages: number
+}
 
 export default function TourPackages({ searchTerm, selectedCategory }: { 
   searchTerm: string
@@ -12,6 +30,10 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
   const [isClient, setIsClient] = useState(false)
   const [tours, setTours] = useState<Tour[]>([])
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const toursPerPage = 9
 
   useEffect(() => {
     setIsClient(true)
@@ -26,24 +48,61 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
   useEffect(() => {
     const fetchTours = async () => {
       try {
-        const toursData = await SimpleTourService.getAllTours()
+        setLoading(true)
         
-        // If no data from Supabase, try fallback
-        if (!toursData || toursData.length === 0) {
-          const { tours } = await import('@/app/tours/data/tours')
-          setTours(tours)
-        } else {
-          setTours(toursData)
+        // Build query parameters for server-side filtering and pagination
+        const params = new URLSearchParams({
+          page: currentPage.toString(),
+          limit: toursPerPage.toString()
+        })
+        
+        if (searchTerm) {
+          params.append('search', searchTerm)
         }
+        
+        if (selectedCategory && selectedCategory !== 'All Categories') {
+          params.append('category', selectedCategory.replace(' Tours', ''))
+        }
+        
+        const response = await fetch(`/api/tours?${params.toString()}`)
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch tours')
+        }
+        
+        const data: ToursResponse = await response.json()
+        
+        setTours(data.tours)
+        setTotalCount(data.totalCount)
+        setTotalPages(data.totalPages)
+        
       } catch (error) {
         console.error('Error fetching tours:', error)
         // Try fallback on error
         try {
-          const { tours } = await import('@/app/tours/data/tours')
-          setTours(tours)
+          const { tours: fallbackTours } = await import('@/app/tours/data/tours')
+          
+          // Client-side filtering for fallback
+          const filtered = fallbackTours.filter((tour) => {
+            const matchesSearch = tour.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                 tour.description.toLowerCase().includes(searchTerm.toLowerCase())
+            const matchesCategory = selectedCategory === 'All Categories' || 
+                                    tour.tag === selectedCategory.replace(' Tours', '')
+            return matchesSearch && matchesCategory
+          })
+          
+          const startIndex = (currentPage - 1) * toursPerPage
+          const endIndex = startIndex + toursPerPage
+          const paginatedTours = filtered.slice(startIndex, endIndex)
+          
+          setTours(paginatedTours)
+          setTotalCount(filtered.length)
+          setTotalPages(Math.ceil(filtered.length / toursPerPage))
         } catch (fallbackError) {
           console.error('Fallback also failed:', fallbackError)
           setTours([])
+          setTotalCount(0)
+          setTotalPages(0)
         }
       } finally {
         setLoading(false)
@@ -51,15 +110,7 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
     }
 
     fetchTours()
-  }, [])
-
-  const filteredTours = tours.filter((tour) => {
-    const matchesSearch = tour.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         tour.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'All Categories' || 
-                            tour.tag === selectedCategory.replace(' Tours', '')
-    return matchesSearch && matchesCategory
-  })
+  }, [currentPage, searchTerm, selectedCategory])
 
   if (loading) {
     return (
@@ -68,8 +119,15 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
         <section className="tours-section py-20 pt-20 pb-11 bg-white flex items-center justify-center font-primary">
           <div className="container max-w-[1440px] mx-auto px-5">
             <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">Loading tours...</p>
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-full text-sm text-blue-700 shadow-sm">
+                <div className="relative">
+                  <div className="w-5 h-5 border-2 border-blue-200 rounded-full"></div>
+                  <div className="absolute top-0 left-0 w-5 h-5 border-2 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+                </div>
+                <span className="font-medium">Discovering amazing tours...</span>
+              </div>
             </div>
+            <TourGridSkeleton />
           </div>
         </section>
       </>
@@ -78,20 +136,26 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
 
   return (
     <>
-      {/* 80px gap after hero section */}
       <div className="h-20"></div>
       
       <section className="tours-section py-20 pt-20 pb-11 bg-white flex items-center justify-center font-primary">
         <div className="container max-w-[1440px] mx-auto px-5">
           
           <div className="tour-grid grid grid-cols-3 gap-8 justify-center">
-            {filteredTours.length > 0 ? (
-              filteredTours.map((tour) => (
+            {tours.length > 0 ? (
+              tours.map((tour) => (
                 <div key={tour.id} className="tour-card w-full mx-auto bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200 transition-all duration-300 reveal">
                   <div className="card-image relative h-[310px]">
-                    <img src={tour.image} alt={tour.title} className="w-full h-full object-cover" />
-                    {tour.featured && <span className="badge-featured absolute top-4 left-4 bg-warning text-white py-1 px-3 rounded-md text-xs font-bold">⭐ Featured</span>}
-                    <span className="tag absolute bottom-4 left-4 bg-white py-1 px-3 rounded-2xl text-xs text-gray-800">{tour.tag}</span>
+                    <Image 
+                      src={tour.image} 
+                      alt={tour.title} 
+                      fill
+                      className="object-cover" 
+                      loading="lazy"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                    {tour.featured && <span className="badge-featured absolute top-4 left-4 bg-warning text-white py-1 px-3 rounded-md text-xs font-bold z-10">⭐ Featured</span>}
+                    <span className="tag absolute bottom-4 left-4 bg-white py-1 px-3 rounded-2xl text-xs text-gray-800 z-10">{tour.tag}</span>
                   </div>
                   <div className="card-content p-6">
                     <h3 className="text-gray-800 text-[1.7rem] mb-2 transition-colors duration-300">{tour.title}</h3>
@@ -116,6 +180,87 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
                 <p className="text-gray-400 text-sm mt-2">Try adjusting your search or filter settings.</p>
               </div>
             )}
+          </div>
+          
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center mt-12">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      href="#"
+                    />
+                  </PaginationItem>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    const isActive = currentPage === page
+                    const isNearActive = Math.abs(page - currentPage) <= 2
+                    const showPage = isNearActive || page === 1 || page === totalPages
+                    const shouldShowEllipsisBefore = page === 1 && currentPage > 4
+                    const shouldShowEllipsisAfter = page === totalPages && currentPage < totalPages - 3
+                    
+                    if (!showPage && !shouldShowEllipsisBefore && !shouldShowEllipsisAfter) return null
+                    
+                    if (shouldShowEllipsisBefore) {
+                      return (
+                        <React.Fragment key="ellipsis-start">
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        </React.Fragment>
+                      )
+                    }
+                    
+                    if (shouldShowEllipsisAfter) {
+                      return (
+                        <React.Fragment key="ellipsis-end">
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        </React.Fragment>
+                      )
+                    }
+                    
+                    return (
+                      <PaginationItem key={page}>
+                        <PaginationLink 
+                          href="#"
+                          onClick={() => setCurrentPage(page)}
+                          isActive={isActive}
+                          className={isActive ? 'bg-gray-900 text-white hover:bg-gray-800' : ''}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  })}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      href="#"
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+          
+          {/* Results count */}
+          <div className="text-center mt-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-full text-sm text-gray-600 shadow-sm">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="font-medium">{tours.length}</span>
+              <span className="text-gray-400">of</span>
+              <span className="font-medium">{totalCount}</span>
+              <span className="text-gray-400">tours</span>
+            </div>
           </div>
         </div>
       </section>

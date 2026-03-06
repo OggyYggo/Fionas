@@ -5,12 +5,11 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import Header from '@/components/Landing Page/Header'
 import Footer from '@/components/Footer'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertCircle, CheckCircle, XCircle } from 'lucide-react'
 import ContactStep from './components/ContactStep'
 import TripDetailsStep from './components/TripDetailsStep'
 import InterestsStep from './components/InterestsStep'
 import ReviewStep from './components/ReviewStep'
+import AlertPortal from './components/AlertPortal'
 
 export default function Custom() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -148,24 +147,11 @@ export default function Custom() {
   }
 
   return (
-    <>
+    <div className="relative">
       <Header />
       
-      {/* Alert Component */}
-      {alert && (
-        <div className="fixed top-20 right-4 z-[9999] max-w-md animate-in slide-in-from-top-2">
-          <Alert variant={alert.type === 'error' ? 'destructive' : 'default'} className="shadow-xl border-2">
-            <div className="flex items-center">
-              {alert.type === 'warning' && <AlertCircle className="h-4 w-4 flex-shrink-0" />}
-              {alert.type === 'success' && <CheckCircle className="h-4 w-4 flex-shrink-0" />}
-              {alert.type === 'error' && <XCircle className="h-4 w-4 flex-shrink-0" />}
-              <AlertDescription className="ml-2">
-                {alert.message}
-              </AlertDescription>
-            </div>
-          </Alert>
-        </div>
-      )}
+      {/* Alert Portal - Renders directly to body */}
+      {alert && <AlertPortal type={alert.type} message={alert.message} />}
       
       {/* Custom Hero Section */}
       <section className="hero-custom">
@@ -316,6 +302,6 @@ export default function Custom() {
         </div>
       </main>
       <Footer />
-    </>
+    </div>
   )
 }
