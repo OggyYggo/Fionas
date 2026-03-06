@@ -161,56 +161,63 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>{tour ? 'Edit Tour' : 'Add New Tour'}</CardTitle>
-        <CardDescription>
+    <div className="w-full max-w-4xl mx-auto space-y-8">
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-bold text-gray-900">{tour ? 'Edit Tour' : 'Add New Tour'}</h1>
+        <p className="text-gray-600">
           {tour ? 'Update the tour information below.' : 'Fill in the details to create a new tour package.'}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Tour Title</Label>
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Basic Information */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
+          <h2 className="text-xl font-semibold text-gray-900 pb-2 border-b border-gray-100">Basic Information</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <Label htmlFor="title" className="text-sm font-medium text-gray-700">Tour Title</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="e.g., Panglao Island Hopping"
+                className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 required
               />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="price">Price</Label>
+            <div className="space-y-3">
+              <Label htmlFor="price" className="text-sm font-medium text-gray-700">Base Price</Label>
               <Input
                 id="price"
                 value={formData.price}
                 onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
                 placeholder="e.g., ₱3,500"
+                className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 required
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+          <div className="space-y-3">
+            <Label htmlFor="description" className="text-sm font-medium text-gray-700">Description</Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               placeholder="Describe the tour experience..."
-              rows={3}
+              rows={4}
+              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 resize-none"
               required
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="duration">Duration</Label>
+            <div className="space-y-3">
+              <Label htmlFor="duration" className="text-sm font-medium text-gray-700">Duration</Label>
               <Select value={formData.duration} onValueChange={(value) => setFormData(prev => ({ ...prev, duration: value }))}>
-                <SelectTrigger>
+                <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                   <SelectValue placeholder="Select duration" />
                 </SelectTrigger>
                 <SelectContent>
@@ -223,21 +230,22 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="maxPeople">Max People</Label>
+            <div className="space-y-3">
+              <Label htmlFor="maxPeople" className="text-sm font-medium text-gray-700">Max People</Label>
               <Input
                 id="maxPeople"
                 value={formData.maxPeople}
                 onChange={(e) => setFormData(prev => ({ ...prev, maxPeople: e.target.value }))}
-                placeholder="e.g., Max 10"
+                placeholder="e.g., 10"
+                className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 required
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="tag">Category Tag</Label>
+            <div className="space-y-3">
+              <Label htmlFor="tag" className="text-sm font-medium text-gray-700">Category</Label>
               <Select value={formData.tag} onValueChange={(value) => setFormData(prev => ({ ...prev, tag: value }))}>
-                <SelectTrigger>
+                <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -251,103 +259,82 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
               </Select>
             </div>
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="image">Tour Image</Label>
+        {/* Tour Image */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
+          <h2 className="text-xl font-semibold text-gray-900 pb-2 border-b border-gray-100">Tour Image</h2>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-center w-full">
+              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <svg className="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                  </svg>
+                  <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                </div>
+                <input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+              
+            {formData.image && (
+              <div className="relative">
+                <img 
+                  src={formData.image} 
+                  alt="Tour preview" 
+                  className="w-full h-64 object-cover rounded-lg shadow-md"
+                />
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
+                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tour Details */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
+          <h2 className="text-xl font-semibold text-gray-900 pb-2 border-b border-gray-100">Tour Details</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-              {formData.image && (
-                <div className="mt-2">
-                  <img 
-                    src={formData.image} 
-                    alt="Tour preview" 
-                    className="w-full h-48 object-cover rounded-lg"
-                  />
-                </div>
-              )}
-              {!imageFile && tour?.image && (
-                <p className="text-sm text-gray-500">
-                  Current image: {tour.image}
-                </p>
-              )}
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium text-gray-700">Tour Highlights</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFormData(prev => ({ 
+                    ...prev, 
+                    highlights: [...prev.highlights, ''] 
+                  }))}
+                  className="h-8 px-3 text-xs border-blue-200 text-blue-600 hover:bg-blue-50"
+                >
+                  + Add Highlight
+                </Button>
+              </div>
+              <div className="min-h-[100px] bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <p className="text-xs text-gray-500 text-center">Click "Add Highlight" to add tour highlights</p>
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label>Tour Highlights</Label>
-            <div className="space-y-2">
-              {formData.highlights.map((highlight, index) => (
-                <div key={index} className="flex gap-2">
-                  <Input
-                    value={highlight}
-                    onChange={(e) => {
-                      const newHighlights = [...formData.highlights]
-                      newHighlights[index] = e.target.value
-                      setFormData(prev => ({ ...prev, highlights: newHighlights }))
-                    }}
-                    placeholder="Enter tour highlight"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const newHighlights = formData.highlights.filter((_, i) => i !== index)
-                      setFormData(prev => ({ ...prev, highlights: newHighlights }))
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setFormData(prev => ({ 
-                  ...prev, 
-                  highlights: [...prev.highlights, ''] 
-                }))}
-              >
-                Add Highlight
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>What's Included</Label>
-              <div className="space-y-2">
-                {formData.included.map((item, index) => (
-                  <div key={index} className="flex gap-2">
-                    <Input
-                      value={item}
-                      onChange={(e) => {
-                        const newIncluded = [...formData.included]
-                        newIncluded[index] = e.target.value
-                        setFormData(prev => ({ ...prev, included: newIncluded }))
-                      }}
-                      placeholder="Enter included item"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const newIncluded = formData.included.filter((_, i) => i !== index)
-                        setFormData(prev => ({ ...prev, included: newIncluded }))
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                ))}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium text-gray-700">What's Included</Label>
                 <Button
                   type="button"
                   variant="outline"
@@ -356,62 +343,53 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
                     ...prev, 
                     included: [...prev.included, ''] 
                   }))}
+                  className="h-8 px-3 text-xs border-green-200 text-green-600 hover:bg-green-50"
                 >
-                  Add Item
+                  + Add Item
                 </Button>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Not Included</Label>
-              <div className="space-y-2">
-                {formData.notIncluded.map((item, index) => (
-                  <div key={index} className="flex gap-2">
-                    <Input
-                      value={item}
-                      onChange={(e) => {
-                        const newNotIncluded = [...formData.notIncluded]
-                        newNotIncluded[index] = e.target.value
-                        setFormData(prev => ({ ...prev, notIncluded: newNotIncluded }))
-                      }}
-                      placeholder="Enter not included item"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const newNotIncluded = formData.notIncluded.filter((_, i) => i !== index)
-                        setFormData(prev => ({ ...prev, notIncluded: newNotIncluded }))
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setFormData(prev => ({ 
-                    ...prev, 
-                    notIncluded: [...prev.notIncluded, ''] 
-                  }))}
-                >
-                  Add Item
-                </Button>
+              <div className="min-h-[100px] bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <p className="text-xs text-gray-500 text-center">Click "Add Item" to add included items</p>
               </div>
             </div>
           </div>
 
           <div className="space-y-4">
-            <Label>Package Pricing</Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-medium">Local Rates</Label>
-                <div className="space-y-2 mt-2">
-                  {formData.pricing.local.map((rate, index) => (
-                    <div key={index} className="flex gap-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-medium text-gray-700">Not Included</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setFormData(prev => ({ 
+                  ...prev, 
+                  notIncluded: [...prev.notIncluded, ''] 
+                }))}
+                className="h-8 px-3 text-xs border-red-200 text-red-600 hover:bg-red-50"
+              >
+                + Add Item
+              </Button>
+            </div>
+            <div className="min-h-[100px] bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <p className="text-xs text-gray-500 text-center">Click "Add Item" to add not included items</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Package Pricing */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
+          <h2 className="text-xl font-semibold text-gray-900 pb-2 border-b border-gray-100">Package Pricing</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-800 flex items-center">
+                <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                Local Rates
+              </h3>
+              <div className="space-y-3">
+                {formData.pricing.local.map((rate, index) => (
+                  <div key={index} className="flex gap-3 items-center">
+                    <div className="flex-1">
                       <Input
                         value={rate.pax}
                         onChange={(e) => {
@@ -420,8 +398,10 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
                           setFormData(prev => ({ ...prev, pricing: newPricing }))
                         }}
                         placeholder="Pax"
-                        className="w-20"
+                        className="h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
+                    </div>
+                    <div className="flex-1">
                       <Input
                         value={rate.price}
                         onChange={(e) => {
@@ -430,17 +410,23 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
                           setFormData(prev => ({ ...prev, pricing: newPricing }))
                         }}
                         placeholder="Price"
+                        className="h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
+            </div>
 
-              <div>
-                <Label className="text-sm font-medium">Foreigner Rates</Label>
-                <div className="space-y-2 mt-2">
-                  {formData.pricing.foreigner.map((rate, index) => (
-                    <div key={index} className="flex gap-2">
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-800 flex items-center">
+                <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                Foreigner Rates
+              </h3>
+              <div className="space-y-3">
+                {formData.pricing.foreigner.map((rate, index) => (
+                  <div key={index} className="flex gap-3 items-center">
+                    <div className="flex-1">
                       <Input
                         value={rate.pax}
                         onChange={(e) => {
@@ -449,8 +435,10 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
                           setFormData(prev => ({ ...prev, pricing: newPricing }))
                         }}
                         placeholder="Pax"
-                        className="w-20"
+                        className="h-10 border-gray-300 focus:border-green-500 focus:ring-green-500"
                       />
+                    </div>
+                    <div className="flex-1">
                       <Input
                         value={rate.price}
                         onChange={(e) => {
@@ -459,33 +447,56 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
                           setFormData(prev => ({ ...prev, pricing: newPricing }))
                         }}
                         placeholder="Price"
+                        className="h-10 border-gray-300 focus:border-green-500 focus:ring-green-500"
                       />
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="featured"
-              checked={formData.featured}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, featured: checked }))}
-            />
-            <Label htmlFor="featured">Featured Tour</Label>
+        {/* Tour Settings */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
+          <h2 className="text-xl font-semibold text-gray-900 pb-2 border-b border-gray-100">Tour Settings</h2>
+          
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <Switch
+                id="featured"
+                checked={formData.featured}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, featured: checked }))}
+                className="data-[state=checked]:bg-blue-600"
+              />
+              <div>
+                <Label htmlFor="featured" className="text-sm font-medium text-gray-700 cursor-pointer">Featured Tour</Label>
+                <p className="text-xs text-gray-500">Display this tour prominently on the website</p>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Saving...' : (tour ? 'Update Tour' : 'Create Tour')}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+        {/* Action Buttons */}
+        <div className="flex justify-end space-x-4 pt-6">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={onCancel} 
+            disabled={isLoading}
+            className="h-11 px-6 border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </Button>
+          <Button 
+            type="submit" 
+            disabled={isLoading}
+            className="h-11 px-6 bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            {isLoading ? 'Saving...' : (tour ? 'Update Tour' : 'Create Tour')}
+          </Button>
+        </div>
+      </form>
+    </div>
   )
 }
