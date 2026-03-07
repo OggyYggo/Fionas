@@ -16,50 +16,162 @@ export class BookingService {
   // Create a new booking
   static async createBooking(bookingData: CreateBookingRequest): Promise<CreateBookingResponse> {
     try {
-      // Format data for Supabase
+      console.log('🔍 BookingService: Creating booking with data:', bookingData)
+      
+      // Check Supabase connection
+      console.log('🔍 Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+      console.log('🔍 Supabase client initialized:', !!supabase)
+      
+      // Test basic Supabase connection first
+      try {
+        const { data: testData, error: testError } = await supabase
+          .from('bookings')
+          .select('id')
+          .limit(1)
+        
+        console.log('🔍 Supabase connection test:', { testData, testError })
+        
+        if (testError) {
+          console.error('❌ Supabase connection test failed:', testError)
+          return {
+            success: false,
+            message: `Database connection failed: ${testError.message || 'Unknown error'}`
+          }
+        }
+      } catch (connectionError) {
+        console.error('❌ Supabase connection error:', connectionError)
+        return {
+          success: false,
+          message: `Cannot connect to database: ${connectionError instanceof Error ? connectionError.message : 'Unknown error'}`
+        }
+      }
+      
+      // Only use fields that exist in the current database schema (now with custom fields)
       const dbData = {
         full_name: bookingData.fullName,
         email: bookingData.email,
         phone: bookingData.phone,
-        tour_type: bookingData.tourType.toLowerCase().replace(' tour', ''),
+        tour_type: bookingData.tourType, // Main tour type (custom, countryside, etc.)
         start_date: bookingData.startDate,
         end_date: bookingData.endDate,
         number_of_guests: parseInt(bookingData.numberOfGuests.toString()) || 1,
-        budget_range: bookingData.budgetRange?.toLowerCase().split(' ')[0] || 'standard',
-        interests: bookingData.interests,
-        destinations: bookingData.destinations,
-        additional_notes: bookingData.additionalNotes
+        budget_range: bookingData.budgetRange?.toLowerCase() || 'standard',
+        additional_notes: bookingData.additionalNotes,
+        
+        // New custom tour fields (excluding travel_type to avoid conflict)
+        destination: bookingData.destination || null,
+        adults: bookingData.adults || 1,
+        children: bookingData.children || 0,
+        // Store travel preference in additional_notes to avoid field conflict
+        activities: bookingData.activities || [],
+        other_activity: bookingData.otherActivity || null,
+        accommodation: bookingData.accommodation || null,
+        transportation: bookingData.transportation || null,
+        tour_guide: bookingData.tourGuide || null,
+        special_requests: bookingData.specialRequests || null
       }
 
-      const { data, error } = await supabase
-        .from('bookings')
-        .insert(dbData)
-        .select()
-        .single()
+      // Add travel preference to additional_notes to avoid field conflict
+      if (bookingData.travelType) {
+        dbData.additional_notes = `${dbData.additional_notes || ''}\n\nTravel Preference: ${bookingData.travelType}`
+      }
 
-      if (error) {
-        console.error('Supabase error:', error)
+      console.log('🔍 BookingService: Using existing schema fields:', dbData)
+
+      // Generate a unique booking number
+      const generateBookingNumber = () => {
+        const timestamp = Date.now().toString(36).toUpperCase()
+        const random = Math.random().toString(36).substring(2, 8).toUpperCase()
+        return `BK-${timestamp}-${random}`
+      }
+
+      // Map form budget range to database enum values
+      const mapBudgetRange = (formBudget: string) => {
+        const budgetMapping: { [key: string]: string } = {
+          'budget': 'standard',
+          'standard': 'standard', 
+          'premium': 'premium',
+          'luxury': 'luxury',
+          'ultra_luxury': 'ultra_luxury'
+        }
+        return budgetMapping[formBudget] || 'standard'
+      }
+
+      // Let's try with just the essential fields first to isolate the issue
+      const essentialData = {
+        booking_number: generateBookingNumber(),
+        full_name: bookingData.fullName,
+        email: bookingData.email,
+        phone: bookingData.phone,
+        tour_type: bookingData.tourType,
+        number_of_guests: parseInt(bookingData.numberOfGuests.toString()) || 1,
+        budget_range: mapBudgetRange(bookingData.budgetRange || 'standard') as any
+      }
+
+      console.log('🔍 BookingService: Trying with essential fields only:', essentialData)
+
+      try {
+        console.log('🔍 About to execute Supabase insert...')
+        const result = await supabase
+          .from('bookings')
+          .insert(essentialData)  // Use essential data first
+          .select()
+        
+        console.log('🔍 Supabase insert completed, processing response...')
+        
+        const { data, error } = result
+        console.log('🔍 BookingService: Insert response - data length:', data?.length)
+        console.log('🔍 BookingService: Insert response - error present:', !!error)
+
+        if (error) {
+          console.error('❌ Insert failed - error object:', error)
+          console.error('❌ Error type:', typeof error)
+          console.error('❌ Error keys:', Object.keys(error))
+          console.error('❌ Error details:', {
+            message: error?.message || 'No message',
+            details: error?.details || 'No details', 
+            hint: error?.hint || 'No hint',
+            code: error?.code || 'No code'
+          })
+          return {
+            success: false,
+            message: `Database error: ${error?.message || 'Unknown error occurred'}`
+          }
+        }
+
+        if (!data || data.length === 0) {
+          console.error('❌ No data returned from insert')
+          return {
+            success: false,
+            message: 'No data returned from database'
+          }
+        }
+
+        const insertedRecord = data[0]
+        console.log('✅ BookingService: Booking created successfully - ID:', insertedRecord.id)
+        return {
+          success: true,
+          message: 'Booking created successfully!',
+          data: {
+            bookingId: insertedRecord.id || 'unknown',
+            bookingNumber: insertedRecord.booking_number || 'unknown',
+            status: insertedRecord.status || 'pending',
+            estimatedResponseTime: '24 hours'
+          }
+        }
+      } catch (supabaseError) {
+        console.error('❌ Supabase operation threw an exception:', supabaseError)
         return {
           success: false,
-          message: error.message || 'Failed to create booking'
-        }
-      }
-
-      return {
-        success: true,
-        message: 'Booking created successfully!',
-        data: {
-          bookingId: data.id,
-          bookingNumber: data.booking_number,
-          status: data.status,
-          estimatedResponseTime: '24 hours'
+          message: `Supabase operation failed: ${supabaseError instanceof Error ? supabaseError.message : 'Unknown error'}`
         }
       }
     } catch (error) {
-      console.error('Booking service error:', error)
+      console.error('❌ Booking service error:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       return {
         success: false,
-        message: 'Internal server error'
+        message: `Internal server error: ${errorMessage}`
       }
     }
   }

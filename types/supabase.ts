@@ -1,7 +1,7 @@
 // TypeScript types for Supabase schema
 // These types match the database schema in supabase/schema.sql
 
-export type BookingStatus = 'pending' | 'confirmed' | 'cancelled'
+export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed'
 export type TourType = 'custom' | 'countryside' | 'island_hopping' | 'dolphin_watching' | 'diving' | 'firefly_watching'
 export type BudgetRange = 'standard' | 'premium' | 'luxury' | 'ultra_luxury'
 
@@ -18,6 +18,7 @@ export interface Booking {
   // Tour Details
   tour_type: TourType
   tour_title?: string
+  destination?: string
   
   // Date Information
   start_date?: string
@@ -25,12 +26,23 @@ export interface Booking {
   
   // Guest Information
   number_of_guests: number
+  adults?: number
+  children?: number
+  travel_type?: string
   
   // Pricing
   budget_range: BudgetRange
   total_price?: number
   
-  // Preferences
+  // Custom Tour Preferences
+  activities?: string[]
+  other_activity?: string
+  accommodation?: string
+  transportation?: string
+  tour_guide?: string
+  special_requests?: string
+  
+  // Legacy fields (for backward compatibility)
   interests?: string[]
   destinations?: string[]
   additional_notes?: string
@@ -197,6 +209,18 @@ export interface CreateBookingRequest {
   interests?: string[]
   destinations?: string[]
   additionalNotes?: string
+  
+  // Custom Tour specific fields
+  destination?: string
+  adults?: number
+  children?: number
+  travelType?: string
+  activities?: string[]
+  otherActivity?: string
+  accommodation?: string
+  transportation?: string
+  tourGuide?: string
+  specialRequests?: string
 }
 
 export interface CreateBookingResponse {

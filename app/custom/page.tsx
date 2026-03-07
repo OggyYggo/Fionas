@@ -9,23 +9,33 @@ import ContactStep from './components/ContactStep'
 import TripDetailsStep from './components/TripDetailsStep'
 import InterestsStep from './components/InterestsStep'
 import ReviewStep from './components/ReviewStep'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { CheckCircledIcon } from '@radix-ui/react-icons'
 import AlertPortal from './components/AlertPortal'
 
 export default function Custom() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isClient, setIsClient] = useState(false)
   const [alert, setAlert] = useState<{ type: 'warning' | 'success' | 'error'; message: string } | null>(null)
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false)
   
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
+    destination: '',
     startDate: null as Date | null,
     endDate: null as Date | null,
-    numberOfGuests: '1 Guest',
-    budgetRange: 'Standard (₱5,000 - ₱10,000/person)',
-    interests: [] as string[],
-    destinations: [] as string[]
+    adults: 2,
+    children: 0,
+    activities: [] as string[],
+    otherActivity: '',
+    budgetRange: '',
+    accommodation: '',
+    transportation: '',
+    tourGuide: '',
+    specialRequests: '',
+    fullName: '',
+    email: '',
+    phone: '+63',
+    agreement: false
   })
 
   useEffect(() => {
@@ -43,7 +53,7 @@ export default function Custom() {
     }
   }, [alert])
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
@@ -58,22 +68,22 @@ export default function Custom() {
     }))
   }
 
+  const handleGuestChange = (type: 'adults' | 'children', value: number) => {
+    setFormData(prev => ({
+      ...prev,
+      [type]: value
+    }))
+  }
+
+  const handleActivitiesChange = (activities: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      activities
+    }))
+  }
+
   const showAlert = (message: string) => {
     setAlert({ type: 'warning', message })
-  }
-
-  const handleInterestsChange = (interests: string[]) => {
-    setFormData(prev => ({
-      ...prev,
-      interests
-    }))
-  }
-
-  const handleDestinationsChange = (destinations: string[]) => {
-    setFormData(prev => ({
-      ...prev,
-      destinations
-    }))
   }
 
   const handleContinue = () => {
@@ -90,54 +100,138 @@ export default function Custom() {
 
   const handleCancel = () => {
     setFormData({
-      fullName: '',
-      email: '',
-      phone: '',
+      destination: '',
       startDate: null,
       endDate: null,
-      numberOfGuests: '1 Guest',
-      budgetRange: 'Standard (₱5,000 - ₱10,000/person)',
-      interests: [],
-      destinations: []
+      adults: 2,
+      children: 0,
+      activities: [],
+      otherActivity: '',
+      budgetRange: '',
+      accommodation: '',
+      transportation: '',
+      tourGuide: '',
+      specialRequests: '',
+      fullName: '',
+      email: '',
+      phone: '+63',
+      agreement: false
     })
     setCurrentStep(1)
   }
 
+  const testSuccessAlert = () => {
+    console.log('🧪 Testing success alert')
+    setShowSuccessAlert(true)
+    setAlert({ 
+      type: 'success', 
+      message: 'Test Success! This is a demo alert to verify the success message is working properly.' 
+    })
+    
+    setTimeout(() => {
+      setShowSuccessAlert(false)
+    }, 5000)
+  }
+
   const handleSubmitRequest = async () => {
     try {
+      // Validate required fields
+      if (!formData.fullName.trim()) {
+        setAlert({ type: 'error', message: 'Please enter your full name.' })
+        return
+      }
+      
+      if (!formData.email.trim()) {
+        setAlert({ type: 'error', message: 'Please enter your email address.' })
+        return
+      }
+      
+      if (!formData.phone.trim() || formData.phone === '+63') {
+        setAlert({ type: 'error', message: 'Please enter a valid phone number.' })
+        return
+      }
+      
+      if (!formData.destination) {
+        setAlert({ type: 'error', message: 'Please select a destination.' })
+        return
+      }
+      
+      if (!formData.startDate) {
+        setAlert({ type: 'error', message: 'Please select a start date.' })
+        return
+      }
+      
+      if (formData.activities.length === 0 && !formData.otherActivity.trim()) {
+        setAlert({ type: 'error', message: 'Please select at least one activity or specify other interests.' })
+        return
+      }
+      
+      if (!formData.budgetRange) {
+        setAlert({ type: 'error', message: 'Please select a budget range.' })
+        return
+      }
+      
+      if (!formData.accommodation) {
+        setAlert({ type: 'error', message: 'Please select accommodation preference.' })
+        return
+      }
+      
+      if (!formData.transportation) {
+        setAlert({ type: 'error', message: 'Please select transportation preference.' })
+        return
+      }
+      
+      if (!formData.agreement) {
+        setAlert({ type: 'error', message: 'Please agree to be contacted regarding your custom itinerary request.' })
+        return
+      }
+
+      // Import BookingService
+      const { BookingService } = await import('@/lib/supabase')
+      
       // Prepare booking data
       const bookingData = {
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
-        tourType: 'Custom Tour',
+        tourType: 'custom' as const,
         startDate: formData.startDate?.toISOString().split('T')[0],
         endDate: formData.endDate?.toISOString().split('T')[0],
-        numberOfGuests: formData.numberOfGuests,
-        budgetRange: formData.budgetRange,
-        interests: formData.interests,
-        destinations: formData.destinations,
+        numberOfGuests: formData.adults + formData.children,
+        budgetRange: formData.budgetRange as any,
+        destination: formData.destination,
+        adults: formData.adults,
+        children: formData.children,
+        activities: formData.activities,
+        otherActivity: formData.otherActivity,
+        accommodation: formData.accommodation,
+        transportation: formData.transportation,
+        tourGuide: formData.tourGuide,
+        specialRequests: formData.specialRequests,
         additionalNotes: document.querySelector('textarea')?.value || ''
       }
 
-      // Send to API
-      const response = await fetch('/api/booking', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingData)
-      })
+      console.log('🔍 Submitting booking data:', bookingData)
 
-      const result = await response.json()
+      // Submit using BookingService
+      const result = await BookingService.createBooking(bookingData)
 
       if (result.success) {
+        console.log('✅ Booking successful, showing success alert')
+        setShowSuccessAlert(true)
         setAlert({ 
           type: 'success', 
-          message: `Request Submitted! Booking ID: ${result.data.bookingId}. Status: ${result.data.status}. We will contact you within ${result.data.estimatedResponseTime}.` 
+          message: `Request Submitted! Booking ID: ${result.data?.bookingId || 'Pending'}. Status: ${result.data?.status || 'pending'}. We will contact you within ${result.data?.estimatedResponseTime || '24 hours'}.` 
         })
         handleCancel()
+        
+        // Hide success alert after 10 seconds
+        setTimeout(() => {
+          setShowSuccessAlert(false)
+          console.log('🔒 Hiding success alert after 10 seconds')
+        }, 10000)
       } else {
+        console.log('❌ Booking failed:', result.message)
         setAlert({ type: 'error', message: result.message || 'Something went wrong. Please try again.' })
       }
     } catch (error) {
@@ -150,14 +244,35 @@ export default function Custom() {
     <div className="relative">
       <Header />
       
-      {/* Alert Portal - Renders directly to body */}
-      {alert && <AlertPortal type={alert.type} message={alert.message} />}
+      {/* Success Alert - Shadcn Alert */}
+      {showSuccessAlert && (
+        <div className="fixed top-20 right-4 z-[9999] max-w-md">
+          <Alert className="bg-green-50 border-green-200 text-green-800 shadow-lg">
+            <CheckCircledIcon className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-700">
+              {alert?.message}
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+      
+      {/* Regular Alert Portal */}
+      {alert && !showSuccessAlert && <AlertPortal type={alert.type} message={alert.message} />}
+      
+      {/* Test Button - Remove this in production */}
+      <button
+        onClick={testSuccessAlert}
+        className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600 z-40 text-sm"
+        style={{ display: 'none' }} /* Hidden by default, change to block to test */
+      >
+        Test Success Alert
+      </button>
       
       {/* Custom Hero Section */}
       <section className="hero-custom">
         <div className="hero-content">
           <h1 className="font-primary text-[64px] font-black mb-5 leading-tight tracking-[-1.5px]">
-            Design Your Dream Tour
+            Plan Your Bohol Itinerary
           </h1>
           <p className="font-primary text-xl font-normal leading-relaxed mb-10 text-gray-300">
             Tell us your pereferences and we'll create a personalized iterinary for you
@@ -202,58 +317,79 @@ export default function Custom() {
               </div>
             </div>
 
-            {/* Step 1: Contact Information */}
+            {/* Step 1: Trip Details */}
             {currentStep === 1 && (
               <ContactStep
                 formData={{
-                  fullName: formData.fullName,
-                  email: formData.email,
-                  phone: formData.phone
+                  destination: formData.destination,
+                  startDate: formData.startDate,
+                  endDate: formData.endDate,
+                  adults: formData.adults,
+                  children: formData.children
                 }}
                 onInputChange={handleInputChange}
+                onDateChange={handleDateChange}
+                onGuestChange={handleGuestChange}
                 onContinue={handleContinue}
                 onCancel={handleCancel}
                 showAlert={showAlert}
               />
             )}
 
-            {/* Step 2: Trip Details */}
+            {/* Step 2: Activities / Interests */}
             {currentStep === 2 && (
+              <InterestsStep
+                formData={{
+                  activities: formData.activities,
+                  otherActivity: formData.otherActivity
+                }}
+                onInputChange={handleInputChange}
+                onActivitiesChange={handleActivitiesChange}
+                onContinue={handleContinue}
+                onBack={handleBack}
+                showAlert={showAlert}
+              />
+            )}
+
+            {/* Step 3: Budget & Travel Preferences */}
+            {currentStep === 3 && (
               <TripDetailsStep
                 formData={{
-                  startDate: formData.startDate,
-                  endDate: formData.endDate,
-                  numberOfGuests: formData.numberOfGuests,
-                  budgetRange: formData.budgetRange
+                  budgetRange: formData.budgetRange,
+                  accommodation: formData.accommodation,
+                  transportation: formData.transportation,
+                  tourGuide: formData.tourGuide,
+                  specialRequests: formData.specialRequests
                 }}
-                onDateChange={handleDateChange}
                 onInputChange={handleInputChange}
                 onContinue={handleContinue}
                 onBack={handleBack}
-                isClient={isClient}
                 showAlert={showAlert}
               />
             )}
 
-            {/* Step 3: Your Interests */}
-            {currentStep === 3 && (
-              <InterestsStep
-                formData={{
-                  interests: formData.interests,
-                  destinations: formData.destinations
-                }}
-                onInterestsChange={handleInterestsChange}
-                onDestinationsChange={handleDestinationsChange}
-                onContinue={handleContinue}
-                onBack={handleBack}
-                showAlert={showAlert}
-              />
-            )}
-
-            {/* Step 4: Review & Submit */}
+            {/* Step 4: Contact Information */}
             {currentStep === 4 && (
               <ReviewStep
-                formData={formData}
+                formData={{
+                  fullName: formData.fullName,
+                  email: formData.email,
+                  phone: formData.phone,
+                  agreement: formData.agreement,
+                  destination: formData.destination,
+                  startDate: formData.startDate,
+                  endDate: formData.endDate,
+                  adults: formData.adults,
+                  children: formData.children,
+                  activities: formData.activities,
+                  otherActivity: formData.otherActivity,
+                  budgetRange: formData.budgetRange,
+                  accommodation: formData.accommodation,
+                  transportation: formData.transportation,
+                  tourGuide: formData.tourGuide,
+                  specialRequests: formData.specialRequests
+                }}
+                onInputChange={handleInputChange}
                 onSubmit={handleSubmitRequest}
                 onBack={handleBack}
                 showAlert={showAlert}

@@ -53,11 +53,21 @@ export default function BookingsPage() {
           customer: booking.full_name || 'Unknown',
           email: booking.email,
           tour: booking.tour_type || 'Unknown Tour',
-          tourId: booking.tour_id || 0,
+          destination: booking.destination || '',
           date: booking.start_date || new Date().toISOString().split('T')[0],
+          endDate: booking.end_date || '',
           status: booking.status,
           amount: String(booking.total_price || '₱0'),
           participants: booking.number_of_guests || 1,
+          adults: booking.adults || 0,
+          children: booking.children || 0,
+          travelType: booking.travel_type || '',
+          activities: booking.activities || [],
+          otherActivity: booking.other_activity || '',
+          accommodation: booking.accommodation || '',
+          transportation: booking.transportation || '',
+          tourGuide: booking.tour_guide || '',
+          specialRequests: booking.special_requests || '',
           createdAt: booking.created_at,
           updatedAt: booking.updated_at
         }))
@@ -118,6 +128,7 @@ export default function BookingsPage() {
         booking.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
         booking.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         booking.tour.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.destination.toLowerCase().includes(searchTerm.toLowerCase()) ||
         booking.id.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
@@ -352,9 +363,10 @@ export default function BookingsPage() {
                 <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100/80 border-b border-gray-200">
                   <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Booking ID</TableHead>
                   <TableHead className="w-[200px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Customer</TableHead>
-                  <TableHead className="w-[180px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Tour</TableHead>
+                  <TableHead className="w-[150px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Destination</TableHead>
+                  <TableHead className="w-[150px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Tour</TableHead>
                   <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Date</TableHead>
-                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Participants</TableHead>
+                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Guests</TableHead>
                   <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Amount</TableHead>
                   <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Status</TableHead>
                   <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Actions</TableHead>
@@ -378,15 +390,28 @@ export default function BookingsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="py-4 px-6">
+                      <div className="text-gray-700">{booking.destination}</div>
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
                       <div className="text-gray-700">{booking.tour}</div>
                     </TableCell>
                     <TableCell className="py-4 px-6">
-                      <div className="text-gray-700">{booking.date}</div>
+                      <div>
+                        <div className="text-gray-700">{booking.date}</div>
+                        {booking.endDate && (
+                          <div className="text-sm text-gray-500">to {booking.endDate}</div>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="py-4 px-6 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <Users className="h-4 w-4 text-gray-500" />
                         <span className="text-gray-700">{booking.participants}</span>
+                        {booking.adults > 0 && booking.children > 0 && (
+                          <div className="text-xs text-gray-500">
+                            {booking.adults}A {booking.children}C
+                          </div>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="py-4 px-6">

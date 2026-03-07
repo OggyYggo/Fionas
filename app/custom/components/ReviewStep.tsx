@@ -7,47 +7,76 @@ interface ReviewStepProps {
     fullName: string
     email: string
     phone: string
+    agreement: boolean
+    destination: string
     startDate: Date | null
     endDate: Date | null
-    numberOfGuests: string
+    adults: number
+    children: number
+    activities: string[]
+    otherActivity: string
     budgetRange: string
-    interests: string[]
-    destinations: string[]
+    accommodation: string
+    transportation: string
+    tourGuide: string
+    specialRequests: string
   }
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   onSubmit: () => void
   onBack: () => void
   showAlert?: (message: string) => void
 }
 
-export default function ReviewStep({ formData, onSubmit, onBack, showAlert }: ReviewStepProps) {
+export default function ReviewStep({ 
+  formData, 
+  onInputChange,
+  onSubmit, 
+  onBack, 
+  showAlert 
+}: ReviewStepProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errors, setErrors] = useState<{[key: string]: string}>({})
 
-  const handleSubmit = async () => {
-    // Basic validation before submission
-    if (!formData.fullName || !formData.email || !formData.phone) {
+  const validateAndSubmit = () => {
+    const newErrors: {[key: string]: string} = {}
+    
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Full name is required'
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email address is required'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address'
+    }
+    
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required'
+    } else {
+      // More lenient phone validation - just check if it starts with +63 and has reasonable length
+      const cleanPhone = formData.phone.replace(/\s/g, '')
+      if (!cleanPhone.startsWith('+63') || cleanPhone.length < 12) {
+        newErrors.phone = 'Please enter a valid Philippine phone number'
+      }
+    }
+    
+    if (!formData.agreement) {
+      newErrors.agreement = 'You must agree to be contacted'
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
       if (showAlert) {
-        showAlert('Missing contact information. Please go back and fill in all required fields.')
+        showAlert('Please fill in all required contact information correctly.')
       }
       return
     }
     
-    if (!formData.startDate) {
-      if (showAlert) {
-        showAlert('Missing trip details. Please select a start date.')
-      }
-      return
-    }
-    
-    if (formData.interests.length === 0) {
-      if (showAlert) {
-        showAlert('Please select at least one interest.')
-      }
-      return
-    }
-    
+    setErrors({})
     setIsSubmitting(true)
+    
     try {
-      await onSubmit()
+      onSubmit()
     } catch (error) {
       if (showAlert) {
         showAlert('Submission failed. Please try again.')
@@ -56,136 +85,236 @@ export default function ReviewStep({ formData, onSubmit, onBack, showAlert }: Re
       setIsSubmitting(false)
     }
   }
-  const interests = [
-    { id: 'beaches', name: 'Beaches & Islands', icon: '🏖️' },
-    { id: 'nature', name: 'Nature & Wildlife', icon: '🌿' },
-    { id: 'adventure', name: 'Adventure Activities', icon: '🎯' },
-    { id: 'cultural', name: 'Cultural Sites', icon: '🏛️' },
-    { id: 'diving', name: 'Diving & Snorkeling', icon: '🤿' },
-    { id: 'food', name: 'Food Tours', icon: '🍽️' },
-    { id: 'photography', name: 'Photography', icon: '📸' },
-    { id: 'relaxation', name: 'Relaxation', icon: '🧘' }
-  ]
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\s/g, '')
+    
+    // Remove any non-digit characters except +
+    value = value.replace(/[^\d+]/g, '')
+    
+    // Ensure it starts with +63
+    if (!value.startsWith('+63')) {
+      if (value.startsWith('63')) {
+        value = '+63' + value.slice(2)
+      } else if (value.startsWith('+')) {
+        value = '+63' + value.slice(1)
+      } else {
+        value = '+63' + value
+      }
+    }
+    
+    // Limit to +63 + 10 digits (total 13 characters)
+    if (value.length > 13) {
+      value = value.slice(0, 13)
+    }
+    
+    const syntheticEvent = {
+      target: {
+        name: 'phone',
+        value: value
+      }
+    } as React.ChangeEvent<HTMLInputElement>
+    
+    onInputChange(syntheticEvent)
+  }
+
+  const calculateTripDuration = () => {
+    if (!formData.startDate || !formData.endDate) {
+      return 0
+    }
+    
+    const start = new Date(formData.startDate)
+    const end = new Date(formData.endDate)
+    const diffTime = Math.abs(end.getTime() - start.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
+    return diffDays
+  }
+
+  const getBudgetLabel = () => {
+    switch(formData.budgetRange) {
+      case 'budget': return 'Budget (₱2,000 – ₱5,000 / person)'
+      case 'standard': return 'Standard (₱5,000 – ₱10,000 / person)'
+      case 'premium': return 'Premium (₱10,000+ / person)'
+      default: return formData.budgetRange
+    }
+  }
+
+  const tripDuration = calculateTripDuration()
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8">
-      <h2 className="text-2xl font-semibold mb-6">Review Your Tour Request</h2>
-      <p className="text-gray-600 mb-8">Please review your information before submitting your request.</p>
-      
-      {/* Contact Information */}
+    <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
       <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800">Contact Information</h3>
-        <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-          <div className="flex justify-between">
-            <span className="text-gray-600">Full Name:</span>
-            <span className="font-medium">{formData.fullName}</span>
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Your Contact Information</h2>
+        <p className="text-gray-600">Enter your contact details so we can send your personalized Bohol itinerary.</p>
+      </div>
+      
+      <form className="space-y-8">
+        {/* Contact Information */}
+        <div className="space-y-6">
+          {/* Full Name */}
+          <div className="space-y-2">
+            <label className="block text-gray-700 font-semibold text-base">Full Name *</label>
+            <input
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={onInputChange}
+              className={`w-full px-5 py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-gray-700 bg-white shadow-sm hover:shadow-md ${
+                errors.fullName ? 'border-red-400 bg-red-50' : 'border-gray-200'
+              }`}
+              placeholder="Enter your full name"
+            />
+            {errors.fullName && (
+              <p className="mt-2 text-sm text-red-500 flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {errors.fullName}
+              </p>
+            )}
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Email:</span>
-            <span className="font-medium">{formData.email}</span>
+
+          {/* Email Address */}
+          <div className="space-y-2">
+            <label className="block text-gray-700 font-semibold text-base">Email Address *</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={onInputChange}
+              className={`w-full px-5 py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-gray-700 bg-white shadow-sm hover:shadow-md ${
+                errors.email ? 'border-red-400 bg-red-50' : 'border-gray-200'
+              }`}
+              placeholder="your.email@example.com"
+            />
+            {errors.email && (
+              <p className="mt-2 text-sm text-red-500 flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {errors.email}
+              </p>
+            )}
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Phone:</span>
-            <span className="font-medium">{formData.phone}</span>
+
+          {/* Phone Number */}
+          <div className="space-y-2">
+            <label className="block text-gray-700 font-semibold text-base">Phone Number *</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handlePhoneChange}
+              className={`w-full px-5 py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-gray-700 bg-white shadow-sm hover:shadow-md ${
+                errors.phone ? 'border-red-400 bg-red-50' : 'border-gray-200'
+              }`}
+              placeholder="+63 912 345 6789"
+            />
+            <p className="text-sm text-gray-500">Format: +63 XXX XXX XXXX (Philippines)</p>
+            {errors.phone && (
+              <p className="mt-2 text-sm text-red-500 flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {errors.phone}
+              </p>
+            )}
           </div>
         </div>
-      </div>
 
-      {/* Trip Details */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800">Trip Details</h3>
-        <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-          <div className="flex justify-between">
-            <span className="text-gray-600">Start Date:</span>
-            <span className="font-medium">
-              {formData.startDate ? formData.startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Not selected'}
+        {/* Agreement Checkbox */}
+        <div className="space-y-2">
+          <label className="flex items-start space-x-3 cursor-pointer">
+            <input
+              type="checkbox"
+              name="agreement"
+              checked={formData.agreement}
+              onChange={onInputChange}
+              className={`w-5 h-5 text-teal-600 border-2 rounded focus:ring-teal-500 focus:ring-2 mt-1 ${
+                errors.agreement ? 'border-red-400' : 'border-gray-300'
+              }`}
+            />
+            <span className={`text-sm leading-relaxed ${
+              errors.agreement ? 'text-red-600' : 'text-gray-700'
+            }`}>
+              I agree to be contacted regarding my custom itinerary request.
             </span>
-          </div>
-          {formData.endDate && (
+          </label>
+          {errors.agreement && (
+            <p className="mt-2 text-sm text-red-500 flex items-center">
+              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              {errors.agreement}
+            </p>
+          )}
+        </div>
+
+        {/* Trip Summary */}
+        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Trip Summary</h3>
+          <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-gray-600">End Date:</span>
-              <span className="font-medium">
-                {formData.endDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              <span className="text-gray-600">Destination:</span>
+              <span className="font-medium text-gray-800">{formData.destination}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Dates:</span>
+              <span className="font-medium text-gray-800">
+                {formData.startDate?.toLocaleDateString() || 'Not selected'} 
+                {formData.endDate && ` - ${formData.endDate.toLocaleDateString()}`}
+                {tripDuration > 0 && ` (${tripDuration} days)`}
               </span>
             </div>
-          )}
-          <div className="flex justify-between">
-            <span className="text-gray-600">Number of Guests:</span>
-            <span className="font-medium">{formData.numberOfGuests}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Budget Range:</span>
-            <span className="font-medium">{formData.budgetRange}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Interests */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800">Your Interests</h3>
-        <div className="bg-gray-50 rounded-lg p-4">
-          <div className="flex flex-wrap gap-2">
-            {formData.interests.map((interestId) => {
-              const interest = interests.find(i => i.id === interestId)
-              return interest ? (
-                <span key={interest.id} className="bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm font-medium">
-                  {interest.icon} {interest.name}
-                </span>
-              ) : null
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Destinations */}
-      {formData.destinations.length > 0 && (
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold mb-4 text-gray-800">Must-visit Destinations</h3>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex flex-wrap gap-2">
-              {formData.destinations.map((destination) => (
-                <span key={destination} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                  {destination}
-                </span>
-              ))}
+            <div className="flex justify-between">
+              <span className="text-gray-600">Guests:</span>
+              <span className="font-medium text-gray-800">
+                {formData.adults} adults{formData.children > 0 && `, ${formData.children} children`}
+              </span>
             </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Budget:</span>
+              <span className="font-medium text-gray-800">{getBudgetLabel()}</span>
+            </div>
+            {formData.activities.length > 0 && (
+              <div>
+                <span className="text-gray-600">Activities:</span>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {formData.activities.slice(0, 3).map((activity) => (
+                    <span key={activity} className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-medium">
+                      {activity}
+                    </span>
+                  ))}
+                  {formData.activities.length > 3 && (
+                    <span className="bg-gray-200 text-gray-600 px-2 py-1 rounded-full text-xs font-medium">
+                      +{formData.activities.length - 3} more
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      )}
 
-      {/* Additional Notes */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800">Additional Notes (Optional)</h3>
-        <textarea
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"
-          rows={4}
-          placeholder="Any special requests or additional information..."
-        />
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex space-x-4">
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-        >
-          Back
-        </button>
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="flex-1 px-6 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? 'Submitting...' : 'Submit Request'}
-          {!isSubmitting && (
-            <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-          )}
-        </button>
-      </div>
+        {/* Action Buttons */}
+        <div className="flex space-x-4 mt-10 pt-6 border-t border-gray-100">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex-1 px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 text-base"
+          >
+            Back
+          </button>
+          <button
+            type="button"
+            onClick={validateAndSubmit}
+            disabled={isSubmitting}
+            className="flex-1 px-8 py-4 bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-xl font-semibold hover:from-teal-700 hover:to-teal-800 transition-all duration-200 text-base shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Request'}
+          </button>
+        </div>
+      </form>
     </div>
   )
 }
