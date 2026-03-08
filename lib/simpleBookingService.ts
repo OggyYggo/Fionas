@@ -39,11 +39,21 @@ export class SimpleBookingService {
         customer: booking.full_name || booking.customer_name || 'Unknown',
         email: booking.email,
         tour: booking.tour_type || booking.tour_name || 'Unknown Tour',
-        tourId: booking.tour_id || 0,
+        destination: booking.destination || '',
         date: booking.start_date || booking.booking_date || new Date().toISOString().split('T')[0],
+        endDate: booking.end_date || '',
         status: booking.status,
         amount: booking.total_price || booking.amount || '₱0',
         participants: booking.number_of_guests || booking.participants || 1,
+        adults: booking.adults || 0,
+        children: booking.children || 0,
+        tourType: booking.tour_type || '',
+        activities: booking.activities || [],
+        otherActivity: booking.other_activity || '',
+        accommodation: booking.accommodation || '',
+        transportation: booking.transportation || '',
+        tourGuide: booking.tour_guide || '',
+        specialRequests: booking.special_requests || '',
         createdAt: booking.created_at,
         updatedAt: booking.updated_at
       }))
@@ -72,11 +82,21 @@ export class SimpleBookingService {
         customer: data.full_name || data.customer_name || 'Unknown',
         email: data.email,
         tour: data.tour_type || data.tour_name || 'Unknown Tour',
-        tourId: data.tour_id || 0,
+        destination: data.destination || '',
         date: data.start_date || data.booking_date || new Date().toISOString().split('T')[0],
+        endDate: data.end_date || '',
         status: data.status,
         amount: data.total_price || data.amount || '₱0',
         participants: data.number_of_guests || data.participants || 1,
+        adults: data.adults || 0,
+        children: data.children || 0,
+        tourType: data.tour_type || '',
+        activities: data.activities || [],
+        otherActivity: data.other_activity || '',
+        accommodation: data.accommodation || '',
+        transportation: data.transportation || '',
+        tourGuide: data.tour_guide || '',
+        specialRequests: data.special_requests || '',
         createdAt: data.created_at,
         updatedAt: data.updated_at
       }
@@ -96,7 +116,6 @@ export class SimpleBookingService {
         full_name: bookingData.customer,
         email: bookingData.email,
         tour_type: bookingData.tour,
-        tour_id: bookingData.tourId,
         start_date: bookingData.date,
         status: bookingData.status,
         total_price: bookingData.amount,
@@ -130,11 +149,21 @@ export class SimpleBookingService {
         customer: data.full_name || data.customer_name || 'Unknown',
         email: data.email,
         tour: data.tour_type || data.tour_name || 'Unknown Tour',
-        tourId: data.tour_id || 0,
+        destination: data.destination || '',
         date: data.start_date || data.booking_date || new Date().toISOString().split('T')[0],
+        endDate: data.end_date || '',
         status: data.status,
         amount: data.total_price || data.amount || '₱0',
         participants: data.number_of_guests || data.participants || 1,
+        adults: data.adults || 0,
+        children: data.children || 0,
+        tourType: data.tour_type || '',
+        activities: data.activities || [],
+        otherActivity: data.other_activity || '',
+        accommodation: data.accommodation || '',
+        transportation: data.transportation || '',
+        tourGuide: data.tour_guide || '',
+        specialRequests: data.special_requests || '',
         createdAt: data.created_at,
         updatedAt: data.updated_at
       }
@@ -155,7 +184,6 @@ export class SimpleBookingService {
       if (bookingData.customer) dbData.full_name = bookingData.customer
       if (bookingData.email) dbData.email = bookingData.email
       if (bookingData.tour) dbData.tour_type = bookingData.tour
-      if (bookingData.tourId) dbData.tour_id = bookingData.tourId
       if (bookingData.date) dbData.start_date = bookingData.date
       if (bookingData.status) dbData.status = bookingData.status
       if (bookingData.amount) dbData.total_price = bookingData.amount
@@ -189,11 +217,21 @@ export class SimpleBookingService {
         customer: data.full_name || data.customer_name || 'Unknown',
         email: data.email,
         tour: data.tour_type || data.tour_name || 'Unknown Tour',
-        tourId: data.tour_id || 0,
+        destination: data.destination || '',
         date: data.start_date || data.booking_date || new Date().toISOString().split('T')[0],
+        endDate: data.end_date || '',
         status: data.status,
         amount: data.total_price || data.amount || '₱0',
         participants: data.number_of_guests || data.participants || 1,
+        adults: data.adults || 0,
+        children: data.children || 0,
+        tourType: data.tour_type || '',
+        activities: data.activities || [],
+        otherActivity: data.other_activity || '',
+        accommodation: data.accommodation || '',
+        transportation: data.transportation || '',
+        tourGuide: data.tour_guide || '',
+        specialRequests: data.special_requests || '',
         createdAt: data.created_at,
         updatedAt: data.updated_at
       }

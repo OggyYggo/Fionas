@@ -27,6 +27,8 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
     price: tour?.price || '',
     tag: tour?.tag || 'Island Hopping',
     featured: tour?.featured || false,
+    gallery_urls: tour?.gallery_urls || [],
+    tour_type: tour?.tourType || 'Package',
     highlights: tour?.highlights || [],
     included: tour?.included || [],
     notIncluded: tour?.notIncluded || [],
@@ -58,10 +60,12 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
     }
   })
 
+  const [mainImages, setMainImages] = useState<File[]>([])
   const [imageFile, setImageFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showPricingInput, setShowPricingInput] = useState(false)
-  const [isImageUploading, setIsImageUploading] = useState(false)
+  const [isMainImageUploading, setIsMainImageUploading] = useState(false)
+  const [uploadType, setUploadType] = useState<'package' | 'destinations'>((tour?.tourType === 'Destinations' ? 'destinations' : 'package'))
 
   const formatPrice = (value: string): string => {
     // Remove all non-digit characters
@@ -76,17 +80,46 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
     setFormData(prev => ({ ...prev, price: formattedValue ? `₱${formattedValue}` : '' }))
   }
 
+  const handleUploadTypeChange = (value: 'package' | 'destinations') => {
+    setUploadType(value)
+    const tourType = value === 'destinations' ? 'Destinations' : 'Package'
+    setFormData(prev => ({ ...prev, tour_type: tourType }))
+    
+    // Clear excess images if switching to destinations (1 photo limit)
+    if (value === 'destinations' && mainImages.length > 1) {
+      setMainImages(prev => prev.slice(0, 1))
+    }
+  }
+
   const convertToWebP = async (file: File): Promise<File> => {
     return new Promise((resolve, reject) => {
+      // Skip conversion for small WebP files to improve performance
+      if (file.type === 'image/webp' && file.size < 2 * 1024 * 1024) {
+        resolve(file)
+        return
+      }
+      
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
       const img = new Image()
       
       img.onload = () => {
-        canvas.width = img.width
-        canvas.height = img.height
-        ctx?.drawImage(img, 0, 0)
+        // Limit maximum dimensions to improve performance
+        const maxWidth = 1920
+        const maxHeight = 1080
+        let { width, height } = img
         
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height)
+          width *= ratio
+          height *= ratio
+        }
+        
+        canvas.width = width
+        canvas.height = height
+        ctx?.drawImage(img, 0, 0, width, height)
+        
+        // Use lower quality for better performance
         canvas.toBlob((blob) => {
           if (blob) {
             const webpFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.webp'), {
@@ -96,11 +129,125 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
           } else {
             reject(new Error('Failed to convert to WebP'))
           }
-        }, 'image/webp', 0.9)
+        }, 'image/webp', 0.8) // Reduced quality from 0.9 to 0.8
       }
       
       img.onerror = () => reject(new Error('Failed to load image'))
       img.src = URL.createObjectURL(file)
+    })
+  }
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Validate file size
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Image size must be less than 10MB')
+        return
+      }
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('File must be an image')
+        return
+      }
+      
+      setIsMainImageUploading(true)
+      try {
+        // Convert to WebP if not already WebP
+        const processedFile = file.type === 'image/webp' ? file : await convertToWebP(file)
+        setImageFile(processedFile)
+        // Create preview URL
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setFormData(prev => ({ ...prev, image: reader.result as string }))
+          setIsMainImageUploading(false)
+        }
+        reader.readAsDataURL(processedFile)
+      } catch (error) {
+        console.error('Error processing image:', error)
+        setIsMainImageUploading(false)
+        alert('Failed to process image. Please try a different file.')
+      }
+    }
+  }
+
+  const handleMainImagesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length > 0) {
+      // Validate all files
+      const invalidFiles = files.filter(file => {
+        if (file.size > 10 * 1024 * 1024) {
+          alert(`File "${file.name}" is too large. Maximum size is 10MB.`)
+          return true
+        }
+        if (!file.type.startsWith('image/')) {
+          alert(`File "${file.name}" is not an image.`)
+          return true
+        }
+        return false
+      })
+      
+      if (invalidFiles.length > 0) return
+      
+      // Set limit based on upload type
+      const maxImages = uploadType === 'package' ? 5 : 1
+      const remainingSlots = maxImages - mainImages.length
+      const filesToProcess = files.slice(0, remainingSlots)
+      
+      if (files.length > remainingSlots) {
+        const limitText = uploadType === 'package' ? '5 photos for packages' : '1 photo for destinations'
+        alert(`You can only upload up to ${limitText}. Only the first ${remainingSlots} images will be processed.`)
+      }
+      
+      setIsMainImageUploading(true)
+      const processedFiles: File[] = []
+      
+      try {
+        // Process images in parallel for better performance
+        const processingPromises = filesToProcess.map(async (file) => {
+          // Convert to WebP if not already WebP
+          return file.type === 'image/webp' ? file : await convertToWebP(file)
+        })
+        
+        const processedResults = await Promise.all(processingPromises)
+        processedFiles.push(...processedResults)
+        
+        setMainImages(prev => [...prev, ...processedFiles])
+        
+        // Set the first image as the main image for backward compatibility
+        if (processedFiles.length > 0 && !formData.image) {
+          const reader = new FileReader()
+          reader.onloadend = () => {
+            setFormData(prev => ({ ...prev, image: reader.result as string }))
+          }
+          reader.readAsDataURL(processedFiles[0])
+        }
+      } catch (error) {
+        console.error('Error processing main images:', error)
+        alert('Failed to process some images. Please try again.')
+      } finally {
+        setIsMainImageUploading(false)
+      }
+    }
+  }
+
+  const removeMainImage = (index: number) => {
+    setMainImages(prev => {
+      const newImages = prev.filter((_, i) => i !== index)
+      
+      // Update the main image if the first image was removed
+      if (index === 0 && newImages.length > 0) {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setFormData(prev => ({ ...prev, image: reader.result as string }))
+        }
+        reader.readAsDataURL(newImages[0])
+      } else if (index === 0 && newImages.length === 0) {
+        setFormData(prev => ({ ...prev, image: '' }))
+      }
+      
+      return newImages
     })
   }
 
@@ -149,24 +296,29 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
     const submitData = { ...formData }
     console.log('🔍 Submit data prepared:', submitData)
     
-    // If there's a new image file, handle upload
-    if (imageFile) {
-      console.log('🔍 Uploading image file:', imageFile.name)
+    // Handle main images upload (up to 5 photos)
+    if (mainImages.length > 0) {
+      console.log('🔍 Uploading main images:', mainImages.length, 'files')
       try {
         const { SimpleTourService } = await import('@/lib/simpleTourService')
-        const imageUrl = await SimpleTourService.saveImage(imageFile)
-        submitData.image = imageUrl
-        console.log('✅ Image uploaded successfully:', imageUrl)
+        
+        // Upload images in parallel for better performance
+        const uploadPromises = mainImages.map(file => SimpleTourService.saveImage(file))
+        const mainImageUrls = await Promise.all(uploadPromises)
+        
+        submitData.image = mainImageUrls[0] // Use first image as primary
+        submitData.gallery_urls = mainImageUrls.slice(1) // Use remaining as gallery
+        console.log('✅ Main images uploaded successfully:', mainImageUrls)
       } catch (error) {
-        console.error('❌ Error uploading image:', error)
-        // If image upload fails, use a placeholder instead of blocking the entire form
+        console.error('❌ Error uploading main images:', error)
         console.log('🔄 Using placeholder image instead...')
         submitData.image = `https://via.placeholder.com/300x200?text=${encodeURIComponent(formData.title || 'Tour')}`
-        alert('Image upload failed. Using placeholder image. You can update the image later.')
+        submitData.gallery_urls = []
+        alert('Main images upload failed. Using placeholder image. You can update the images later.')
       }
     } else if (!submitData.image) {
       // Use placeholder if no image provided
-      console.log('🔄 No image provided, using placeholder...')
+      console.log('🔄 No main image provided, using placeholder...')
       submitData.image = `https://via.placeholder.com/300x200?text=${encodeURIComponent(formData.title || 'Tour')}`
     }
     
@@ -174,43 +326,14 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
     onSubmit(submitData)
   }
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setIsImageUploading(true)
-      try {
-        // Convert to WebP if not already WebP
-        const processedFile = file.type === 'image/webp' ? file : await convertToWebP(file)
-        setImageFile(processedFile)
-        // Create preview URL
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          setFormData(prev => ({ ...prev, image: reader.result as string }))
-          setIsImageUploading(false)
-        }
-        reader.readAsDataURL(processedFile)
-      } catch (error) {
-        console.error('Error converting image to WebP:', error)
-        setIsImageUploading(false)
-        // Fallback to original file if conversion fails
-        setImageFile(file)
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          setFormData(prev => ({ ...prev, image: reader.result as string }))
-        }
-        reader.readAsDataURL(file)
-      }
-    }
-  }
-
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8">
+    <div className="w-full space-y-8 pt-[50px] pb-[50px]">
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Information */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
           <h2 className="text-xl font-semibold text-gray-900 pb-2 border-b border-gray-100">Basic Information</h2>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
               <Label htmlFor="title" className="text-sm font-medium text-gray-700">Tour Title</Label>
               <Input
@@ -266,10 +389,10 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-3">
+            <div className="space-y-3 flex-1">
               <Label htmlFor="duration" className="text-sm font-medium text-gray-700">Duration</Label>
               <Select value={formData.duration} onValueChange={(value) => setFormData(prev => ({ ...prev, duration: value }))}>
-                <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500 w-full">
                   <SelectValue placeholder="Select duration" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-300 shadow-lg">
@@ -282,22 +405,22 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
               </Select>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 flex-1">
               <Label htmlFor="maxPeople" className="text-sm font-medium text-gray-700">Max People</Label>
               <Input
                 id="maxPeople"
                 value={formData.maxPeople}
                 onChange={(e) => setFormData(prev => ({ ...prev, maxPeople: e.target.value }))}
                 placeholder="e.g., 10"
-                className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500 w-full"
                 required
               />
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 flex-1">
               <Label htmlFor="tag" className="text-sm font-medium text-gray-700">Category</Label>
               <Select value={formData.tag} onValueChange={(value) => setFormData(prev => ({ ...prev, tag: value }))}>
-                <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500 w-full">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-300 shadow-lg">
@@ -315,55 +438,106 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
 
         {/* Tour Image */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
-          <h2 className="text-xl font-semibold text-gray-900 pb-2 border-b border-gray-100">Tour Image</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-gray-900 pb-2 border-b border-gray-100">Tour Images</h2>
+            <div className="flex items-center space-x-3">
+              {/* Upload Type Dropdown */}
+              <div className="flex items-center space-x-2">
+                <Label className="text-sm font-medium text-gray-700">Type:</Label>
+                <Select value={uploadType} onValueChange={handleUploadTypeChange}>
+                  <SelectTrigger className="h-8 w-32 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-gray-300 shadow-lg">
+                    <SelectItem value="package">Package</SelectItem>
+                    <SelectItem value="destinations">Destinations</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200">
+                {mainImages.length}/{uploadType === 'package' ? '5' : '1'} photos
+              </div>
+            </div>
+          </div>
           
           <div className="space-y-4">
-            <div className="flex items-center justify-center w-full">
-              <label className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                {isImageUploading && (
-                  <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center rounded-lg">
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                      <span className="text-sm text-gray-600">Processing image...</span>
-                    </div>
-                  </div>
-                )}
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <svg className="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                  </svg>
-                  <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                  <p className="text-xs text-gray-500">PNG, JPG, GIF, WebP up to 10MB (auto-converted to WebP)</p>
-                </div>
-                <input
-                  id="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                  disabled={isImageUploading}
-                />
-              </label>
-            </div>
+            <div className="flex flex-col items-center justify-center w-full">
+              <input
+                ref={fileInputRef}
+                id="image"
+                type="file"
+                accept="image/*"
+                multiple={uploadType === 'package'}
+                onChange={handleMainImagesChange}
+                className="hidden"
+                disabled={isMainImageUploading}
+              />
               
-            {formData.image && (
-              <div className="relative">
-                <img 
-                  src={formData.image} 
-                  alt="Tour preview" 
-                  className="w-full h-64 object-cover rounded-lg shadow-md"
-                />
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
-                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            )}
+              {/* Show upload area if under limit */}
+              {mainImages.length < (uploadType === 'package' ? 5 : 1) && (
+                <label htmlFor="image" className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50/50 hover:bg-gray-100 hover:border-blue-400 transition-all duration-200 group">
+                  {isMainImageUploading && (
+                    <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center rounded-xl">
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent"></div>
+                        <span className="text-sm font-medium text-gray-700">
+                          {mainImages.length > 0 ? 'Processing additional images...' : 'Processing images...'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          Converting to WebP and optimizing...
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex flex-col items-center justify-center pt-6 pb-8 px-4">
+                    <div className="mb-4 p-3 bg-blue-50 rounded-full group-hover:bg-blue-100 transition-colors">
+                      <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                    </div>
+                    <p className="mb-2 text-sm font-medium text-gray-700"><span className="text-blue-600">Click to upload</span> or drag and drop</p>
+                    <p className="text-xs text-gray-500 text-center">PNG, JPG, GIF, WebP up to 10MB each<br/><span className="text-blue-600 font-medium">Maximum {uploadType === 'package' ? '5 photos' : '1 photo'} • Auto-converted to WebP</span></p>
+                  </div>
+                </label>
+              )}
+
+              {/* Display uploaded main images */}
+              {mainImages.length > 0 && (
+                <div className="space-y-3 w-full">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-gray-700">Uploaded Tour Images</p>
+                    <span className="text-xs text-blue-600 font-medium">{mainImages.length} photos</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                    {mainImages.map((file, index) => (
+                      <div key={`main-${index}`} className="relative group">
+                        <div className="aspect-square rounded-lg overflow-hidden border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
+                          <img 
+                            src={URL.createObjectURL(file)} 
+                            alt={`Tour image ${index + 1}`} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeMainImage(index)}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors shadow-lg"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                        {index === 0 && (
+                          <div className="absolute bottom-1 left-1 bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                            Primary
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -678,20 +852,20 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end space-x-4 pt-6">
+        <div className="flex justify-end gap-6 pt-6">
           <Button 
             type="button" 
             variant="outline" 
             onClick={onCancel} 
             disabled={isLoading}
-            className="h-11 px-6 border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="h-11 px-8 border-gray-300 text-gray-700 hover:bg-gray-50 min-w-[100px]"
           >
             Cancel
           </Button>
           <Button 
             type="submit" 
             disabled={isLoading}
-            className="h-11 px-6 bg-blue-600 hover:bg-blue-700 text-white"
+            className="h-11 px-8 bg-blue-600 hover:bg-blue-700 text-white min-w-[120px]"
           >
             {isLoading ? 'Saving...' : (tour ? 'Update Tour' : 'Create Tour')}
           </Button>

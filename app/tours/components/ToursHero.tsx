@@ -5,7 +5,7 @@ import { toursAnimations } from '@/animations/toursAnimations'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, Filter } from 'lucide-react'
+import { Search, Filter, Image } from 'lucide-react'
 
 // Custom debounce function
 function debounce<T extends (...args: any[]) => any>(
@@ -22,16 +22,19 @@ function debounce<T extends (...args: any[]) => any>(
 interface ToursHeroProps {
   onSearch: (searchTerm: string) => void
   onCategoryChange: (category: string) => void
+  onUploadTypeChange?: (uploadType: 'package' | 'destinations') => void
 }
 
 export default function ToursHero({
   onSearch,
   onCategoryChange,
+  onUploadTypeChange,
 }: ToursHeroProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] =
     useState<string>('All Categories')
   const [isSearching, setIsSearching] = useState(false)
+  const [uploadType, setUploadType] = useState<'package' | 'destinations'>('package')
 
   // Debounced search to reduce API calls
   const debouncedSearch = useCallback(
@@ -53,13 +56,18 @@ export default function ToursHero({
     onCategoryChange(value)
   }
 
+  const handleUploadTypeChange = (value: 'package' | 'destinations') => {
+    setUploadType(value)
+    onUploadTypeChange?.(value)
+  }
+
   useEffect(() => {
     toursAnimations()
   }, [])
 
   return (
-    <section className="relative min-h-[450px] bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
-      <div className="container max-w-6xl mx-auto px-5 py-20">
+    <section className="relative bg-gradient-to-br from-blue-600 to-purple-700 py-12">
+      <div className="container max-w-6xl mx-auto px-5">
         <h1 className="font-primary text-[64px] font-black mb-5 leading-tight tracking-[-1.5px] text-white text-center">
           Discover Our Amazing Tours
         </h1>

@@ -146,14 +146,56 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
               tours.map((tour) => (
                 <div key={tour.id} className="tour-card w-full mx-auto bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200 transition-all duration-300 reveal">
                   <div className="card-image relative h-[310px]">
-                    <Image 
-                      src={tour.image} 
-                      alt={tour.title} 
-                      fill
-                      className="object-cover" 
-                      loading="lazy"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
+                    {/* Main image or gallery */}
+                    {tour.gallery_urls && tour.gallery_urls.length > 0 ? (
+                      <div className="relative w-full h-full">
+                        {/* Main image */}
+                        <Image 
+                          src={tour.image} 
+                          alt={tour.title} 
+                          fill
+                          className="object-cover" 
+                          loading="lazy"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                        
+                        {/* Gallery thumbnails overlay */}
+                        <div className="absolute bottom-2 right-2 flex gap-1">
+                          {tour.gallery_urls.slice(0, 3).map((url, index) => (
+                            <div key={index} className="relative w-12 h-12 rounded-md overflow-hidden border-2 border-white shadow-md">
+                              <Image 
+                                src={url} 
+                                alt={`${tour.title} gallery ${index + 1}`}
+                                fill
+                                className="object-cover"
+                                sizes="48px"
+                              />
+                            </div>
+                          ))}
+                          {tour.gallery_urls.length > 3 && (
+                            <div className="w-12 h-12 rounded-md overflow-hidden border-2 border-white shadow-md bg-black/50 flex items-center justify-center">
+                              <span className="text-white text-xs font-bold">+{tour.gallery_urls.length - 3}</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Gallery indicator */}
+                        <div className="absolute top-4 right-4 bg-black/60 text-white py-1 px-2 rounded-full text-xs font-medium z-10">
+                          <i className="fas fa-images mr-1"></i>
+                          {tour.gallery_urls.length + 1} photos
+                        </div>
+                      </div>
+                    ) : (
+                      <Image 
+                        src={tour.image} 
+                        alt={tour.title} 
+                        fill
+                        className="object-cover" 
+                        loading="lazy"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    )}
+                    
                     {tour.featured && <span className="badge-featured absolute top-4 left-4 bg-warning text-white py-1 px-3 rounded-md text-xs font-bold z-10">⭐ Featured</span>}
                     <span className="tag absolute bottom-4 left-4 bg-white py-1 px-3 rounded-2xl text-xs text-gray-800 z-10">{tour.tag}</span>
                   </div>

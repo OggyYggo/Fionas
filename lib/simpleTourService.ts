@@ -98,7 +98,9 @@ export class SimpleTourService {
       return (data || []).map(tour => ({
         ...tour,
         maxPeople: tour.max_people,
-        notIncluded: tour.not_included
+        notIncluded: tour.not_included,
+        gallery_urls: tour.gallery_urls || [],
+        tourType: tour.tour_type || 'Package'
       }))
     } catch (error) {
       console.error('❌ Error in getAllTours:', error)
@@ -123,7 +125,9 @@ export class SimpleTourService {
       return {
         ...data,
         maxPeople: data.max_people,
-        notIncluded: data.not_included
+        notIncluded: data.not_included,
+        gallery_urls: data.gallery_urls || [],
+        tourType: data.tour_type || 'Package'
       }
     } catch (error) {
       console.error('❌ Error in getTourById:', error)
@@ -143,6 +147,8 @@ export class SimpleTourService {
         title: tourData.title,
         description: tourData.description,
         image: tourData.image,
+        gallery_urls: tourData.gallery_urls || [],
+        tour_type: tourData.tourType || 'Package',
         duration: tourData.duration,
         max_people: tourData.maxPeople,
         price: tourData.price,
@@ -180,7 +186,9 @@ export class SimpleTourService {
       return {
         ...data,
         maxPeople: data.max_people,
-        notIncluded: data.not_included
+        notIncluded: data.not_included,
+        gallery_urls: data.gallery_urls || [],
+        tourType: data.tour_type || 'Package'
       }
     } catch (error) {
       console.error('❌ SimpleTourService: Error creating tour:', error)
@@ -208,7 +216,7 @@ export class SimpleTourService {
       if (tourData.highlights) dbData.highlights = tourData.highlights
       if (tourData.included) dbData.included = tourData.included
       if (tourData.notIncluded) dbData.not_included = tourData.notIncluded
-      if (tourData.pricing) dbData.pricing = tourData.pricing
+      if (tourData.tourType) dbData.tour_type = tourData.tourType
 
       console.log('🔍 SimpleTourService: Prepared update data:', dbData)
 
@@ -236,7 +244,9 @@ export class SimpleTourService {
       return {
         ...data,
         maxPeople: data.max_people,
-        notIncluded: data.not_included
+        notIncluded: data.not_included,
+        gallery_urls: data.gallery_urls || [],
+        tourType: data.tour_type || 'Package'
       }
     } catch (error) {
       console.error('❌ SimpleTourService: Error in updateTour:', error)

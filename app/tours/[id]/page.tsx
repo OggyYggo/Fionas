@@ -91,25 +91,67 @@ export default function TourDetail() {
       <Header />
       
       <main className="min-h-screen bg-white">
-        {/* Hero Video */}
-        <div className="container mx-auto px-5" style={{maxWidth: '1440px'}}>
-          <div className="relative w-full h-[500px] overflow-hidden">
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="w-full h-full object-cover"
-              poster={tour.image}
-            >
-              <source src="/videos/Panglao Island Tour.MP4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-            {tour.featured && (
-              <span className="absolute top-6 left-6 bg-orange-500 text-white py-2 px-4 rounded-md text-sm font-bold flex items-center gap-2">
-                ⭐ Featured Tour
-              </span>
-            )}
+        {/* Gallery Section */}
+        <div className="container mx-auto px-5 py-8" style={{maxWidth: '1440px'}}>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-2 h-[400px]">
+            {/* Main Image */}
+            <div className="md:col-span-2 md:row-span-2 relative overflow-hidden rounded-lg">
+              <img
+                src={(tour as any).images?.[0] || tour.image}
+                alt="Main tour image"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
+              {tour.featured && (
+                <span className="absolute top-6 left-6 bg-orange-500 text-white py-2 px-4 rounded-md text-sm font-bold flex items-center gap-2">
+                  ⭐ Featured Tour
+                </span>
+              )}
+            </div>
+            
+            {/* Top Right Image */}
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src={(tour as any).images?.[1] || tour.image}
+                alt="Tour image 2"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            
+            {/* Bottom Right Images */}
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src={(tour as any).images?.[2] || tour.image}
+                alt="Tour image 3"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            
+            {/* Bottom Left Images */}
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src={(tour as any).images?.[3] || tour.image}
+                alt="Tour image 4"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            
+            <div className="relative overflow-hidden rounded-lg">
+              <div className="relative w-full h-full">
+                <img
+                  src={(tour as any).images?.[4] || tour.image}
+                  alt="Tour image 5"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+                {/* Overlay for "Show all photos" */}
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <button
+                    className="bg-white text-black hover:bg-gray-100 font-medium px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Show all photos
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
