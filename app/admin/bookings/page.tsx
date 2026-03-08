@@ -61,6 +61,7 @@ export default function BookingsPage() {
           participants: booking.number_of_guests || 1,
           adults: booking.adults || 0,
           children: booking.children || 0,
+          tourType: booking.tour_type || '',
           travelType: booking.travel_type || '',
           activities: booking.activities || [],
           otherActivity: booking.other_activity || '',

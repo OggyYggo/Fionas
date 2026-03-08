@@ -3,6 +3,8 @@ export interface Tour {
   title: string
   description: string
   image: string
+  gallery_urls?: string[] // Support for up to 5 photos
+  tourType?: 'Destinations' | 'Package'
   duration: string
   maxPeople: string
   price: string

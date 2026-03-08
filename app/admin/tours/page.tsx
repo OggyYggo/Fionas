@@ -175,9 +175,9 @@ export default function ToursPage() {
 
   if (showForm) {
     return (
-      <div className="space-y-6 pt-20">
-        <div className="flex items-center justify-center">
-          <div className="text-center">
+      <div className="space-y-6 pt-[30px]">
+        <div className="text-left">
+          <div className="text-left">
             <h1 className="text-3xl font-bold text-gray-900">
               {editingTour ? 'Edit Tour' : 'Add New Tour'}
             </h1>
@@ -311,7 +311,8 @@ export default function ToursPage() {
                   <TableHead className="w-[140px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Price</TableHead>
                   <TableHead className="w-[140px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Duration</TableHead>
                   <TableHead className="w-[140px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Category</TableHead>
-                  <TableHead className="w-[140px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Type</TableHead>
+                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Type</TableHead>
+                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Featured</TableHead>
                   <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Capacity</TableHead>
                   <TableHead className="w-[180px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Actions</TableHead>
                 </TableRow>
@@ -351,6 +352,20 @@ export default function ToursPage() {
                     <TableCell className="py-4 px-6">
                       <Badge variant="default" className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-md hover:shadow-lg transition-shadow duration-200 px-3 py-1">
                         {tour.tag}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
+                      <Badge 
+                        variant="default" 
+                        className={`border-0 shadow-md hover:shadow-lg transition-shadow duration-200 px-3 py-1 ${
+                          tour.tourType === 'Destinations' 
+                            ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white' 
+                            : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1">
+                          {tour.tourType || 'Package'}
+                        </div>
                       </Badge>
                     </TableCell>
                     <TableCell className="py-4 px-6">
