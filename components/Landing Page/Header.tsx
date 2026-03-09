@@ -26,7 +26,7 @@ export default function Header() {
       <nav className="navbar">
         <div className="container">
           <div className="logo">
-            <img src="/Logo.png" alt="Fiona Travel & Tours Logo" className="h-20 w-auto object-contain" />
+            <img src="/New Logo 02.svg" alt="Fiona Travel & Tours Logo" className="h-20 w-auto object-contain" />
             <div className="logo-text">
               <span className="brand-name font-bold text-gray-800 text-base">Fiona Travel & Tours</span>
               <span className="tagline text-xs text-gray-500">Your Bohol Adventure Partner</span>
@@ -34,12 +34,12 @@ export default function Header() {
           </div>
 
           <ul className="nav-links list-none flex gap-10">
-            <li><a href="/" className={`${isActive('/') ? 'active' : ''} no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal`}>Home</a></li>
-            <li><a href="/tours" className={`${isActive('/tours') ? 'active' : ''} no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal`}>Tours</a></li>
-            <li><a href="/custom" className={`${isActive('/custom') ? 'active' : ''} no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal`}>Custom</a></li>
-            <li><a href="/destinations" className={`${isActive('/destinations') ? 'active' : ''} no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal`}>Destinations</a></li>
-            <li><a href="/about" className={`${isActive('/about') ? 'active' : ''} no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal`}>About</a></li>
-            <li><a href="/contact" className={`${isActive('/contact') ? 'active' : ''} no-underline text-gray-500 font-medium transition-colors duration-300 hover:text-accent-teal`}>Contact</a></li>
+            <li><a href="/" className={`${isActive('/') ? 'active font-semibold' : 'font-medium'} no-underline text-gray-500 transition-colors duration-300 hover:text-accent-teal`}>Home</a></li>
+            <li><a href="/tours" className={`${isActive('/tours') ? 'active font-semibold' : 'font-medium'} no-underline text-gray-500 transition-colors duration-300 hover:text-accent-teal`}>Tours</a></li>
+            <li><a href="/custom" className={`${isActive('/custom') ? 'active font-semibold' : 'font-medium'} no-underline text-gray-500 transition-colors duration-300 hover:text-accent-teal`}>Custom</a></li>
+            <li><a href="/destinations" className={`${isActive('/destinations') ? 'active font-semibold' : 'font-medium'} no-underline text-gray-500 transition-colors duration-300 hover:text-accent-teal`}>Destinations</a></li>
+            <li><a href="/about" className={`${isActive('/about') ? 'active font-semibold' : 'font-medium'} no-underline text-gray-500 transition-colors duration-300 hover:text-accent-teal`}>About</a></li>
+            <li><a href="/contact" className={`${isActive('/contact') ? 'active font-semibold' : 'font-medium'} no-underline text-gray-500 transition-colors duration-300 hover:text-accent-teal`}>Contact</a></li>
           </ul>
 
           <div className="nav-actions flex items-center gap-5">

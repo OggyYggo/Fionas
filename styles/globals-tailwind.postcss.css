@@ -16,14 +16,17 @@
   }
   
   body {
-    @apply font-primary text-gray-800 leading-relaxed bg-white;
+    @apply font-primary text-gray-800 leading-relaxed;
+    background-color: #FCFDFE;
   }
 }
 
 /* Custom component styles that are difficult to replicate with Tailwind */
 @layer components {
   .hero {
-    @apply relative h-[490px] flex items-center justify-center text-center text-white;
+    @apply relative flex items-start justify-center text-center text-white pb-80;
+    height: 500px;
+    padding-top: 100px;
     background: url('https://images.unsplash.com/photo-1615185403293-a8fb0482d24e?q=80&w=1075&auto=format&fit=crop') no-repeat center center/cover;
     overflow: hidden;
   }
@@ -36,7 +39,8 @@
   }
   
   .hero-content {
-    @apply relative z-10 max-w-[900px] px-5;
+    @apply relative max-w-[900px] px-5 mx-auto text-center;
+    z-index: 10;
   }
 
   .hero-custom {
@@ -119,7 +123,7 @@
   }
   
   .nav-links a.active {
-    @apply text-accent-teal;
+    @apply text-accent-teal font-semibold;
   }
   
   .nav-actions {
@@ -131,7 +135,8 @@
   }
   
   .btn-book {
-    @apply bg-accent-teal text-white py-3 px-6 rounded-sm no-underline font-semibold transition-colors duration-300 hover:bg-accent-teal-dark;
+    @apply text-white py-3 px-6 rounded-sm no-underline font-semibold transition-colors duration-300 hover:bg-accent-teal-dark;
+    background-color: #059669;
   }
   
   /* Tours Section Styles */
@@ -148,7 +153,7 @@
   }
   
   .section-header h2 {
-    @apply text-gray-800 text-[2.5rem] font-black my-2;
+    @apply text-gray-800 text-[2.5rem] font-black my-3;
   }
   
   .section-header p {
@@ -242,7 +247,7 @@
   
   /* Destinations Section Styles */
   .destinations-section {
-    @apply py-32 bg-white;
+    @apply py-20 bg-white;
   }
   
   .destinations-header {
@@ -258,7 +263,7 @@
   }
   
   .destinations-content p {
-    @apply text-gray-600 text-lg max-w-[500px] leading-relaxed mx-auto;
+    @apply text-gray-600 text-lg max-w-[700px] leading-relaxed mx-auto;
   }
   
   .destinations-layout {
@@ -572,7 +577,7 @@
   
   /* Photo Gallery Section Styles */
   .photo-gallery-section {
-    @apply py-[44px] bg-white text-gray-800 relative overflow-hidden;
+    @apply py-[80px] bg-white text-gray-800 relative overflow-hidden;
   }
   
   .gallery-header {
@@ -785,7 +790,8 @@
   
   /* Testimonials Section Styles */
   .testimonials-section {
-    @apply py-[90px] bg-white relative;
+    @apply py-[80px] relative;
+    background-color: #FAFAF9;
   }
   
   .testimonials-header {

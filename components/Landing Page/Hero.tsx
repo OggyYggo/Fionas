@@ -20,7 +20,7 @@ export default function Hero() {
     <section id="home" className="hero">
       <div className="hero-content">
         <h1 className="font-primary text-[72px] font-black mb-4 leading-tight tracking-[-1.5px]">
-          Your <span className="text-accent-light">Bohol Adventure</span> Starts Here
+          Your Bohol Adventure Starts Here
         </h1>
         <p className="font-primary text-xl font-normal leading-relaxed mb-8 text-gray-300">
           Pristine beaches, Chocolate Hills, and unforgettable adventures your dream getaway starts here.
