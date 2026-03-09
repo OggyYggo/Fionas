@@ -76,11 +76,10 @@ export default function PhotoGallery() {
     <section className="photo-gallery-section py-[44px] bg-white text-gray-800 relative overflow-hidden">
       <div className="container max-w-[1440px] mx-auto px-5">
         <div className="gallery-header text-center mb-20 max-w-[800px] mx-auto">
-          <span className="subtitle text-accent-green font-bold text-sm tracking-wider">BEHIND THE LENS</span>
-          <h2 className="text-[40px] font-black mb-5 leading-tight text-gray-800">Photo Gallery of The Agency</h2>
+          {/* <span className="subtitle text-accent-green font-bold text-sm tracking-wider">BEHIND THE LENS</span> */}
+          <h2 className="text-[40px] font-black mb-5 leading-tight text-gray-800">Explore the Beauty of Bohol</h2>
           <p className="text-lg leading-[1.8] text-gray-600 max-w-[700px] mx-auto">
-            Explore our stunning travel moments each photo captures the adventure, discovery,
-            and unforgettable experiences waiting for you.
+            Stunning moments from tours across Bohol’s top destinations
           </p>
         </div>
 

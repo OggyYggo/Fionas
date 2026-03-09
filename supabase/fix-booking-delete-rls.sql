@@ -4,6 +4,7 @@
 DROP POLICY IF EXISTS "Enable insert for all users" ON bookings;
 DROP POLICY IF EXISTS "Enable select for all users" ON bookings;
 DROP POLICY IF EXISTS "Enable update for all users" ON bookings;
+DROP POLICY IF EXISTS "Enable delete for all users" ON bookings;
 
 -- Create comprehensive policies for all operations
 CREATE POLICY "Enable insert for all users" ON bookings

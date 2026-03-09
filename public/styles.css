@@ -98,6 +98,10 @@ body {
     color: #10ac84; /* The teal color from your image */
 }
 
+.nav-links a.active {
+    font-weight: 600; /* Semi-bold for active links */
+}
+
 /* Right Actions & Button */
 .nav-actions {
     display: flex;
