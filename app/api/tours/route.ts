@@ -17,33 +17,54 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '9')
-    const search = searchParams.get('search')?.toLowerCase() || ''
-    const category = searchParams.get('category')?.toLowerCase() || ''
+    const search = searchParams.get('search') || ''
+    const category = searchParams.get('category') || ''
     
     let allTours: any[] = []
     
     // Try to get tours from SimpleTourService first
     try {
-      allTours = await SimpleTourService.getAllTours()
+      const paginated = await SimpleTourService.getToursPaginated(page, limit, search, category)
+      const response: ToursResponse = {
+        tours: paginated.tours,
+        totalCount: paginated.totalCount,
+        currentPage: paginated.currentPage,
+        totalPages: paginated.totalPages
+      }
+
+      return NextResponse.json(response, {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      })
     } catch (error) {
       console.log('SimpleTourService failed, using fallback tours')
-      allTours = tours
+      allTours = tours.map(tour => ({
+        ...tour,
+        gallery_urls: tour.images || [] // Map images to gallery_urls for consistency
+      }))
     }
     
     // If no tours from service, use fallback
     if (!allTours || allTours.length === 0) {
-      allTours = tours
+      allTours = tours.map(tour => ({
+        ...tour,
+        gallery_urls: tour.images || [] // Map images to gallery_urls for consistency
+      }))
     }
     
     // Server-side filtering
+    const normalizedSearch = search.toLowerCase()
+    const normalizedCategory = category.toLowerCase()
+
     let filteredTours = allTours.filter((tour) => {
-      const matchesSearch = !search || 
-        tour.title.toLowerCase().includes(search) ||
-        tour.description.toLowerCase().includes(search)
-      
-      const matchesCategory = !category || 
-        tour.tag.toLowerCase() === category
-      
+      const matchesSearch = !normalizedSearch ||
+        tour.title.toLowerCase().includes(normalizedSearch) ||
+        tour.description.toLowerCase().includes(normalizedSearch)
+
+      const matchesCategory = !normalizedCategory ||
+        tour.tag.toLowerCase() === normalizedCategory
+
       return matchesSearch && matchesCategory
     })
     
@@ -69,7 +90,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400'
+        'Cache-Control': 'no-store, max-age=0'
       }
     })
     

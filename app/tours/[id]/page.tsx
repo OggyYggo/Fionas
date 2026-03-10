@@ -15,36 +15,57 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 export default function TourDetail() {
   const params = useParams()
   const tourId = parseInt(params.id as string)
   const [tour, setTour] = useState<Tour | null>(null)
   const [loading, setLoading] = useState(true)
+  const [dataSource, setDataSource] = useState<'db' | 'fallback' | 'none'>('none')
 
   useEffect(() => {
     const fetchTour = async () => {
       try {
         const tourData = await SimpleTourService.getTourById(tourId)
         
-        // If no data from Supabase, try fallback
-        if (!tourData) {
+        if (tourData) {
+          setTour(tourData)
+          setDataSource('db')
+        } else {
           const { tours } = await import('@/app/tours/data/tours')
           const fallbackTour = tours.find(t => t.id === tourId)
-          setTour(fallbackTour || null)
-        } else {
-          setTour(tourData)
+          setTour(
+            fallbackTour
+              ? ({
+                  ...fallbackTour,
+                  gallery_urls:
+                    (fallbackTour as any).gallery_urls || (fallbackTour as any).images || [],
+                } as Tour)
+              : null
+          )
+          setDataSource(fallbackTour ? 'fallback' : 'none')
         }
       } catch (error) {
         console.error('Error fetching tour:', error)
-        // Try fallback on error
         try {
           const { tours } = await import('@/app/tours/data/tours')
           const fallbackTour = tours.find(t => t.id === tourId)
-          setTour(fallbackTour || null)
+          setTour(
+            fallbackTour
+              ? ({
+                  ...fallbackTour,
+                  gallery_urls:
+                    (fallbackTour as any).gallery_urls || (fallbackTour as any).images || [],
+                } as Tour)
+              : null
+          )
+          setDataSource(fallbackTour ? 'fallback' : 'none')
         } catch (fallbackError) {
           console.error('Fallback also failed:', fallbackError)
           setTour(null)
+          setDataSource('none')
         }
       } finally {
         setLoading(false)
@@ -53,6 +74,12 @@ export default function TourDetail() {
 
     fetchTour()
   }, [tourId])
+
+  useEffect(() => {
+    if (!loading) {
+      console.log('Tour detail data source:', dataSource, 'tourId:', tourId)
+    }
+  }, [loading, dataSource, tourId])
 
   if (loading) {
     return (
@@ -86,6 +113,15 @@ export default function TourDetail() {
     )
   }
 
+  const galleryImages =
+    tour.gallery_urls && tour.gallery_urls.length > 0 ? tour.gallery_urls : [tour.image]
+
+  const locationText = (tour as any).location || (tour as any).tour_location || 'Bohol, Philippines'
+  const cancellationText =
+    (tour as any).cancellation_policy ||
+    (tour as any).cancellationPolicy ||
+    'Free cancellation up to 24 hours before'
+
   return (
     <>
       <Header />
@@ -97,7 +133,7 @@ export default function TourDetail() {
             {/* Main Image */}
             <div className="md:col-span-2 md:row-span-2 relative overflow-hidden rounded-lg">
               <img
-                src={(tour as any).images?.[0] || tour.image}
+                src={galleryImages[0] || tour.image}
                 alt="Main tour image"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
@@ -111,7 +147,7 @@ export default function TourDetail() {
             {/* Top Right Image */}
             <div className="relative overflow-hidden rounded-lg">
               <img
-                src={(tour as any).images?.[1] || tour.image}
+                src={galleryImages[1] || galleryImages[0] || tour.image}
                 alt="Tour image 2"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
@@ -120,7 +156,7 @@ export default function TourDetail() {
             {/* Bottom Right Images */}
             <div className="relative overflow-hidden rounded-lg">
               <img
-                src={(tour as any).images?.[2] || tour.image}
+                src={galleryImages[2] || galleryImages[0] || tour.image}
                 alt="Tour image 3"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
@@ -129,7 +165,7 @@ export default function TourDetail() {
             {/* Bottom Left Images */}
             <div className="relative overflow-hidden rounded-lg">
               <img
-                src={(tour as any).images?.[3] || tour.image}
+                src={galleryImages[3] || galleryImages[0] || tour.image}
                 alt="Tour image 4"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
@@ -138,7 +174,7 @@ export default function TourDetail() {
             <div className="relative overflow-hidden rounded-lg">
               <div className="relative w-full h-full">
                 <img
-                  src={(tour as any).images?.[4] || tour.image}
+                  src={galleryImages[4] || galleryImages[0] || tour.image}
                   alt="Tour image 5"
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                 />
@@ -175,22 +211,27 @@ export default function TourDetail() {
                 {tour.tag}
               </span>
 
+              
               {/* Title */}
               <h1 className="text-4xl lg:text-5xl font-bold text-[#1E293B] mb-6">{tour.title}</h1>
 
               {/* Meta Information */}
               <div className="flex flex-wrap gap-6 mb-8">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <i className="far fa-clock text-lg"></i>
-                  <span>{tour.duration}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <i className="fas fa-users text-lg"></i>
-                  <span>{tour.maxPeople}</span>
-                </div>
+                {tour.duration && (
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <i className="far fa-clock text-lg"></i>
+                    <span>{tour.duration}</span>
+                  </div>
+                )}
+                {tour.maxPeople && (
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <i className="fas fa-users text-lg"></i>
+                    <span>{tour.maxPeople}</span>
+                  </div>
+                )}
                 <div className="flex items-center gap-2 text-gray-600">
                   <i className="fas fa-map-marker-alt text-lg"></i>
-                  <span>Bohol, Philippines</span>
+                  <span>{locationText}</span>
                 </div>
               </div>
 
@@ -203,130 +244,155 @@ export default function TourDetail() {
               </section>
 
               {/* Tour Highlights */}
-              <section className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Tour Highlights</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {(tour.highlights || [
-                    'Professional tour guide',
-                    'Hotel pickup and drop-off',
-                    'All entrance fees included',
-                    'Small group experience'
-                  ]).map((highlight, index) => (
-                    <div key={index} className="flex items-center gap-3 bg-green-50 p-3 rounded-lg">
-                      <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <i className="fas fa-check text-white text-xs"></i>
+              {(tour.highlights || []).length > 0 && (
+                <section className="mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Tour Highlights</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {(tour.highlights || []).map((highlight, index) => (
+                      <div key={index} className="flex items-center gap-3 bg-green-50 p-3 rounded-lg">
+                        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                          <i className="fas fa-check text-white text-xs"></i>
+                        </div>
+                        <span className="text-gray-700">{highlight}</span>
                       </div>
-                      <span className="text-gray-700">{highlight}</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
+                    ))}
+                  </div>
+                </section>
+              )}
 
-              {/* Package Tour Rates */}
-              <section className="mb-8">
-                <h2 className="text-[24px] font-bold text-gray-900 mb-4">Package Tour Rates</h2>
-                <Table className="text-[18px]">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-center" colSpan={2}>LOCAL</TableHead>
-                      <TableHead className="text-center" colSpan={2}>FOREIGNER</TableHead>
-                    </TableRow>
-                    <TableRow>
-                      <TableHead className="text-center p-4">pax</TableHead>
-                      <TableHead className="text-center p-4">price / pax</TableHead>
-                      <TableHead className="text-center p-4">pax</TableHead>
-                      <TableHead className="text-center p-4">price / pax</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {(tour.pricing?.local || [
-                      { pax: 1, price: '₱3,500' },
-                      { pax: 2, price: '₱2,000' },
-                      { pax: 3, price: '₱1,500' },
-                      { pax: 4, price: '₱1,200' },
-                      { pax: 5, price: '₱1,000' },
-                      { pax: 6, price: '₱900' },
-                      { pax: 7, price: '₱800' },
-                      { pax: 8, price: '₱750' },
-                      { pax: 9, price: '₱700' },
-                      { pax: '10+', price: '₱650' }
-                    ]).map((localRate, index) => {
-                      const foreignerRate = tour.pricing?.foreigner?.[index] || [
-                        { pax: 1, price: '$70' },
-                        { pax: 2, price: '$40' },
-                        { pax: 3, price: '$30' },
-                        { pax: 4, price: '$25' },
-                        { pax: 5, price: '$20' },
-                        { pax: 6, price: '$18' },
-                        { pax: 7, price: '$16' },
-                        { pax: 8, price: '$15' },
-                        { pax: 9, price: '$14' },
-                        { pax: '10+', price: '$13' }
-                      ][index]
-                      return (
-                        <TableRow key={index}>
-                          <TableCell className="text-center p-4">{localRate.pax}</TableCell>
-                          <TableCell className="text-center p-4">{localRate.price}</TableCell>
-                          <TableCell className="text-center p-4">{foreignerRate.pax}</TableCell>
-                          <TableCell className="text-center p-4">{foreignerRate.price}</TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </TableBody>
-                </Table>
-              </section>
-
+              
               {/* What's Included / Not Included */}
-              <section className="mb-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* What's Included */}
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">What's Included</h2>
-                    <ul className="space-y-3">
-                      {(tour.included || [
-                        'Hotel pickup and drop-off',
-                        'Boat transfers',
-                        'Snorkeling equipment',
-                        'Local guide',
-                        'Morning snacks',
-                        'Environmental fees'
-                      ]).map((item, index) => (
-                        <li key={index} className="flex items-center gap-3">
-                          <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                            <i className="fas fa-check text-white text-xs"></i>
-                          </div>
-                          <span className="text-gray-700">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+              {((tour.included || []).length > 0 || (tour.notIncluded || []).length > 0) && (
+                <section className="mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* What's Included */}
+                    {(tour.included || []).length > 0 && (
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-4">What's Included</h2>
+                        <ul className="space-y-3">
+                          {(tour.included || []).map((item, index) => (
+                            <li key={index} className="flex items-center gap-3">
+                              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i className="fas fa-check text-white text-xs"></i>
+                              </div>
+                              <span className="text-gray-700">{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
 
-                  {/* Not Included */}
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Not Included</h2>
-                    <ul className="space-y-3">
-                      {(tour.notIncluded || [
-                        'Lunch',
-                        'Underwater camera',
-                        'Tips and gratuities',
-                        'Personal expenses'
-                      ]).map((item, index) => (
-                        <li key={index} className="flex items-center gap-3">
-                          <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
-                            <i className="fas fa-times text-white text-xs"></i>
-                          </div>
-                          <span className="text-gray-700">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {/* Not Included */}
+                    {(tour.notIncluded || []).length > 0 && (
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-4">Not Included</h2>
+                        <ul className="space-y-3">
+                          {(tour.notIncluded || []).map((item, index) => (
+                            <li key={index} className="flex items-center gap-3">
+                              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i className="fas fa-times text-white text-xs"></i>
+                              </div>
+                              <span className="text-gray-700">{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
-                </div>
-              </section>
+                </section>
+              )}
+
+              {/* Tour Itinerary */}
+              {(tour.itinerary || []).length > 0 && (
+                <section className="mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Tour Itinerary</h2>
+                  <div className="space-y-4">
+                    {(tour.itinerary || []).map((item, index) => (
+                      <div key={index} className="flex gap-4">
+                        <div className="flex flex-col items-center">
+                          <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                            {index + 1}
+                          </div>
+                          {index < (tour.itinerary || []).length - 1 && (
+                            <div className="w-0.5 flex-1 bg-purple-200 mt-2"></div>
+                          )}
+                        </div>
+                        <div className="pb-6">
+                          <p className="text-gray-700 text-lg pt-2">{item}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Why Choose This Tour */}
+              {(tour.why_choose || []).length > 0 && (
+                <section className="mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Why Choose This Tour</h2>
+                  <ul className="space-y-2">
+                    {(tour.why_choose || []).map((reason, index) => (
+                      <li key={index} className="text-gray-700">• {reason}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {/* Customer Reviews */}
+              {(tour.reviews || []).length > 0 && (
+                <section className="mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Customer Reviews</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {(tour.reviews || []).map((review, index) => (
+                      <Card key={index} className="bg-white border-gray-200 shadow-sm py-4 px-5">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                              {review.author?.charAt(0)?.toUpperCase() || 'U'}
+                            </div>
+                            <div>
+                              <p className="font-semibold text-gray-900 text-sm">{review.author}</p>
+                              {review.date && <p className="text-xs text-gray-500">{review.date}</p>}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <svg key={i} className={`w-4 h-4 ${i < review.rating ? 'text-amber-400' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                              </svg>
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-gray-600 text-sm leading-relaxed">{review.comment}</p>
+                      </Card>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* FAQs */}
+              {(tour.faqs || []).length > 0 && (
+                <section className="mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+                  <Accordion type="single" collapsible className="w-full border border-gray-200 rounded-xl overflow-hidden">
+                    {(tour.faqs || []).map((faq, index) => (
+                      <AccordionItem key={index} value={`faq-${index}`} className="border-gray-200 px-5">
+                        <AccordionTrigger className="text-base font-semibold text-gray-900 hover:no-underline hover:text-green-700 py-5">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-gray-600 leading-relaxed text-base">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </section>
+              )}
 
               {/* Tour Location */}
               <section className="mb-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Tour Location</h2>
-                <Map location="Bohol, Philippines" height="400px" />
+                <Map location={locationText} height="400px" />
               </section>
             </div>
 
@@ -350,7 +416,7 @@ export default function TourDetail() {
                 {/* Cancellation Policy */}
                 <div className="flex items-center gap-3 text-sm text-gray-600 mb-6 pb-6 border-b border-gray-200">
                   <i className="fas fa-shield-alt text-green-600"></i>
-                  <span>Free cancellation up to 24 hours before</span>
+                  <span>{cancellationText}</span>
                 </div>
 
                 {/* Need Help Section */}

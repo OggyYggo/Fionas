@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
-import { MapPin, Plus, Search, Filter, Star, Eye, Edit, Trash2, ChevronDown } from 'lucide-react'
+import { MapPin, Plus, Search, Filter, Star, Eye, Edit, Trash2, ChevronDown, Loader2, RefreshCw } from 'lucide-react'
 import { SimpleTourService } from '@/lib/simpleTourService'
 import { Tour } from '@/types/tour'
 import TourForm from '@/components/admin/TourForm'
@@ -58,11 +58,14 @@ export default function ToursPage() {
   }
 
   const fetchTours = async () => {
+    setLoading(true)
+    setError(null)
     try {
       const toursData = await SimpleTourService.getAllTours()
       setTours(toursData)
     } catch (error) {
       console.error('Error fetching tours:', error)
+      setError(error instanceof Error ? error.message : 'Failed to fetch tours')
     } finally {
       setLoading(false)
     }
@@ -244,6 +247,16 @@ export default function ToursPage() {
               className="pl-10 w-64 h-10 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
             />
           </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={fetchTours}
+            disabled={loading}
+            className="h-10 w-10 border-gray-300 hover:bg-gray-50"
+            title="Refresh tours"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          </Button>
           <Button onClick={() => setShowForm(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 hover:border-emerald-700 h-10">
             <Plus className="h-4 w-4 mr-2" />
             Add New Tour
@@ -253,8 +266,16 @@ export default function ToursPage() {
 
      
 
+      {/* Loading State */}
+      {loading && (
+        <div className="flex flex-col items-center justify-center py-20">
+          <Loader2 className="h-10 w-10 text-emerald-600 animate-spin mb-4" />
+          <p className="text-gray-500 text-sm font-medium">Loading tours...</p>
+        </div>
+      )}
+
       {/* Tours Table */}
-      <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
+      {!loading && <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
@@ -309,11 +330,9 @@ export default function ToursPage() {
                 <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100/80 border-b border-gray-200">
                   <TableHead className="w-[400px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Tour Details</TableHead>
                   <TableHead className="w-[140px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Price</TableHead>
-                  <TableHead className="w-[140px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Duration</TableHead>
                   <TableHead className="w-[140px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Category</TableHead>
                   <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Type</TableHead>
                   <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Featured</TableHead>
-                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Capacity</TableHead>
                   <TableHead className="w-[180px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -345,9 +364,6 @@ export default function ToursPage() {
                       <div className="font-bold text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                         {tour.price}
                       </div>
-                    </TableCell>
-                    <TableCell className="py-4 px-6 text-center">
-                      <span className="font-medium text-gray-700">{tour.duration}</span>
                     </TableCell>
                     <TableCell className="py-4 px-6">
                       <Badge variant="default" className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-md hover:shadow-lg transition-shadow duration-200 px-3 py-1">
@@ -382,9 +398,6 @@ export default function ToursPage() {
                           {tour.featured ? 'Featured' : 'Standard'}
                         </div>
                       </Badge>
-                    </TableCell>
-                    <TableCell className="py-4 px-6 text-center">
-                      <span className="font-bold text-gray-900">{tour.maxPeople}</span>
                     </TableCell>
                     <TableCell className="py-4 px-6">
                       <div className="flex items-center justify-center gap-2">
@@ -445,7 +458,7 @@ export default function ToursPage() {
             )}
           </div>
         </CardContent>
-      </Card>
+      </Card>}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

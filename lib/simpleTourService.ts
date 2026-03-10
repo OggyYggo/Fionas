@@ -14,7 +14,9 @@ export class SimpleTourService {
       console.log('🔍 SimpleTourService: Supabase import successful')
       
       // Test connection using tours table (the actual table name)
-      const { data, error } = await supabase.from('tours').select('count').limit(1)
+      const { error } = await supabase
+        .from('tours')
+        .select('id', { head: true, count: 'exact' })
       if (error) {
         console.error('❌ SimpleTourService: Supabase connection test failed:', error)
         throw new Error(`Database connection failed: ${error.message}`)
@@ -142,21 +144,25 @@ export class SimpleTourService {
       
       const supabase = await this.getSupabase()
       console.log('🔍 SimpleTourService: Supabase client obtained')
+
+      const resolvedTourType = (tourData as any).tour_type || tourData.tourType || 'Package'
       
       const dbData = {
         title: tourData.title,
         description: tourData.description,
         image: tourData.image,
         gallery_urls: tourData.gallery_urls || [],
-        tour_type: tourData.tourType || 'Package',
-        duration: tourData.duration,
-        max_people: tourData.maxPeople,
+        tour_type: resolvedTourType,
         price: tourData.price,
         tag: tourData.tag,
         featured: tourData.featured,
         highlights: tourData.highlights || [],
+        itinerary: tourData.itinerary || [],
         included: tourData.included || [],
         not_included: tourData.notIncluded || [],
+        why_choose: (tourData as any).why_choose || tourData.why_choose || [],
+        reviews: tourData.reviews || [],
+        faqs: tourData.faqs || [],
         pricing: tourData.pricing || {}
       }
 
@@ -208,15 +214,19 @@ export class SimpleTourService {
       if (tourData.title) dbData.title = tourData.title
       if (tourData.description) dbData.description = tourData.description
       if (tourData.image) dbData.image = tourData.image
-      if (tourData.duration) dbData.duration = tourData.duration
-      if (tourData.maxPeople) dbData.max_people = tourData.maxPeople
       if (tourData.price) dbData.price = tourData.price
       if (tourData.tag) dbData.tag = tourData.tag
       if (tourData.featured !== undefined) dbData.featured = tourData.featured
+      if (tourData.gallery_urls) dbData.gallery_urls = tourData.gallery_urls
       if (tourData.highlights) dbData.highlights = tourData.highlights
+      if (tourData.itinerary) dbData.itinerary = tourData.itinerary
       if (tourData.included) dbData.included = tourData.included
       if (tourData.notIncluded) dbData.not_included = tourData.notIncluded
-      if (tourData.tourType) dbData.tour_type = tourData.tourType
+      if ((tourData as any).why_choose || tourData.why_choose) dbData.why_choose = (tourData as any).why_choose || tourData.why_choose
+      if (tourData.reviews) dbData.reviews = tourData.reviews
+      if (tourData.faqs) dbData.faqs = tourData.faqs
+      if (tourData.pricing) dbData.pricing = tourData.pricing
+      if ((tourData as any).tour_type || tourData.tourType) dbData.tour_type = (tourData as any).tour_type || tourData.tourType
 
       console.log('🔍 SimpleTourService: Prepared update data:', dbData)
 
