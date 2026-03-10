@@ -255,8 +255,6 @@ class HybridTourService implements TourService {
         title: tourData.title,
         description: tourData.description,
         image: tourData.image,
-        duration: tourData.duration,
-        max_people: tourData.maxPeople,
         price: tourData.price,
         tag: tourData.tag,
         featured: tourData.featured
@@ -295,8 +293,6 @@ class HybridTourService implements TourService {
       if (tourData.title) dbData.title = tourData.title
       if (tourData.description) dbData.description = tourData.description
       if (tourData.image) dbData.image = tourData.image
-      if (tourData.duration) dbData.duration = tourData.duration
-      if (tourData.maxPeople) dbData.max_people = tourData.maxPeople
       if (tourData.price) dbData.price = tourData.price
       if (tourData.tag) dbData.tag = tourData.tag
       if (tourData.featured !== undefined) dbData.featured = tourData.featured

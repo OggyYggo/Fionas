@@ -23,6 +23,14 @@ interface ToursResponse {
   totalPages: number
 }
 
+const DESCRIPTION_LIMIT = 120
+
+function truncateText(text: string, limit: number) {
+  if (!text) return ''
+  if (text.length <= limit) return text
+  return text.slice(0, limit).trimEnd() + '...'
+}
+
 export default function TourPackages({ searchTerm, selectedCategory }: { 
   searchTerm: string
   selectedCategory: string 
@@ -64,7 +72,7 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
           params.append('category', selectedCategory.replace(' Tours', ''))
         }
         
-        const response = await fetch(`/api/tours?${params.toString()}`)
+        const response = await fetch(`/api/tours?${params.toString()}`, { cache: 'no-store' })
         
         if (!response.ok) {
           throw new Error('Failed to fetch tours')
@@ -82,8 +90,14 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
         try {
           const { tours: fallbackTours } = await import('@/app/tours/data/tours')
           
+          // Map fallback data to ensure gallery_urls consistency
+          const mappedFallbackTours = fallbackTours.map(tour => ({
+            ...tour,
+            gallery_urls: tour.images || []
+          }))
+          
           // Client-side filtering for fallback
-          const filtered = fallbackTours.filter((tour) => {
+          const filtered = mappedFallbackTours.filter((tour) => {
             const matchesSearch = tour.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                                  tour.description.toLowerCase().includes(searchTerm.toLowerCase())
             const matchesCategory = selectedCategory === 'All Categories' || 
@@ -201,18 +215,22 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
                   </div>
                   <div className="card-content p-6">
                     <h3 className="text-gray-800 text-[1.7rem] mb-2 transition-colors duration-300">{tour.title}</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed mb-5">{tour.description}</p>
+                    <p className="text-gray-600 text-sm leading-relaxed mb-5">{truncateText(tour.description, DESCRIPTION_LIMIT)}</p>
                     <div className="tour-meta flex gap-4 text-xs text-gray-500 mb-6">
-                      <span className="flex items-center gap-1"><i className="far fa-clock w-3 h-3"></i> {tour.duration}</span>
-                      <span className="flex items-center gap-1"><i className="fas fa-users w-3 h-3"></i> {tour.maxPeople}</span>
+                      {tour.duration ? (
+                        <span className="flex items-center gap-1"><i className="far fa-clock w-3 h-3"></i> {tour.duration}</span>
+                      ) : null}
+                      {tour.maxPeople ? (
+                        <span className="flex items-center gap-1"><i className="fas fa-users w-3 h-3"></i> {tour.maxPeople}</span>
+                      ) : null}
                     </div>
-                      <div className="card-footer flex justify-between items-center border-t border-gray-100 pt-5">
-                    <div className="price-box flex flex-col items-start gap-1">
-                      <span className="from-text block text-xs text-gray-500">For as Low as</span>
-                      <span className="price-amount text-green-600 text-[1.8rem] font-semibold leading-none">{tour.price}</span>
+                    <div className="card-footer flex justify-between items-center border-t border-gray-100 pt-5">
+                      <div className="price-box flex flex-col items-start gap-1">
+                        <span className="from-text block text-xs text-gray-500">For as Low as</span>
+                        <span className="price-amount text-green-600 text-[1.8rem] font-semibold leading-none">{tour.price}</span>
+                      </div>
+                      <a href={`/tours/${tour.id}`} className="btn-details w-[145px] h-12 bg-gray-900 text-white no-underline rounded-lg flex items-center justify-center font-bold p-4 gap-11 transition-all duration-300 hover:bg-gray-900">View <i className="fa-solid fa-circle-chevron-right btn-icon ml-3 text-base align-middle"></i></a>
                     </div>
-                    <a href={`/tours/${tour.id}`} className="btn-details w-[145px] h-12 bg-gray-900 text-white no-underline rounded-lg flex items-center justify-center font-bold p-4 gap-11 transition-all duration-300 hover:bg-gray-900">View <i className="fa-solid fa-circle-chevron-right btn-icon ml-3 text-base align-middle"></i></a>
-                  </div>
                   </div>
                 </div>
               ))

@@ -66,7 +66,8 @@
   }
   
   .btn-explore {
-    @apply bg-accent-teal text-white border-none hover:bg-accent-teal-dark;
+    background-color: #11B981;
+    @apply text-white border-none hover:bg-accent-teal-dark;
   }
   
   .btn-outline {
@@ -131,12 +132,13 @@
   }
   
   .cart-icon {
-    @apply bg-accent-green text-white w-12 h-12 rounded-full flex items-center justify-center cursor-pointer;
+    background-color: #059669;
+    @apply text-white w-12 h-12 rounded-full flex items-center justify-center cursor-pointer;
   }
   
   .btn-book {
     @apply text-white py-3 px-6 rounded-sm no-underline font-semibold transition-colors duration-300 hover:bg-accent-teal-dark;
-    background-color: #059669;
+    background-color: #11B981;
   }
   
   /* Tours Section Styles */
