@@ -1,5 +1,6 @@
 import '@/styles/globals-tailwind.postcss.css'
 import type { Metadata } from 'next'
+import { QueryProvider } from '@/components/providers/query-provider'
 
 export const metadata: Metadata = {
   title: 'Bohol Travel Agency | Book Tours & Explore Tourist Spots',
@@ -41,7 +42,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Bohol Tours" />
       </head>
       <body>
-        {children}
+        <QueryProvider>
+          {children}
+        </QueryProvider>
       </body>
     </html>
   )
