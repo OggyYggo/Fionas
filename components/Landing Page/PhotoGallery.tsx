@@ -2,14 +2,23 @@
 
 import { useEffect, useState } from 'react'
 
+interface GalleryItem {
+  id: number
+  number: string
+  title: string
+  image: string
+}
+
 export default function PhotoGallery() {
   const [isClient, setIsClient] = useState(false)
+  const [imageLoading, setImageLoading] = useState<{[key: string]: boolean}>({})
+  const [imageErrors, setImageErrors] = useState<{[key: string]: boolean}>({})
 
   useEffect(() => {
     setIsClient(true)
   }, [])
 
-  const galleryItems = [
+  const galleryItems: GalleryItem[] = [
     {
       id: 1,
       number: '01',
@@ -72,6 +81,19 @@ export default function PhotoGallery() {
 
   const visibleItems = galleryItems.slice(currentIndex, currentIndex + 4)
 
+  const handleImageLoad = (key: string) => {
+    setImageLoading(prev => ({ ...prev, [key]: false }))
+  }
+
+  const handleImageError = (key: string) => {
+    setImageLoading(prev => ({ ...prev, [key]: false }))
+    setImageErrors(prev => ({ ...prev, [key]: true }))
+  }
+
+  const handleImageStart = (key: string) => {
+    setImageLoading(prev => ({ ...prev, [key]: true }))
+  }
+
   return (
     <section className="photo-gallery-section py-[44px] bg-white text-gray-800 relative overflow-hidden">
       <div className="container max-w-[1440px] mx-auto px-5">
@@ -89,19 +111,43 @@ export default function PhotoGallery() {
           </button>
           
           <div className="gallery-grid grid grid-cols-4 gap-8 mb-16 w-full">
-            {visibleItems.map((item) => (
-              <div key={item.id} className="gallery-item relative h-[400px] rounded-2xl overflow-hidden cursor-pointer transition-all duration-400 hover:-translate-y-2.5 hover:shadow-2xl">
-                <div className="gallery-image-wrapper relative w-full h-full overflow-hidden">
-                  <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-600 hover:scale-110" />
-                  <div className="gallery-overlay absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-gray-900/90 via-gray-900/60 to-transparent flex flex-col justify-end p-8 opacity-0 transition-opacity duration-400 hover:opacity-100">
-                    <div className="item-content relative">
-                      <span className="item-number absolute -top-16 right-0 text-[4rem] font-black text-white/15 leading-none">{item.number}</span>
-                      <h3 className="text-[1.4rem] font-bold mb-2.5 text-white">{item.title}</h3>
+            {visibleItems.map((item) => {
+              const imageKey = `gallery-${item.id}`
+              return (
+                <div key={item.id} className="gallery-item relative h-[400px] rounded-2xl overflow-hidden cursor-pointer transition-all duration-400 hover:-translate-y-2.5 hover:shadow-2xl">
+                  <div className="gallery-image-wrapper relative w-full h-full overflow-hidden">
+                    {imageLoading[imageKey] && (
+                      <div className="absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center z-5">
+                        <div className="text-gray-400">Loading...</div>
+                      </div>
+                    )}
+                    {imageErrors[imageKey] ? (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <div className="text-gray-500 text-center">
+                          <i className="fas fa-image text-3xl mb-2"></i>
+                          <p className="text-sm">Image unavailable</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <img 
+                        src={item.image} 
+                        alt={item.title} 
+                        className="w-full h-full object-cover transition-transform duration-600 hover:scale-110"
+                        onLoad={() => handleImageLoad(imageKey)}
+                        onError={() => handleImageError(imageKey)}
+                        onLoadStart={() => handleImageStart(imageKey)}
+                      />
+                    )}
+                    <div className="gallery-overlay absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-gray-900/90 via-gray-900/60 to-transparent flex flex-col justify-end p-8 opacity-0 transition-opacity duration-400 hover:opacity-100">
+                      <div className="item-content relative">
+                        <span className="item-number absolute -top-16 right-0 text-[4rem] font-black text-white/15 leading-none">{item.number}</span>
+                        <h3 className="text-[1.4rem] font-bold mb-2.5 text-white">{item.title}</h3>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           <button className="gallery-nav absolute top-1/2 -translate-y-1/2 w-12 h-12 bg-white shadow-md border-2 border-gray-200 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 z-10 text-gray-600 text-xl -right-20 hover:bg-accent-teal hover:border-accent-teal hover:text-white hover:scale-110" onClick={handleNext}>

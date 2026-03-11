@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { TourGridSkeleton } from '@/components/ui/tour-card-skeleton'
 import { CardSpinner } from '@/components/ui/spinner'
 import { Tour } from '@/types/tour'
+import { useTours } from '@/hooks/useTours'
 import {
   Pagination,
   PaginationContent,
@@ -15,13 +16,6 @@ import {
   PaginationPrevious,
   PaginationEllipsis
 } from '@/components/ui/pagination'
-
-interface ToursResponse {
-  tours: Tour[]
-  totalCount: number
-  currentPage: number
-  totalPages: number
-}
 
 const DESCRIPTION_LIMIT = 120
 
@@ -36,12 +30,24 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
   selectedCategory: string 
 }) {
   const [isClient, setIsClient] = useState(false)
-  const [tours, setTours] = useState<Tour[]>([])
-  const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
-  const [totalCount, setTotalCount] = useState(0)
-  const [totalPages, setTotalPages] = useState(0)
   const toursPerPage = 9
+
+  const {
+    tours,
+    totalCount,
+    totalPages,
+    isLoading,
+    error,
+    refetch,
+    prefetchNextPage,
+    prefetchPreviousPage,
+  } = useTours({
+    page: currentPage,
+    limit: toursPerPage,
+    search: searchTerm,
+    category: selectedCategory,
+  })
 
   useEffect(() => {
     setIsClient(true)
@@ -53,80 +59,49 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
     }
   }, [isClient])
 
+  // Reset to page 1 when filters change
   useEffect(() => {
-    const fetchTours = async () => {
-      try {
-        setLoading(true)
-        
-        // Build query parameters for server-side filtering and pagination
-        const params = new URLSearchParams({
-          page: currentPage.toString(),
-          limit: toursPerPage.toString()
-        })
-        
-        if (searchTerm) {
-          params.append('search', searchTerm)
-        }
-        
-        if (selectedCategory && selectedCategory !== 'All Categories') {
-          params.append('category', selectedCategory.replace(' Tours', ''))
-        }
-        
-        const response = await fetch(`/api/tours?${params.toString()}`, { cache: 'no-store' })
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch tours')
-        }
-        
-        const data: ToursResponse = await response.json()
-        
-        setTours(data.tours)
-        setTotalCount(data.totalCount)
-        setTotalPages(data.totalPages)
-        
-      } catch (error) {
-        console.error('Error fetching tours:', error)
-        // Try fallback on error
-        try {
-          const { tours: fallbackTours } = await import('@/app/tours/data/tours')
-          
-          // Map fallback data to ensure gallery_urls consistency
-          const mappedFallbackTours = fallbackTours.map(tour => ({
-            ...tour,
-            gallery_urls: tour.images || []
-          }))
-          
-          // Client-side filtering for fallback
-          const filtered = mappedFallbackTours.filter((tour) => {
-            const matchesSearch = tour.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                 tour.description.toLowerCase().includes(searchTerm.toLowerCase())
-            const matchesCategory = selectedCategory === 'All Categories' || 
-                                    tour.tag === selectedCategory.replace(' Tours', '')
-            return matchesSearch && matchesCategory
-          })
-          
-          const startIndex = (currentPage - 1) * toursPerPage
-          const endIndex = startIndex + toursPerPage
-          const paginatedTours = filtered.slice(startIndex, endIndex)
-          
-          setTours(paginatedTours)
-          setTotalCount(filtered.length)
-          setTotalPages(Math.ceil(filtered.length / toursPerPage))
-        } catch (fallbackError) {
-          console.error('Fallback also failed:', fallbackError)
-          setTours([])
-          setTotalCount(0)
-          setTotalPages(0)
-        }
-      } finally {
-        setLoading(false)
-      }
+    setCurrentPage(1)
+  }, [searchTerm, selectedCategory])
+
+  // Prefetch pages on hover
+  const handleNextPageHover = () => {
+    if (currentPage < totalPages) {
+      prefetchNextPage()
     }
+  }
 
-    fetchTours()
-  }, [currentPage, searchTerm, selectedCategory])
+  const handlePrevPageHover = () => {
+    if (currentPage > 1) {
+      prefetchPreviousPage()
+    }
+  }
 
-  if (loading) {
+  if (error) {
+    return (
+      <>
+        <div className="h-20"></div>
+        <section className="tours-section py-20 pt-20 pb-11 bg-white flex items-center justify-center font-primary">
+          <div className="container max-w-[1440px] mx-auto px-5">
+            <div className="text-center py-12">
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-red-50 border border-red-200 rounded-full text-sm text-red-700 shadow-sm">
+                <i className="fas fa-exclamation-triangle"></i>
+                <span className="font-medium">Failed to load tours</span>
+              </div>
+              <button
+                onClick={() => refetch()}
+                className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </section>
+      </>
+    )
+  }
+
+  if (isLoading) {
     return (
       <>
         <div className="h-20"></div>
@@ -171,6 +146,8 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
                           className="object-cover" 
                           loading="lazy"
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          placeholder="blur"
+                          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/8A8A"
                         />
                         
                         {/* Gallery thumbnails overlay */}
@@ -183,6 +160,8 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
                                 fill
                                 className="object-cover"
                                 sizes="48px"
+                                placeholder="blur"
+                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/8A8A"
                               />
                             </div>
                           ))}
@@ -207,6 +186,8 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
                         className="object-cover" 
                         loading="lazy"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        placeholder="blur"
+                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/8A8A"
                       />
                     )}
                     
@@ -214,7 +195,7 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
                     <span className="tag absolute bottom-4 left-4 bg-white py-1 px-3 rounded-2xl text-xs text-gray-800 z-10">{tour.tag}</span>
                   </div>
                   <div className="card-content p-6">
-                    <h3 className="text-gray-800 text-[1.7rem] mb-2 transition-colors duration-300">{tour.title}</h3>
+                    <h3 className="text-gray-800 text-[1.4rem] mb-2 transition-colors duration-300 font-semibold">{tour.title}</h3>
                     <p className="text-gray-600 text-sm leading-relaxed mb-5">{truncateText(tour.description, DESCRIPTION_LIMIT)}</p>
                     <div className="tour-meta flex gap-4 text-xs text-gray-500 mb-6">
                       {tour.duration ? (
@@ -250,6 +231,7 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
                   <PaginationItem>
                     <PaginationPrevious 
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      onMouseEnter={handlePrevPageHover}
                       className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
                       href="#"
                     />
@@ -301,6 +283,7 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
                   <PaginationItem>
                     <PaginationNext 
                       onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      onMouseEnter={handleNextPageHover}
                       className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
                       href="#"
                     />

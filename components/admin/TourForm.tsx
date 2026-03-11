@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -41,6 +41,16 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isMainImageUploading, setIsMainImageUploading] = useState(false)
   const [uploadType, setUploadType] = useState<'package' | 'destinations'>((tour?.tourType === 'Destinations' ? 'destinations' : 'package'))
+  const [existingImages, setExistingImages] = useState<string[]>([])
+
+  // Load existing images when editing a tour
+  useEffect(() => {
+    if (tour && (tour.image || tour.gallery_urls)) {
+      const images = [tour.image, ...(tour.gallery_urls || [])].filter(Boolean)
+      setExistingImages(images)
+      console.log('🔍 Loaded existing images:', images)
+    }
+  }, [tour])
 
   const formatPrice = (value: string): string => {
     // Remove all non-digit characters
@@ -167,7 +177,7 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
       
       // Set limit based on upload type
       const maxImages = uploadType === 'package' ? 5 : 1
-      const remainingSlots = maxImages - mainImages.length
+      const remainingSlots = maxImages - (existingImages.length + mainImages.length)
       const filesToProcess = files.slice(0, remainingSlots)
       
       if (files.length > remainingSlots) {
@@ -400,7 +410,7 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
                 </Select>
               </div>
               <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200">
-                {mainImages.length}/{uploadType === 'package' ? '5' : '1'} photos
+                {existingImages.length + mainImages.length}/{uploadType === 'package' ? '5' : '1'} photos
               </div>
             </div>
           </div>
@@ -419,7 +429,7 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
               />
               
               {/* Show upload area if under limit */}
-              {mainImages.length < (uploadType === 'package' ? 5 : 1) && (
+              {(existingImages.length + mainImages.length) < (uploadType === 'package' ? 5 : 1) && (
                 <label htmlFor="image" className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50/50 hover:bg-gray-100 hover:border-blue-400 transition-all duration-200 group">
                   {isMainImageUploading && (
                     <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center rounded-xl">
@@ -441,25 +451,53 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
                       </svg>
                     </div>
                     <p className="mb-2 text-sm font-medium text-gray-700"><span className="text-blue-600">Click to upload</span> or drag and drop</p>
-                    <p className="text-xs text-gray-500 text-center">PNG, JPG, GIF, WebP up to 10MB each<br/><span className="text-blue-600 font-medium">Maximum {uploadType === 'package' ? '5 photos' : '1 photo'} • Auto-converted to WebP</span></p>
+                    <p className="text-xs text-gray-500 text-center">PNG, JPG, GIF, WebP up to 10MB each<br/><span className="text-blue-600 font-medium">Can add {Math.max(0, (uploadType === 'package' ? 5 : 1) - (existingImages.length + mainImages.length))} more photos • Auto-converted to WebP</span></p>
                   </div>
                 </label>
               )}
 
-              {/* Display uploaded main images */}
+              {/* Display existing images */}
+              {existingImages.length > 0 && (
+                <div className="space-y-3 w-full">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-gray-700">Existing Tour Images</p>
+                    <span className="text-xs text-blue-600 font-medium">{existingImages.length} photos</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                    {existingImages.map((imageUrl, index) => (
+                      <div key={`existing-${index}`} className="relative group">
+                        <div className="aspect-square rounded-lg overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                          <img 
+                            src={imageUrl} 
+                            alt={`Tour image ${index + 1}`} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                          />
+                        </div>
+                        {index === 0 && (
+                          <div className="absolute bottom-1 left-1 bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                            Primary
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Display newly uploaded main images */}
               {mainImages.length > 0 && (
                 <div className="space-y-3 w-full">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-gray-700">Uploaded Tour Images</p>
-                    <span className="text-xs text-blue-600 font-medium">{mainImages.length} photos</span>
+                    <p className="text-sm font-semibold text-gray-700">New Images to Upload</p>
+                    <span className="text-xs text-green-600 font-medium">{mainImages.length} photos</span>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                     {mainImages.map((file, index) => (
                       <div key={`main-${index}`} className="relative group">
-                        <div className="aspect-square rounded-lg overflow-hidden border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="aspect-square rounded-lg overflow-hidden border border-green-200 shadow-sm hover:shadow-md transition-shadow">
                           <img 
                             src={URL.createObjectURL(file)} 
-                            alt={`Tour image ${index + 1}`} 
+                            alt={`New tour image ${index + 1}`} 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                           />
                         </div>
@@ -473,8 +511,8 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
                           </svg>
                         </button>
                         {index === 0 && (
-                          <div className="absolute bottom-1 left-1 bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
-                            Primary
+                          <div className="absolute bottom-1 left-1 bg-green-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                            New Primary
                           </div>
                         )}
                       </div>

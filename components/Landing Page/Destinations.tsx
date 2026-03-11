@@ -5,8 +5,16 @@ import { destinationsAnimations } from '@/animations/destinationsAnimations'
 import PhotoGallery from './PhotoGallery'
 import TestimonialsSection from './Testimonials'
 
+interface Destination {
+  number: string
+  image: string
+  title: string
+}
+
 export default function DestinationsSection() {
   const [isClient, setIsClient] = useState(false)
+  const [imageLoading, setImageLoading] = useState<{[key: string]: boolean}>({})
+  const [imageErrors, setImageErrors] = useState<{[key: string]: boolean}>({})
 
   useEffect(() => {
     setIsClient(true)
@@ -17,7 +25,8 @@ export default function DestinationsSection() {
       // destinationsAnimations() // Temporarily disabled
     }
   }, [isClient])
-  const destinations = [
+
+  const destinations: Destination[] = [
     {
       number: '02',
       image: 'https://i.pinimg.com/1200x/d8/e5/31/d8e531299e463d7185cf4e1071fecafb.jpg',
@@ -40,6 +49,19 @@ export default function DestinationsSection() {
     }
   ]
 
+  const handleImageLoad = (key: string) => {
+    setImageLoading(prev => ({ ...prev, [key]: false }))
+  }
+
+  const handleImageError = (key: string) => {
+    setImageLoading(prev => ({ ...prev, [key]: false }))
+    setImageErrors(prev => ({ ...prev, [key]: true }))
+  }
+
+  const handleImageStart = (key: string) => {
+    setImageLoading(prev => ({ ...prev, [key]: true }))
+  }
+
   return (
     <>
       <section id="destinations" className="destinations-section py-20 bg-white">
@@ -60,7 +82,28 @@ export default function DestinationsSection() {
           <div className="destinations-layout grid grid-cols-2 gap-10 items-stretch w-full">
             {/* Featured Large Left Image */}
             <div className="featured-card relative h-[480px] rounded-2xl overflow-hidden bg-gray-50">
-              <img src="https://i.pinimg.com/736x/3f/8f/fa/3f8ffaded6ac0f091eebbe77b07c4903.jpg" alt="Chocolate Hills" className="w-full h-full object-cover transition-transform duration-300" />
+              {imageLoading['featured'] && (
+                <div className="absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center">
+                  <div className="text-gray-400">Loading...</div>
+                </div>
+              )}
+              {imageErrors['featured'] ? (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <div className="text-gray-500 text-center">
+                    <i className="fas fa-image text-4xl mb-2"></i>
+                    <p>Image unavailable</p>
+                  </div>
+                </div>
+              ) : (
+                <img 
+                  src="https://i.pinimg.com/736x/3f/8f/fa/3f8ffaded6ac0f091eebbe77b07c4903.jpg" 
+                  alt="Chocolate Hills" 
+                  className="w-full h-full object-cover transition-transform duration-300"
+                  onLoad={() => handleImageLoad('featured')}
+                  onError={() => handleImageError('featured')}
+                  onLoadStart={() => handleImageStart('featured')}
+                />
+              )}
               <div className="featured-overlay absolute bottom-0 left-0 w-full p-10 bg-gradient-to-t from-[rgba(34,53,68,0.95)] to-transparent text-white flex flex-col gap-3">
                 <span className="location text-[#9ee7cc] inline-flex items-center gap-1.5 text-sm font-semibold"><i className="fas fa-map-marker-alt"></i> Carmen, Bohol</span>
                 <h3 className="text-[2.2rem] font-black m-0 leading-tight">Chocolate Hills</h3>
@@ -70,15 +113,39 @@ export default function DestinationsSection() {
 
             {/* Right Side 2x2 Grid */}
             <div className="destinations-grid grid grid-cols-2 gap-6">
-              {destinations.map((dest, index) => (
-                <div key={index} className="destination-item relative h-[228px] rounded-2xl overflow-hidden bg-gray-50 cursor-pointer transition-all duration-300">
-                  <img src={dest.image} alt={dest.title} className="w-full h-full object-cover transition-transform duration-300" />
-                  <span className="dest-number absolute top-4 left-4 bg-white/95 text-gray-800 w-11 h-11 rounded-full flex items-center justify-center font-black text-xl z-10">{dest.number}</span>
-                  <div className="destination-overlay absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/80 to-transparent text-white opacity-0 transition-opacity duration-300">
-                    <h4 className="text-base font-bold m-0">{dest.title}</h4>
+              {destinations.map((dest, index) => {
+                const imageKey = `dest-${index}`
+                return (
+                  <div key={index} className="destination-item relative h-[228px] rounded-2xl overflow-hidden bg-gray-50 cursor-pointer transition-all duration-300">
+                    {imageLoading[imageKey] && (
+                      <div className="absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center z-5">
+                        <div className="text-gray-400 text-sm">Loading...</div>
+                      </div>
+                    )}
+                    {imageErrors[imageKey] ? (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <div className="text-gray-500 text-center">
+                          <i className="fas fa-image text-2xl mb-1"></i>
+                          <p className="text-xs">Image unavailable</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <img 
+                        src={dest.image} 
+                        alt={dest.title} 
+                        className="w-full h-full object-cover transition-transform duration-300"
+                        onLoad={() => handleImageLoad(imageKey)}
+                        onError={() => handleImageError(imageKey)}
+                        onLoadStart={() => handleImageStart(imageKey)}
+                      />
+                    )}
+                    <span className="dest-number absolute top-4 left-4 bg-white/95 text-gray-800 w-11 h-11 rounded-full flex items-center justify-center font-black text-xl z-10">{dest.number}</span>
+                    <div className="destination-overlay absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/80 to-transparent text-white opacity-0 transition-opacity duration-300">
+                      <h4 className="text-base font-bold m-0">{dest.title}</h4>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>

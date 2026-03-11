@@ -34,7 +34,9 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json(response, {
         headers: {
-          'Cache-Control': 'no-store, max-age=0'
+          'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+          'CDN-Cache-Control': 'public, max-age=300',
+          'Vary': 'Accept-Encoding'
         }
       })
     } catch (error) {
@@ -90,7 +92,9 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'no-store, max-age=0'
+        'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+        'CDN-Cache-Control': 'public, max-age=300',
+        'Vary': 'Accept-Encoding'
       }
     })
     

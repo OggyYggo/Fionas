@@ -3,8 +3,19 @@
 import { useEffect, useState } from 'react'
 import { destinationsAnimations } from '@/animations/destinationsAnimations'
 
+interface Testimonial {
+  id: number
+  name: string
+  title: string
+  company: string
+  image: string
+  content: string
+}
+
 export default function TestimonialsSection() {
   const [isClient, setIsClient] = useState(false)
+  const [imageLoading, setImageLoading] = useState<{[key: string]: boolean}>({})
+  const [imageErrors, setImageErrors] = useState<{[key: string]: boolean}>({})
 
   useEffect(() => {
     setIsClient(true)
@@ -16,7 +27,7 @@ export default function TestimonialsSection() {
     }
   }, [isClient])
 
-  const testimonials = [
+  const testimonials: Testimonial[] = [
     {
       id: 1,
       name: 'William Ashford',
@@ -69,6 +80,19 @@ export default function TestimonialsSection() {
     setCurrentPage(page)
   }
 
+  const handleImageLoad = (key: string) => {
+    setImageLoading(prev => ({ ...prev, [key]: false }))
+  }
+
+  const handleImageError = (key: string) => {
+    setImageLoading(prev => ({ ...prev, [key]: false }))
+    setImageErrors(prev => ({ ...prev, [key]: true }))
+  }
+
+  const handleImageStart = (key: string) => {
+    setImageLoading(prev => ({ ...prev, [key]: true }))
+  }
+
   return (
     <section className="testimonials-section py-[80px] relative" style={{backgroundColor: '#FAFAF9'}}>
       <div className="container max-w-[1440px] mx-auto px-5">
@@ -81,25 +105,48 @@ export default function TestimonialsSection() {
         </div>
         
         <div className="testimonials-grid grid grid-cols-4 gap-6 mb-20">
-          {getCurrentTestimonials().map((testimonial) => (
-            <div key={testimonial.id} className="testimonial-card bg-white rounded-2xl p-8 shadow-sm border border-gray-200 transition-all duration-400 opacity-0 translate-y-8 animate-fade-in-up hover:-translate-y-2.5 hover:shadow-xl hover:border-accent-teal h-full flex flex-col">
-              <div className="testimonial-content mb-6 flex-grow">
-                <p className="testimonial-text text-gray-700 text-[1.1rem] leading-relaxed mb-6 italic relative">"{truncateText(testimonial.content, 100)}"</p>
-              </div>
-              <div className="testimonial-author flex items-center gap-4 mt-auto">
-                <div className="author-avatar w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
-                  <img src={testimonial.image} alt={testimonial.name} className="w-full h-full object-cover" />
+          {getCurrentTestimonials().map((testimonial) => {
+            const imageKey = `testimonial-${testimonial.id}`
+            return (
+              <div key={testimonial.id} className="testimonial-card bg-white rounded-2xl p-8 shadow-sm border border-gray-200 transition-all duration-400 opacity-0 translate-y-8 animate-fade-in-up hover:-translate-y-2.5 hover:shadow-xl hover:border-accent-teal h-full flex flex-col">
+                <div className="testimonial-content mb-6 flex-grow">
+                  <p className="testimonial-text text-gray-700 text-[1.1rem] leading-relaxed mb-6 italic relative">"{truncateText(testimonial.content, 100)}"</p>
                 </div>
-                <div className="author-info self-center">
-                  <h4 className="text-gray-800 text-base font-bold mb-1 m-0">{testimonial.name}</h4>
-                  <p className="text-accent-green text-sm font-medium m-0">{testimonial.title}, <span>{testimonial.company}</span></p>
-                  <div className="social-icon">
-                    <i className="fa-brands fa-twitter"></i>
+                <div className="testimonial-author flex items-center gap-4 mt-auto">
+                  <div className="author-avatar w-16 h-16 rounded-full overflow-hidden flex-shrink-0 relative">
+                    {imageLoading[imageKey] && (
+                      <div className="absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center">
+                        <div className="text-gray-400 text-xs">Loading...</div>
+                      </div>
+                    )}
+                    {imageErrors[imageKey] ? (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <div className="text-gray-500 text-center">
+                          <i className="fas fa-user text-lg"></i>
+                        </div>
+                      </div>
+                    ) : (
+                      <img 
+                        src={testimonial.image} 
+                        alt={testimonial.name} 
+                        className="w-full h-full object-cover"
+                        onLoad={() => handleImageLoad(imageKey)}
+                        onError={() => handleImageError(imageKey)}
+                        onLoadStart={() => handleImageStart(imageKey)}
+                      />
+                    )}
+                  </div>
+                  <div className="author-info self-center">
+                    <h4 className="text-gray-800 text-base font-bold mb-1 m-0">{testimonial.name}</h4>
+                    <p className="text-accent-green text-sm font-medium m-0">{testimonial.title}, <span>{testimonial.company}</span></p>
+                    <div className="social-icon">
+                      <i className="fa-brands fa-twitter"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         <div className="testimonials-footer text-center">
