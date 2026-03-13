@@ -25,7 +25,8 @@ import {
   Settings,
   Waves,
   Mountain,
-  TreePine
+  TreePine,
+  Route
 } from 'lucide-react'
 
 const navItems = [
@@ -38,6 +39,11 @@ const navItems = [
     title: 'Bookings',
     url: '/admin/bookings',
     icon: Calendar,
+  },
+  {
+    title: 'Custom Tours',
+    url: '/admin/custom-tours',
+    icon: Route,
   },
   {
     title: 'Tours',

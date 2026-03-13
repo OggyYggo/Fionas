@@ -1,6 +1,6 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useState, useEffect, useMemo } from 'react'
 import { SimpleTourService } from '@/lib/simpleTourService'
 import { Tour } from '@/types/tour'
@@ -30,6 +30,7 @@ import { CarouselSize } from '@/components/ui/carousel-size'
 
 export default function TourDetail() {
   const params = useParams()
+  const router = useRouter()
   const tourId = parseInt(params.id as string)
   const [tour, setTour] = useState<Tour | null>(null)
   const [loading, setLoading] = useState(true)
@@ -462,7 +463,10 @@ export default function TourDetail() {
                 </div>
 
                 {/* Book Button */}
-                <button className="w-full bg-[#11B981] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#0D9F6F] transition-colors flex items-center justify-center gap-2 mb-6">
+                <button 
+                  onClick={() => router.push(`/tours/${tourId}/booking-confirmation`)}
+                  className="w-full bg-[#11B981] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#0D9F6F] transition-colors flex items-center justify-center gap-2 mb-6"
+                >
                   <i className="far fa-calendar"></i>
                   Book This Tour
                 </button>
