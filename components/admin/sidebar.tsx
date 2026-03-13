@@ -11,12 +11,14 @@ import {
   FileText, 
   BarChart3,
   MapPin,
-  CreditCard 
+  CreditCard,
+  Route
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Bookings', href: '/admin/bookings', icon: Calendar },
+  { name: 'Custom Tours', href: '/admin/custom-tours', icon: Route },
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Tours', href: '/admin/tours', icon: MapPin },
   { name: 'Payments', href: '/admin/payments', icon: CreditCard },
