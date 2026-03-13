@@ -1,13 +1,21 @@
 export interface Booking {
   id: string
+  booking_number: string
   customer: string
   email: string
+  phone: string
   tour: string
   destination: string
   date: string
-  endDate: string
+  endDate?: string
   status: 'confirmed' | 'pending' | 'completed' | 'cancelled'
   amount: string
+  total_amount: number
+  downpayment_amount: number
+  remaining_balance: number
+  payment_method: string
+  payment_status: 'paid' | 'pending' | 'partial'
+  payment_id: string
   participants: number
   adults: number
   children: number
@@ -18,6 +26,7 @@ export interface Booking {
   transportation: string
   tourGuide: string
   specialRequests: string
-  createdAt: string
-  updatedAt: string
+  pickup_location: string
+  created_at: string
+  updated_at: string
 }

@@ -186,42 +186,40 @@ export default function Custom() {
         return
       }
 
-      // Import BookingService
-      const { BookingService } = await import('@/lib/supabase')
+      // Import CustomToursService for custom tour submissions
+      const { CustomToursService } = await import('@/lib/custom-tours-db')
       
-      // Prepare booking data
-      const bookingData = {
+      // Prepare custom tour submission data
+      const submissionData = {
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
-        tourType: 'custom' as const,
+        destination: formData.destination,
         startDate: formData.startDate?.toISOString().split('T')[0],
         endDate: formData.endDate?.toISOString().split('T')[0],
-        numberOfGuests: formData.adults + formData.children,
-        budgetRange: formData.budgetRange as any,
-        destination: formData.destination,
         adults: formData.adults,
         children: formData.children,
         activities: formData.activities,
         otherActivity: formData.otherActivity,
+        budgetRange: formData.budgetRange,
         accommodation: formData.accommodation,
         transportation: formData.transportation,
         tourGuide: formData.tourGuide,
         specialRequests: formData.specialRequests,
-        additionalNotes: document.querySelector('textarea')?.value || ''
+        agreement: formData.agreement
       }
 
-      console.log('🔍 Submitting booking data:', bookingData)
+      console.log('🔍 Submitting custom tour data:', submissionData)
 
-      // Submit using BookingService
-      const result = await BookingService.createBooking(bookingData)
+      // Submit using CustomToursService
+      const result = await CustomToursService.saveFormSubmission(submissionData)
 
       if (result.success) {
-        console.log('✅ Booking successful, showing success alert')
+        console.log('✅ Custom tour submission successful, showing success alert')
         setShowSuccessAlert(true)
         setAlert({ 
           type: 'success', 
-          message: `Request Submitted! Booking ID: ${result.data?.bookingId || 'Pending'}. Status: ${result.data?.status || 'pending'}. We will contact you within ${result.data?.estimatedResponseTime || '24 hours'}.` 
+          message: `Request Submitted! Submission ID: ${result.data?.id || 'Pending'}. We will contact you within 24 hours to discuss your custom itinerary.` 
         })
         handleCancel()
         
@@ -231,11 +229,11 @@ export default function Custom() {
           console.log('🔒 Hiding success alert after 10 seconds')
         }, 10000)
       } else {
-        console.log('❌ Booking failed:', result.message)
+        console.log('❌ Custom tour submission failed:', result.message)
         setAlert({ type: 'error', message: result.message || 'Something went wrong. Please try again.' })
       }
     } catch (error) {
-      console.error('Booking submission error:', error)
+      console.error('Custom tour submission error:', error)
       setAlert({ type: 'error', message: 'Unable to connect to server. Please check your connection and try again.' })
     }
   }

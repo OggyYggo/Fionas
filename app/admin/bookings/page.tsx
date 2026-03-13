@@ -50,14 +50,22 @@ export default function BookingsPage() {
       if (bookingsResult.success && bookingsResult.data) {
         const mappedBookings = bookingsResult.data.map(booking => ({
           id: booking.id,
+          booking_number: booking.booking_number || booking.id,
           customer: booking.full_name || 'Unknown',
           email: booking.email,
-          tour: booking.tour_type || 'Unknown Tour',
+          phone: booking.phone || '',
+          tour: booking.tour_title || booking.tour_type || 'Unknown Tour',
           destination: booking.destination || '',
           date: booking.start_date || new Date().toISOString().split('T')[0],
           endDate: booking.end_date || '',
           status: booking.status,
           amount: String(booking.total_price || '₱0'),
+          total_amount: booking.total_price || 0,
+          downpayment_amount: Math.ceil((booking.total_price || 0) * 0.5), // Calculate 50% downpayment
+          remaining_balance: Math.ceil((booking.total_price || 0) * 0.5), // Calculate remaining 50%
+          payment_method: 'card', // Default payment method
+          payment_status: booking.status === 'confirmed' ? 'paid' : 'pending',
+          payment_id: booking.id,
           participants: booking.number_of_guests || 1,
           adults: booking.adults || 0,
           children: booking.children || 0,
@@ -69,8 +77,9 @@ export default function BookingsPage() {
           transportation: booking.transportation || '',
           tourGuide: booking.tour_guide || '',
           specialRequests: booking.special_requests || '',
-          createdAt: booking.created_at,
-          updatedAt: booking.updated_at
+          pickup_location: '',
+          created_at: booking.created_at,
+          updated_at: booking.updated_at
         }))
         
         setBookings(mappedBookings)
@@ -84,10 +93,7 @@ export default function BookingsPage() {
           cancelled: mappedBookings.filter(b => b.status === 'cancelled').length,
           revenue: mappedBookings
             .filter(b => b.status === 'confirmed')
-            .reduce((total, booking) => {
-              const amount = parseFloat(booking.amount.replace('₱', '').replace(',', ''))
-              return total + amount
-            }, 0)
+            .reduce((total, booking) => total + (booking.downpayment_amount || 0), 0)
             .toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })
         }
         
@@ -312,16 +318,16 @@ export default function BookingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
           <CardHeader className="pb-3">
-            <CardTitle className="text-blue-100 font-medium flex items-center gap-2">
+            <CardTitle className="text-emerald-100 font-medium flex items-center gap-2">
               <DollarSign className="h-5 w-5" />
-              Revenue
+              Downpayment Revenue
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{stats.revenue}</div>
-            <p className="text-blue-100 text-sm mt-1">From confirmed bookings</p>
+            <p className="text-emerald-100 text-sm mt-1">50% downpayments collected</p>
           </CardContent>
         </Card>
       </div>
@@ -368,7 +374,7 @@ export default function BookingsPage() {
                   <TableHead className="w-[150px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Tour</TableHead>
                   <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Date</TableHead>
                   <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Guests</TableHead>
-                  <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Amount</TableHead>
+                  <TableHead className="w-[140px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Payment</TableHead>
                   <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">Status</TableHead>
                   <TableHead className="w-[120px] py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider text-center">Actions</TableHead>
                 </TableRow>
@@ -388,6 +394,9 @@ export default function BookingsPage() {
                       <div>
                         <div className="font-semibold text-gray-900">{booking.customer}</div>
                         <div className="text-sm text-gray-500">{booking.email}</div>
+                        {booking.phone && (
+                          <div className="text-sm text-gray-500">{booking.phone}</div>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="py-4 px-6">
@@ -416,8 +425,22 @@ export default function BookingsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="py-4 px-6">
-                      <div className="font-bold text-lg bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
-                        {booking.amount}
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span className="font-semibold text-green-700">₱{booking.downpayment_amount?.toLocaleString() || '0'}</span>
+                          <span className="text-xs text-gray-500 bg-green-100 px-2 py-1 rounded">Paid</span>
+                        </div>
+                        {booking.remaining_balance > 0 && (
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                            <span className="text-orange-700">₱{booking.remaining_balance?.toLocaleString() || '0'}</span>
+                            <span className="text-xs text-gray-500 bg-orange-100 px-2 py-1 rounded">Due</span>
+                          </div>
+                        )}
+                        <div className="text-xs text-gray-500">
+                          {booking.payment_method}
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell className="py-4 px-6">
