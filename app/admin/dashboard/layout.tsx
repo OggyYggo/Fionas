@@ -10,9 +10,9 @@ export default function AdminDashboardLayout({
     <div className="flex h-screen overflow-hidden bg-gray-50">
       <SidebarProvider defaultOpen={true}>
         <AppSidebar />
-        <SidebarInset className="flex-1">
+        <SidebarInset className="flex-1" style={{ marginLeft: '288px' }}>
           <div className="flex-1 overflow-auto">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-[50px]">
+            <div className="w-full px-6 lg:px-8 pt-[50px] pb-12">
               {children}
             </div>
           </div>

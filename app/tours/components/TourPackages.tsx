@@ -210,7 +210,7 @@ export default function TourPackages({ searchTerm, selectedCategory }: {
                         <span className="from-text block text-xs text-gray-500">For as Low as</span>
                         <span className="price-amount text-green-600 text-[1.8rem] font-semibold leading-none">{tour.price}</span>
                       </div>
-                      <a href={`/tours/${tour.id}`} className="btn-details w-[145px] h-12 bg-gray-900 text-white no-underline rounded-lg flex items-center justify-center font-bold p-4 gap-11 transition-all duration-300 hover:bg-gray-900">View <i className="fa-solid fa-circle-chevron-right btn-icon ml-3 text-base align-middle"></i></a>
+                      <a href={`/tours/${tour.id}`} className="btn-details w-[145px] h-12 bg-gray-900 text-white no-underline rounded-lg flex items-center justify-center font-bold p-4 gap-11 transition-all duration-300 hover:bg-[#11B981] active:bg-[#11B981]">View <i className="fa-solid fa-circle-chevron-right btn-icon ml-3 text-base align-middle"></i></a>
                     </div>
                   </div>
                 </div>

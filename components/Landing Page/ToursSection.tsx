@@ -30,11 +30,11 @@ export default function ToursSection() {
   }, [])
 
   useEffect(() => {
-    if (isClient) {
+    if (isClient && !loading && tours.length > 0) {
       const cleanup = toursAnimations()
       return cleanup
     }
-  }, [isClient])
+  }, [isClient, loading, tours.length])
 
   useEffect(() => {
     const fetchFeaturedTours = async () => {
@@ -105,7 +105,7 @@ export default function ToursSection() {
         <div className="section-header text-center mb-12 reveal">
           {/* <span className="subtitle text-accent-green font-bold text-sm tracking-wider">CURATED EXPERIENCES</span> */}
           <h2 className="text-gray-800 text-[2.5rem] font-black mb-20 my-2">Popular Tour Packages</h2>
-          <p className="text-gray-600 text-lg max-w-[600px] mx-auto">Handpicked adventures showcasing Bohol’s natural wonders and culture</p>
+          <p className="text-gray-600 text-lg max-w-[600px] mx-auto">Handpicked adventures showcasing Bohol's natural wonders and culture</p>
           <div className="flex justify-center mt-5">
             <a href="/tours" className="view-all-btn flex items-center gap-2 border-none text-gray-900 rounded-lg text-lg font-medium bg-transparent cursor-pointer no-underline transition-colors duration-300 hover:text-accent-green">
               View All <i className="fa-solid fa-circle-chevron-right btn-icon text-base"></i>
