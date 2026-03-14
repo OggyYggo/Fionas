@@ -1,5 +1,6 @@
 'use client'
 
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { useEffect, useState } from 'react'
 import { toursAnimations } from '@/animations/toursAnimations'
 import { Tour } from '@/types/tour'

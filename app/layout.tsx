@@ -1,6 +1,7 @@
 import '@/styles/globals-tailwind.postcss.css'
 import type { Metadata } from 'next'
 import { QueryProvider } from '@/components/providers/query-provider'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
   title: 'Bohol Travel Agency | Book Tours & Explore Tourist Spots',
@@ -45,6 +46,7 @@ export default function RootLayout({
         <QueryProvider>
           {children}
         </QueryProvider>
+        <SpeedInsights />
       </body>
     </html>
   )
