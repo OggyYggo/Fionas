@@ -36,14 +36,22 @@ export class SimpleBookingService {
 
       return (data || []).map(booking => ({
         id: booking.id,
+        booking_number: booking.booking_number || booking.id,
         customer: booking.full_name || booking.customer_name || 'Unknown',
         email: booking.email,
+        phone: booking.phone || '',
         tour: booking.tour_type || booking.tour_name || 'Unknown Tour',
         destination: booking.destination || '',
         date: booking.start_date || booking.booking_date || new Date().toISOString().split('T')[0],
         endDate: booking.end_date || '',
         status: booking.status,
         amount: booking.total_price || booking.amount || '₱0',
+        total_amount: booking.total_price || 0,
+        downpayment_amount: Math.ceil((booking.total_price || 0) * 0.5),
+        remaining_balance: Math.ceil((booking.total_price || 0) * 0.5),
+        payment_method: booking.payment_method || 'card',
+        payment_status: (booking.status === 'confirmed' ? 'paid' : 'pending') as 'paid' | 'pending' | 'partial',
+        payment_id: booking.id,
         participants: booking.number_of_guests || booking.participants || 1,
         adults: booking.adults || 0,
         children: booking.children || 0,
@@ -54,8 +62,9 @@ export class SimpleBookingService {
         transportation: booking.transportation || '',
         tourGuide: booking.tour_guide || '',
         specialRequests: booking.special_requests || '',
-        createdAt: booking.created_at,
-        updatedAt: booking.updated_at
+        pickup_location: booking.pickup_location || '',
+        created_at: booking.created_at,
+        updated_at: booking.updated_at
       }))
     } catch (error) {
       console.error('❌ Error in getAllBookings:', error)
@@ -97,8 +106,8 @@ export class SimpleBookingService {
         transportation: data.transportation || '',
         tourGuide: data.tour_guide || '',
         specialRequests: data.special_requests || '',
-        createdAt: data.created_at,
-        updatedAt: data.updated_at
+        created_at: data.created_at,
+        updated_at: data.updated_at
       }
     } catch (error) {
       console.error('❌ Error in getBookingById:', error)
@@ -106,7 +115,7 @@ export class SimpleBookingService {
     }
   }
 
-  static async createBooking(bookingData: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>): Promise<Booking> {
+  static async createBooking(bookingData: Omit<Booking, 'id' | 'created_at' | 'updated_at'>): Promise<Booking> {
     try {
       console.log('🔍 SimpleBookingService: Creating booking:', bookingData)
       
@@ -164,8 +173,8 @@ export class SimpleBookingService {
         transportation: data.transportation || '',
         tourGuide: data.tour_guide || '',
         specialRequests: data.special_requests || '',
-        createdAt: data.created_at,
-        updatedAt: data.updated_at
+        created_at: data.created_at,
+        updated_at: data.updated_at
       }
     } catch (error) {
       console.error('❌ SimpleBookingService: Error creating booking:', error)
@@ -232,8 +241,8 @@ export class SimpleBookingService {
         transportation: data.transportation || '',
         tourGuide: data.tour_guide || '',
         specialRequests: data.special_requests || '',
-        createdAt: data.created_at,
-        updatedAt: data.updated_at
+        created_at: data.created_at,
+        updated_at: data.updated_at
       }
     } catch (error) {
       console.error('❌ SimpleBookingService: Error in updateBooking:', error)
