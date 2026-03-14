@@ -237,7 +237,7 @@ export class CustomToursService {
           // Try to enumerate properties manually
           console.error('❌ Manual property enumeration:')
           for (const prop in error) {
-            console.error(`❌ ${prop}:`, error[prop])
+            console.error(`❌ ${prop}:`, (error as any)[prop])
           }
           
           // Try Object.keys with fallback
