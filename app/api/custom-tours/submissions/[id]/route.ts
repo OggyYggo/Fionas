@@ -4,10 +4,10 @@ import CustomToursService from '@/lib/custom-tours-db'
 // GET /api/custom-tours/submissions/[id] - Get specific submission
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // Get all submissions and filter by ID (since we don't have a specific get by ID method)
     const result = await CustomToursService.getSubmissions({ limit: 1000 })
@@ -44,10 +44,10 @@ export async function GET(
 // PUT /api/custom-tours/submissions/[id] - Update submission status
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const { status, ...updateData } = await request.json()
 
     // Validate status
@@ -88,10 +88,10 @@ export async function PUT(
 // DELETE /api/custom-tours/submissions/[id] - Delete submission
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // Note: You would need to add a delete method to CustomToursService
     // For now, we'll return a not implemented response
