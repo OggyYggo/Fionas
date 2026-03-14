@@ -5,6 +5,7 @@ declare module 'paymongo-node' {
     paymentIntents: {
       create: (data: any) => Promise<any>;
       retrieve: (id: string) => Promise<any>;
+      attach: (id: string, data: any) => Promise<any>;
     };
     
     paymentMethods: {
