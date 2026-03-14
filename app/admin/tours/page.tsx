@@ -62,8 +62,15 @@ export default function ToursPage() {
     setLoading(true)
     setError(null)
     try {
-      const toursData = await SimpleTourService.getAllTours()
-      setTours(toursData)
+      // Fetch both tours and destinations
+      const [toursData, destinationsData] = await Promise.all([
+        SimpleTourService.getAllTours(),
+        import('@/lib/destinationsService').then(({ DestinationsService }) => DestinationsService.getAllDestinations())
+      ])
+      
+      // Combine both arrays
+      const allTours = [...toursData, ...destinationsData]
+      setTours(allTours)
     } catch (error) {
       console.error('Error fetching tours:', error)
       setError(error instanceof Error ? error.message : 'Failed to fetch tours')
@@ -169,7 +176,16 @@ export default function ToursPage() {
     if (!tourToDelete) return
     
     try {
-      const success = await SimpleTourService.deleteTour(tourToDelete.id)
+      let success = false
+      
+      // Check if it's a destination or tour and use appropriate service
+      if (tourToDelete.tourType === 'Destinations') {
+        const { DestinationsService } = await import('@/lib/destinationsService')
+        success = await DestinationsService.deleteDestination(tourToDelete.id)
+      } else {
+        success = await SimpleTourService.deleteTour(tourToDelete.id)
+      }
+      
       if (success) {
         await fetchTours()
         setSuccess(`Tour "${tourToDelete.title}" deleted successfully!`)

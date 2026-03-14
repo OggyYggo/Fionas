@@ -103,7 +103,6 @@ export default function ToursSection() {
     <section id="tours" className="tours-section py-20 pt-20 pb-20 flex items-center justify-center font-primary" style={{backgroundColor: '#FCFDFE'}}>
       <div className="container max-w-[1440px] mx-auto px-5">
         <div className="section-header text-center mb-12 reveal">
-          {/* <span className="subtitle text-accent-green font-bold text-sm tracking-wider">CURATED EXPERIENCES</span> */}
           <h2 className="text-gray-800 text-[2.5rem] font-black mb-20 my-2">Popular Tour Packages</h2>
           <p className="text-gray-600 text-lg max-w-[600px] mx-auto">Handpicked adventures showcasing Bohol's natural wonders and culture</p>
           <div className="flex justify-center mt-5">
