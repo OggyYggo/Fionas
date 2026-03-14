@@ -22,7 +22,12 @@ export default function DestinationsSection() {
 
   useEffect(() => {
     if (isClient) {
-      // destinationsAnimations() // Temporarily disabled
+      // Small delay to ensure DOM is fully rendered
+      const timer = setTimeout(() => {
+        const cleanup = destinationsAnimations()
+        return cleanup
+      }, 100)
+      return () => clearTimeout(timer)
     }
   }, [isClient])
 
