@@ -253,8 +253,8 @@ export class CustomToursService {
         
         console.log('✅ CustomToursService: Insert successful - data:', data)
         
-        if (data && Array.isArray(data) && data.length > 0) {
-          return { success: true, data: data[0] }
+        if (data && Array.isArray(data) && (data as any[]).length > 0) {
+          return { success: true, data: (data as any[])[0] }
         } else {
           console.log('🔍 CustomToursService: No data returned, but insert succeeded')
           return { success: true, data: { id: 'unknown', ...minimalData } }
