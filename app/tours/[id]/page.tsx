@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, use } from 'react'
 import { SimpleTourService } from '@/lib/simpleTourService'
 import { Tour } from '@/types/tour'
 import Header from '@/components/Landing Page/Header'
@@ -28,10 +28,10 @@ import {
 } from '@/components/ui/dialog'
 import { CarouselSize } from '@/components/ui/carousel-size'
 
-export default function TourDetail() {
-  const params = useParams()
+export default function TourDetail({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params)
   const router = useRouter()
-  const tourId = parseInt(params.id as string)
+  const tourId = parseInt(resolvedParams.id)
   const [tour, setTour] = useState<Tour | null>(null)
   const [loading, setLoading] = useState(true)
   const [dataSource, setDataSource] = useState<'db' | 'fallback' | 'none'>('none')
