@@ -386,7 +386,7 @@ export class CustomToursService {
     } catch (error) {
       console.error('❌ CustomToursService: Error in getSubmissions:', error)
       console.error('❌ Error details:', JSON.stringify(error, null, 2))
-      return { success: false, data: [], total: 0 }
+      return { success: false, data: [], total: 0, message: `Internal error: ${error instanceof Error ? error.message : 'Unknown error'}` }
     }
   }
 
