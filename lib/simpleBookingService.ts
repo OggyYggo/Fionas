@@ -88,14 +88,22 @@ export class SimpleBookingService {
 
       return {
         id: data.id,
+        booking_number: data.booking_number || data.id,
         customer: data.full_name || data.customer_name || 'Unknown',
         email: data.email,
+        phone: data.phone || '',
         tour: data.tour_type || data.tour_name || 'Unknown Tour',
         destination: data.destination || '',
         date: data.start_date || data.booking_date || new Date().toISOString().split('T')[0],
         endDate: data.end_date || '',
         status: data.status,
         amount: data.total_price || data.amount || '₱0',
+        total_amount: data.total_price || 0,
+        downpayment_amount: Math.ceil((data.total_price || 0) * 0.5),
+        remaining_balance: Math.ceil((data.total_price || 0) * 0.5),
+        payment_method: data.payment_method || 'card',
+        payment_status: (data.status === 'confirmed' ? 'paid' : 'pending') as 'paid' | 'pending' | 'partial',
+        payment_id: data.id,
         participants: data.number_of_guests || data.participants || 1,
         adults: data.adults || 0,
         children: data.children || 0,
@@ -106,6 +114,7 @@ export class SimpleBookingService {
         transportation: data.transportation || '',
         tourGuide: data.tour_guide || '',
         specialRequests: data.special_requests || '',
+        pickup_location: data.pickup_location || '',
         created_at: data.created_at,
         updated_at: data.updated_at
       }
@@ -155,14 +164,22 @@ export class SimpleBookingService {
 
       return {
         id: data.id,
+        booking_number: data.booking_number || data.id,
         customer: data.full_name || data.customer_name || 'Unknown',
         email: data.email,
+        phone: data.phone || '',
         tour: data.tour_type || data.tour_name || 'Unknown Tour',
         destination: data.destination || '',
         date: data.start_date || data.booking_date || new Date().toISOString().split('T')[0],
         endDate: data.end_date || '',
         status: data.status,
         amount: data.total_price || data.amount || '₱0',
+        total_amount: data.total_price || 0,
+        downpayment_amount: Math.ceil((data.total_price || 0) * 0.5),
+        remaining_balance: Math.ceil((data.total_price || 0) * 0.5),
+        payment_method: data.payment_method || 'card',
+        payment_status: (data.status === 'confirmed' ? 'paid' : 'pending') as 'paid' | 'pending' | 'partial',
+        payment_id: data.id,
         participants: data.number_of_guests || data.participants || 1,
         adults: data.adults || 0,
         children: data.children || 0,
@@ -173,6 +190,7 @@ export class SimpleBookingService {
         transportation: data.transportation || '',
         tourGuide: data.tour_guide || '',
         specialRequests: data.special_requests || '',
+        pickup_location: data.pickup_location || '',
         created_at: data.created_at,
         updated_at: data.updated_at
       }
@@ -223,14 +241,22 @@ export class SimpleBookingService {
 
       return {
         id: data.id,
+        booking_number: data.booking_number || data.id,
         customer: data.full_name || data.customer_name || 'Unknown',
         email: data.email,
+        phone: data.phone || '',
         tour: data.tour_type || data.tour_name || 'Unknown Tour',
         destination: data.destination || '',
         date: data.start_date || data.booking_date || new Date().toISOString().split('T')[0],
         endDate: data.end_date || '',
         status: data.status,
         amount: data.total_price || data.amount || '₱0',
+        total_amount: data.total_price || 0,
+        downpayment_amount: Math.ceil((data.total_price || 0) * 0.5),
+        remaining_balance: Math.ceil((data.total_price || 0) * 0.5),
+        payment_method: data.payment_method || 'card',
+        payment_status: (data.status === 'confirmed' ? 'paid' : 'pending') as 'paid' | 'pending' | 'partial',
+        payment_id: data.id,
         participants: data.number_of_guests || data.participants || 1,
         adults: data.adults || 0,
         children: data.children || 0,
@@ -241,6 +267,7 @@ export class SimpleBookingService {
         transportation: data.transportation || '',
         tourGuide: data.tour_guide || '',
         specialRequests: data.special_requests || '',
+        pickup_location: data.pickup_location || '',
         created_at: data.created_at,
         updated_at: data.updated_at
       }
