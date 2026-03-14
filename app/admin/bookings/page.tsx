@@ -64,7 +64,7 @@ export default function BookingsPage() {
           downpayment_amount: Math.ceil((booking.total_price || 0) * 0.5), // Calculate 50% downpayment
           remaining_balance: Math.ceil((booking.total_price || 0) * 0.5), // Calculate remaining 50%
           payment_method: 'card', // Default payment method
-          payment_status: booking.status === 'confirmed' ? 'paid' : 'pending',
+          payment_status: (booking.status === 'confirmed' ? 'paid' : 'pending') as 'paid' | 'pending' | 'partial',
           payment_id: booking.id,
           participants: booking.number_of_guests || 1,
           adults: booking.adults || 0,
