@@ -90,6 +90,7 @@
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.27",
     "postcss": "^8.5.8",
+    "tailwindcss-scrollbar-hide": "^1.1.7",
     "typescript": "^5.9.3"
   }
 }

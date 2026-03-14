@@ -42,6 +42,7 @@ export class SimpleTourService {
       let query = supabase
         .from('tours')
         .select('*', { count: 'exact' })
+        .neq('tour_type', 'Destinations') // Exclude destinations - only show packages
       
       // Apply filters
       if (search) {
@@ -90,6 +91,7 @@ export class SimpleTourService {
       const { data, error } = await supabase
         .from('tours')
         .select('*')
+        .neq('tour_type', 'Destinations') // Exclude destinations - only show packages
         .order('created_at', { ascending: false })
 
       if (error) {

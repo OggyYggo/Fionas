@@ -279,14 +279,18 @@ export default function TourForm({ tour, onSubmit, onCancel, isLoading }: TourFo
     
     console.log('🔍 Submit data prepared:', submitData)
     
-    // Handle main images upload (up to 5 photos)
+    // Handle main images upload (different logic for destinations vs packages)
     if (mainImages.length > 0) {
       console.log('🔍 Uploading main images:', mainImages.length, 'files')
       try {
-        const { SimpleTourService } = await import('@/lib/simpleTourService')
+        // Use different service based on tour type
+        const isDestination = uploadType === 'destinations'
+        const Service = isDestination 
+          ? (await import('@/lib/destinationsService')).DestinationsService
+          : (await import('@/lib/simpleTourService')).SimpleTourService
         
         // Upload images in parallel for better performance
-        const uploadPromises = mainImages.map(file => SimpleTourService.saveImage(file))
+        const uploadPromises = mainImages.map(file => Service.saveImage(file))
         const mainImageUrls = await Promise.all(uploadPromises)
         
         submitData.image = mainImageUrls[0] // Use first image as primary

@@ -92,11 +92,11 @@
   }
   
   .navbar .container {
-    @apply flex items-center justify-between max-w-[1700px] mx-auto px-[100px] h-full;
+    @apply flex items-center justify-between max-w-[1700px] mx-auto pl-5 pr-[100px] h-full;
   }
   
   .logo {
-    @apply flex items-center gap-1;
+    @apply flex items-center gap-0;
   }
   
   .logo img {
@@ -450,6 +450,10 @@
     .footer-content {
       @apply grid-cols-2 gap-8;
     }
+    
+    .navbar .container {
+      @apply pl-5 pr-5;
+    }
   }
   
   @media (max-width: 768px) {
@@ -489,8 +493,8 @@
       @apply justify-center;
     }
     
-    .nav-links {
-      @apply hidden;
+    .navbar .container {
+      @apply pl-4 pr-4;
     }
   }
   
@@ -896,5 +900,23 @@
   
   .nav-button i {
     @apply text-sm;
+  }
+
+  /* Scrollbar hide utilities */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar-track {
+    display: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar-thumb {
+    display: none;
   }
 }

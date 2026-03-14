@@ -2,12 +2,7 @@
 const CACHE_NAME = 'bohol-travel-v1';
 const urlsToCache = [
   '/',
-  '/index.html',
-  '/styles.css',
-  '/app.js',
-  '/manifest.json',
-  'https://images.unsplash.com/photo-1599580676039-c9a3e1e6d0a2?w=500&h=300&fit=crop',
-  'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&h=300&fit=crop'
+  '/manifest.json'
 ];
 
 // Install event
@@ -81,18 +76,3 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Background sync for bookings
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-bookings') {
-    event.waitUntil(syncBookings());
-  }
-});
-
-async function syncBookings() {
-  try {
-    const response = await fetch('/api/bookings');
-    return response.json();
-  } catch (error) {
-    console.error('Background sync failed:', error);
-  }
-}
