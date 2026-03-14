@@ -6,7 +6,7 @@ export async function testPayMongoConnection() {
     console.log('Secret Key exists:', !!process.env.PAYMONGO_SECRET_KEY)
     console.log('Secret Key starts with sk_test:', process.env.PAYMONGO_SECRET_KEY?.startsWith('sk_test'))
     
-    const paymongo = new Paymongo(process.env.PAYMONGO_SECRET_KEY)
+    const paymongo = new Paymongo(process.env.PAYMONGO_SECRET_KEY || '')
     
     // Test creating a simple payment intent
     const paymentIntent = await paymongo.paymentIntents.create({
