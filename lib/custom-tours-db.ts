@@ -253,7 +253,7 @@ export class CustomToursService {
         
         console.log('✅ CustomToursService: Insert successful - data:', data)
         
-        if (data && data.length > 0) {
+        if (data && Array.isArray(data) && data.length > 0) {
           return { success: true, data: data[0] }
         } else {
           console.log('🔍 CustomToursService: No data returned, but insert succeeded')
@@ -263,17 +263,17 @@ export class CustomToursService {
       } catch (insertException) {
         console.error('❌ CustomToursService: Insert exception caught:', insertException)
         console.error('❌ Exception type:', typeof insertException)
-        console.error('❌ Exception message:', insertException.message)
-        console.error('❌ Exception stack:', insertException.stack)
-        console.error('❌ Exception name:', insertException.name)
+        console.error('❌ Exception message:', (insertException as Error).message)
+        console.error('❌ Exception stack:', (insertException as Error).stack)
+        console.error('❌ Exception name:', (insertException as Error).name)
         
-        return { success: false, message: `Insert exception: ${insertException.message}` }
+        return { success: false, message: `Insert exception: ${(insertException as Error).message}` }
       }
     } catch (error) {
       console.error('❌ CustomToursService: Top-level error:', error)
       console.error('❌ Top-level error type:', typeof error)
-      console.error('❌ Top-level error message:', error.message)
-      return { success: false, message: `Top-level error: ${error.message || 'Unknown error'}` }
+      console.error('❌ Top-level error message:', (error as Error).message)
+      return { success: false, message: `Top-level error: ${(error as Error).message || 'Unknown error'}` }
     }
   }
 
