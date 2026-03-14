@@ -1,6 +1,6 @@
 import Paymongo from 'paymongo-node'
 
-const paymongo = new Paymongo(process.env.PAYMONGO_SECRET_KEY)
+const paymongo = new Paymongo(process.env.PAYMONGO_SECRET_KEY || '')
 
 export interface PaymentData {
   cardNumber?: string
