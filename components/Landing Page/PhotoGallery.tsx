@@ -96,23 +96,44 @@ export default function PhotoGallery() {
 
   return (
     <section className="photo-gallery-section py-[44px] bg-white text-gray-800 relative overflow-hidden">
+      <style jsx>{`
+        @media (max-width: 1024px) {
+          .gallery-desktop {
+            display: none;
+          }
+          .gallery-mobile {
+            display: block !important;
+          }
+        }
+        
+        .gallery-mobile {
+          display: none;
+        }
+        
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
       <div className="container max-w-[1440px] mx-auto px-5">
         <div className="gallery-header text-center mb-20 max-w-[800px] mx-auto">
           {/* <span className="subtitle text-accent-green font-bold text-sm tracking-wider">BEHIND THE LENS</span> */}
           <h2 className="text-[40px] font-black mb-5 leading-tight text-gray-800">Explore the Beauty of Bohol</h2>
           <p className="text-lg leading-[1.8] text-gray-600 max-w-[700px] mx-auto">
-            Stunning moments from tours across Bohol’s top destinations
+            Stunning moments from tours across Bohol's top destinations
           </p>
         </div>
 
         <div className="gallery-wrapper relative flex items-center justify-center">
-          {/* Desktop Navigation Buttons - Hidden on Mobile */}
-          <button className="gallery-nav absolute top-1/2 -translate-y-1/2 w-12 h-12 bg-white shadow-md border-2 border-gray-200 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 z-10 text-gray-600 text-xl -left-20 hover:bg-accent-teal hover:border-accent-teal hover:text-white hover:scale-110 hidden lg:block" onClick={handlePrev}>
+          <button className="gallery-nav absolute top-1/2 -translate-y-1/2 w-12 h-12 bg-white shadow-md border-2 border-gray-200 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 z-10 text-gray-600 text-xl -left-20 hover:bg-accent-teal hover:border-accent-teal hover:text-white hover:scale-110 gallery-desktop" onClick={handlePrev}>
             <i className="fas fa-chevron-left transition-transform duration-200 hover:scale-125"></i>
           </button>
           
-          {/* Desktop Grid Layout */}
-          <div className="gallery-grid grid grid-cols-4 gap-8 mb-16 w-full hidden lg:block">
+          <div className="gallery-grid grid grid-cols-4 gap-8 mb-16 w-full gallery-desktop">
             {visibleItems.map((item) => {
               const imageKey = `gallery-${item.id}`
               return (
@@ -152,53 +173,52 @@ export default function PhotoGallery() {
             })}
           </div>
 
-          {/* Mobile Layout - Single Column Scrollable */}
-          <div className="gallery-mobile w-full lg:hidden overflow-y-auto max-h-[600px] px-2 -mx-2">
-            <div className="flex flex-col space-y-6 pb-4">
-              {galleryItems.map((item) => {
-                const imageKey = `mobile-gallery-${item.id}`
-                return (
-                  <div key={item.id} className="gallery-item-mobile relative h-[300px] rounded-xl overflow-hidden transition-all duration-300 shadow-lg">
-                    <div className="gallery-image-wrapper-mobile relative w-full h-full overflow-hidden">
-                      {imageLoading[imageKey] && (
-                        <div className="absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center z-5">
-                          <div className="text-gray-400">Loading...</div>
+          <button className="gallery-nav absolute top-1/2 -translate-y-1/2 w-12 h-12 bg-white shadow-md border-2 border-gray-200 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 z-10 text-gray-600 text-xl -right-20 hover:bg-accent-teal hover:border-accent-teal hover:text-white hover:scale-110 gallery-desktop" onClick={handleNext}>
+            <i className="fas fa-chevron-right transition-transform duration-200 hover:scale-125"></i>
+          </button>
+        </div>
+
+        {/* Mobile Layout - Single Column Scrollable */}
+        <div className="gallery-mobile w-full overflow-y-auto max-h-[600px] px-0 scrollbar-hide">
+          <div className="flex flex-col space-y-6 pb-4 items-center">
+            {galleryItems.map((item) => {
+              const imageKey = `mobile-gallery-${item.id}`
+              return (
+                <div key={item.id} className="gallery-item-mobile relative w-full max-w-md h-[300px] rounded-xl overflow-hidden transition-all duration-300 shadow-lg mx-auto">
+                  <div className="gallery-image-wrapper-mobile relative w-full h-full overflow-hidden">
+                    {imageLoading[imageKey] && (
+                      <div className="absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center z-5">
+                        <div className="text-gray-400">Loading...</div>
+                      </div>
+                    )}
+                    {imageErrors[imageKey] ? (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <div className="text-gray-500 text-center">
+                          <i className="fas fa-image text-2xl mb-2"></i>
+                          <p className="text-sm">Image unavailable</p>
                         </div>
-                      )}
-                      {imageErrors[imageKey] ? (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <div className="text-gray-500 text-center">
-                            <i className="fas fa-image text-2xl mb-2"></i>
-                            <p className="text-sm">Image unavailable</p>
-                          </div>
-                        </div>
-                      ) : (
-                        <img 
-                          src={item.image} 
-                          alt={item.title} 
-                          className="w-full h-full object-cover transition-transform duration-300"
-                          onLoad={() => handleImageLoad(imageKey)}
-                          onError={() => handleImageError(imageKey)}
-                          onLoadStart={() => handleImageStart(imageKey)}
-                        />
-                      )}
-                      <div className="gallery-overlay-mobile absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-gray-900/90 via-gray-900/60 to-transparent flex flex-col justify-end p-6">
-                        <div className="item-content-mobile relative">
-                          <span className="item-number-mobile absolute -top-12 right-0 text-[3rem] font-black text-white/15 leading-none">{item.number}</span>
-                          <h3 className="text-[1.2rem] font-bold text-white">{item.title}</h3>
-                        </div>
+                      </div>
+                    ) : (
+                      <img 
+                        src={item.image} 
+                        alt={item.title} 
+                        className="w-full h-full object-cover transition-transform duration-300"
+                        onLoad={() => handleImageLoad(imageKey)}
+                        onError={() => handleImageError(imageKey)}
+                        onLoadStart={() => handleImageStart(imageKey)}
+                      />
+                    )}
+                    <div className="gallery-overlay-mobile absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-gray-900/90 via-gray-900/60 to-transparent flex flex-col justify-end p-6">
+                      <div className="item-content-mobile relative">
+                        <span className="item-number-mobile absolute -top-12 right-0 text-[3rem] font-black text-white/15 leading-none">{item.number}</span>
+                        <h3 className="text-[1.2rem] font-bold text-white">{item.title}</h3>
                       </div>
                     </div>
                   </div>
-                )
-              })}
-            </div>
+                </div>
+              )
+            })}
           </div>
-
-          {/* Desktop Navigation Buttons - Hidden on Mobile */}
-          <button className="gallery-nav absolute top-1/2 -translate-y-1/2 w-12 h-12 bg-white shadow-md border-2 border-gray-200 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 z-10 text-gray-600 text-xl -right-20 hover:bg-accent-teal hover:border-accent-teal hover:text-white hover:scale-110 hidden lg:block" onClick={handleNext}>
-            <i className="fas fa-chevron-right transition-transform duration-200 hover:scale-125"></i>
-          </button>
         </div>
       </div>
     </section>

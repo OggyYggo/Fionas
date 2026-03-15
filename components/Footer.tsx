@@ -80,7 +80,7 @@ const Footer: React.FC = () => {
         {/* Bottom Footer */}
         <div className="footer-bottom border-t border-white/10 pt-8 mt-10">
           <div className="footer-bottom-content flex justify-between items-center">
-            <p className="copyright text-gray-400 text-sm m-0"> 2026 Fiona Travel & Tours. All rights reserved.</p>
+            <p className="copyright text-gray-400 text-sm m-0"> Maharlika Digital Solutions. All rights reserved.</p>
             <div className="footer-bottom-links flex gap-6">
               <a href="#" className="text-gray-300 no-underline text-sm transition-all duration-300 hover:text-white hover:underline">Privacy Policy</a>
               <a href="#" className="text-gray-300 no-underline text-sm transition-all duration-300 hover:text-white hover:underline">Terms of Service</a>
