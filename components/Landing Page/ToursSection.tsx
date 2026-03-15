@@ -128,10 +128,6 @@ export default function ToursSection() {
                   <div className="card-content p-6">
                     <h3 className="text-gray-800 text-lg mb-3 transition-colors duration-300 font-semibold">{tour.title}</h3>
                     <p className="text-[#575757] text-xs leading-relaxed mb-4">{truncateText(tour.description, MOBILE_DESCRIPTION_LIMIT)}</p>
-                    <div className="tour-meta flex gap-4 text-xs text-[#A8A9B7] mb-6">
-                      {tour.duration && <span><i className="far fa-clock mr-1"></i> {tour.duration}</span>}
-                      {tour.maxPeople && <span><i className="fas fa-users mr-1"></i> {tour.maxPeople}</span>}
-                    </div>
                     <div className="card-footer flex justify-between items-center border-t border-gray-100 pt-5">
                       <div className="price-box flex flex-col items-start gap-1">
                         <span className="from-text block text-xs text-[#A8A9B7]">For as Low as</span>

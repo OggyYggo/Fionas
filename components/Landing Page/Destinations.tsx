@@ -84,6 +84,24 @@ export default function DestinationsSection() {
 
   return (
     <>
+      <style jsx>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        
+        @media (max-width: 768px) {
+          .destinations-layout {
+            display: none;
+          }
+          .mobile-destinations-scroll {
+            display: block !important;
+          }
+        }
+      `}</style>
       <section id="destinations" className="destinations-section py-20 bg-white">
         <div className="container max-w-[1440px] mx-auto px-5">
           <div className="destinations-header mb-16">
@@ -200,12 +218,131 @@ export default function DestinationsSection() {
                       <span className="dest-number absolute top-4 left-4 bg-white/95 text-gray-800 w-11 h-11 rounded-full flex items-center justify-center font-black text-xl z-10">{displayNumber}</span>
                       <div className="destination-overlay absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/80 to-transparent text-white opacity-0 transition-opacity duration-300">
                         <h4 className="text-base font-bold m-0">{dest.title}</h4>
+                        <p className="text-xs leading-relaxed m-0 opacity-95 mt-2">
+                          {dest.description?.slice(0, 80) || 'Discover this amazing destination in Bohol'}
+                          {dest.description && dest.description.length > 80 ? '...' : ''}
+                        </p>
                       </div>
                     </div>
                   )
                 })
               ) : (
                 <div className="col-span-2 text-center py-8">
+                  <div className="text-gray-500">
+                    <i className="fas fa-map-marked-alt text-4xl mb-2"></i>
+                    <p>No destinations available</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile Vertical Scrollable Cards */}
+          <div className="mobile-destinations-scroll hidden mt-8">
+            <div className="flex flex-col gap-6 pl-5">
+              {/* Featured Destination Card */}
+              {isLoading ? (
+                <div className="flex-shrink-0 w-full max-w-md mx-auto h-64 rounded-2xl overflow-hidden bg-gray-50">
+                  <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
+                </div>
+              ) : error ? (
+                <div className="flex-shrink-0 w-full max-w-md mx-auto h-64 rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center">
+                  <div className="text-gray-500 text-center">
+                    <i className="fas fa-exclamation-triangle text-2xl mb-1"></i>
+                    <p className="text-xs">Failed to load</p>
+                  </div>
+                </div>
+              ) : !featuredDestination ? (
+                <div className="flex-shrink-0 w-full max-w-md mx-auto h-64 rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center">
+                  <div className="text-gray-500 text-center">
+                    <i className="fas fa-image text-2xl mb-1"></i>
+                    <p className="text-xs">No featured destination</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="destination-item relative flex-shrink-0 w-full max-w-md mx-auto h-64 rounded-2xl overflow-hidden bg-gray-50 cursor-pointer transition-all duration-300">
+                  {imageLoading['mobile-featured'] && (
+                    <div className="absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center z-5">
+                      <div className="text-gray-400 text-sm">Loading...</div>
+                    </div>
+                  )}
+                  {imageErrors['mobile-featured'] ? (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <div className="text-gray-500 text-center">
+                        <i className="fas fa-image text-2xl mb-1"></i>
+                        <p className="text-xs">Image unavailable</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <img 
+                      src={featuredDestination.image} 
+                      alt={featuredDestination.title} 
+                      className="w-full h-full object-cover transition-transform duration-300"
+                      onLoad={() => handleImageLoad('mobile-featured')}
+                      onError={() => handleImageError('mobile-featured')}
+                      onLoadStart={() => handleImageStart('mobile-featured')}
+                    />
+                  )}
+                  <span className="dest-number absolute top-4 left-4 bg-white/95 text-gray-800 w-11 h-11 rounded-full flex items-center justify-center font-black text-xl z-10">01</span>
+                  <div className="destination-overlay absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/80 to-transparent text-white opacity-0 transition-opacity duration-300">
+                    <h4 className="text-base font-bold m-0">{featuredDestination.title}</h4>
+                    <p className="text-xs leading-relaxed m-0 opacity-95 mt-2">
+                      {featuredDestination.description?.slice(0, 80) || 'Discover this amazing destination in Bohol'}
+                      {featuredDestination.description && featuredDestination.description.length > 80 ? '...' : ''}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Other Destination Cards */}
+              {isLoading ? (
+                // Mobile loading skeletons for other destinations
+                Array.from({ length: 4 }).map((_, index) => (
+                  <div key={`mobile-skeleton-${index}`} className="flex-shrink-0 w-full max-w-md mx-auto h-64 rounded-2xl overflow-hidden bg-gray-50">
+                    <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
+                  </div>
+                ))
+              ) : destinationsData.length > 0 ? (
+                destinationsData.map((dest: Tour, index: number) => {
+                  const imageKey = `mobile-dest-${index}`
+                  const displayNumber = String(index + 2).padStart(2, '0')
+                  return (
+                    <div key={dest.id} className="destination-item relative flex-shrink-0 w-full max-w-md mx-auto h-64 rounded-2xl overflow-hidden bg-gray-50 cursor-pointer transition-all duration-300">
+                      {imageLoading[imageKey] && (
+                        <div className="absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center z-5">
+                          <div className="text-gray-400 text-sm">Loading...</div>
+                        </div>
+                      )}
+                      {imageErrors[imageKey] ? (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <div className="text-gray-500 text-center">
+                            <i className="fas fa-image text-2xl mb-1"></i>
+                            <p className="text-xs">Image unavailable</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <img 
+                          src={dest.image} 
+                          alt={dest.title} 
+                          className="w-full h-full object-cover transition-transform duration-300"
+                          onLoad={() => handleImageLoad(imageKey)}
+                          onError={() => handleImageError(imageKey)}
+                          onLoadStart={() => handleImageStart(imageKey)}
+                        />
+                      )}
+                      <span className="dest-number absolute top-4 left-4 bg-white/95 text-gray-800 w-11 h-11 rounded-full flex items-center justify-center font-black text-xl z-10">{displayNumber}</span>
+                      <div className="destination-overlay absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/80 to-transparent text-white opacity-0 transition-opacity duration-300">
+                        <h4 className="text-base font-bold m-0">{dest.title}</h4>
+                        <p className="text-xs leading-relaxed m-0 opacity-95 mt-2">
+                          {dest.description?.slice(0, 80) || 'Discover this amazing destination in Bohol'}
+                          {dest.description && dest.description.length > 80 ? '...' : ''}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })
+              ) : (
+                <div className="flex-shrink-0 w-full max-w-md mx-auto text-center py-8">
                   <div className="text-gray-500">
                     <i className="fas fa-map-marked-alt text-4xl mb-2"></i>
                     <p>No destinations available</p>

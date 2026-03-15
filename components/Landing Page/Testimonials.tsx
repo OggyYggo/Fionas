@@ -98,13 +98,14 @@ export default function TestimonialsSection() {
       <div className="container max-w-[1440px] mx-auto px-5">
         <div className="testimonials-header text-center mb-20 max-w-[800px] mx-auto">
           {/* <span className="subtitle inline-block text-accent-green py-2.5">TRAVELER STORIES</span> */}
-          <h2 className="text-gray-800 text-[40px] font-black mb-3 leading-tight">What Our Clients Are Saying</h2>
-          <p className="text-gray-600 text-[18px] leading-[1.7]">Don't just take our word for it hear from travelers who've experienced the magic of Bohol with us</p>
+          <h2 className="text-gray-800 text-[40px] lg:text-[40px] md:text-[32px] sm:text-[28px] font-black mb-3 leading-tight">What Our Clients Are Saying</h2>
+          <p className="text-gray-600 text-[18px] lg:text-[18px] md:text-[16px] sm:text-[14px] leading-[1.7]">Don't just take our word for it hear from travelers who've experienced the magic of Bohol with us</p>
           <div className="rating-info">
           </div>
         </div>
         
-        <div className="testimonials-grid grid grid-cols-4 gap-6 mb-20">
+        {/* Desktop Grid Layout */}
+        <div className="testimonials-grid hidden lg:grid lg:grid-cols-4 gap-6 mb-20">
           {getCurrentTestimonials().map((testimonial) => {
             const imageKey = `testimonial-${testimonial.id}`
             return (
@@ -147,6 +148,60 @@ export default function TestimonialsSection() {
               </div>
             )
           })}
+        </div>
+
+        {/* Mobile Horizontal Scroll Layout */}
+        <div className="testimonials-scroll lg:hidden mb-20">
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-3 sm:gap-4 px-3 sm:px-5 py-2" style={{ scrollSnapType: 'x mandatory' }}>
+              {testimonials.map((testimonial) => {
+                const imageKey = `testimonial-mobile-${testimonial.id}`
+                return (
+                  <div 
+                    key={testimonial.id} 
+                    className="testimonial-card bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200 transition-all duration-400 opacity-0 translate-y-8 animate-fade-in-up hover:-translate-y-2.5 hover:shadow-xl hover:border-accent-teal flex-shrink-0 w-[280px] sm:w-[320px] h-full flex flex-col"
+                    style={{ scrollSnapAlign: 'start' }}
+                  >
+                    <div className="testimonial-content mb-4 sm:mb-6 flex-grow">
+                      <p className="testimonial-text text-gray-700 text-[0.9rem] sm:text-[1rem] leading-relaxed mb-4 sm:mb-6 italic relative">"{truncateText(testimonial.content, 120)}"</p>
+                    </div>
+                    <div className="testimonial-author flex items-center gap-3 sm:gap-4 mt-auto">
+                      <div className="author-avatar w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden flex-shrink-0 relative">
+                        {imageLoading[imageKey] && (
+                          <div className="absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center">
+                            <div className="text-gray-400 text-xs">Loading...</div>
+                          </div>
+                        )}
+                        {imageErrors[imageKey] ? (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <div className="text-gray-500 text-center">
+                              <i className="fas fa-user text-lg"></i>
+                            </div>
+                          </div>
+                        ) : (
+                          <img 
+                            src={testimonial.image} 
+                            alt={testimonial.name} 
+                            className="w-full h-full object-cover"
+                            onLoad={() => handleImageLoad(imageKey)}
+                            onError={() => handleImageError(imageKey)}
+                            onLoadStart={() => handleImageStart(imageKey)}
+                          />
+                        )}
+                      </div>
+                      <div className="author-info self-center">
+                        <h4 className="text-gray-800 text-xs sm:text-sm font-bold mb-1 m-0">{testimonial.name}</h4>
+                        <p className="text-accent-green text-[10px] sm:text-xs font-medium m-0">{testimonial.title}, <span>{testimonial.company}</span></p>
+                        <div className="social-icon">
+                          <i className="fa-brands fa-twitter"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         </div>
 
         <div className="testimonials-footer text-center">
