@@ -338,12 +338,6 @@ export default function TestimonialsPage() {
                     Create a new testimonial for a customer.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="customer_name">Customer Name *</Label>
-                </DialogDescription>
-              </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
