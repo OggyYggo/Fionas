@@ -10,10 +10,10 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const supabase = createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey)
 
 // GET /api/testimonials/[id] - Get a single testimonial (for testing)
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    console.log('GET route hit for testimonials/[id] with ID:', params.id)
-    const { id } = params
+    console.log('GET route hit for testimonials/[id] with ID:', (await params).id)
+    const { id } = await params
     
     const { data, error } = await supabase
       .from('testimonials')
@@ -42,10 +42,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // PUT /api/testimonials/[id] - Update a testimonial (admin only)
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     console.log('Route hit! Processing PUT request for testimonials/[id]')
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
     
     console.log('PUT request received:', { id, body })
@@ -118,10 +118,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // DELETE /api/testimonials/[id] - Delete a testimonial (admin only)
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    console.log('DELETE route hit for testimonials/[id] with ID:', params.id)
-    const { id } = params
+    console.log('DELETE route hit for testimonials/[id] with ID:', (await params).id)
+    const { id } = await params
     
     // Validate testimonial exists
     const { data: existingTestimonial, error: fetchError } = await supabase
