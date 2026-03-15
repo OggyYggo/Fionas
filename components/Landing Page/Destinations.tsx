@@ -239,7 +239,7 @@ export default function DestinationsSection() {
 
           {/* Mobile Vertical Scrollable Cards */}
           <div className="mobile-destinations-scroll hidden mt-8">
-            <div className="flex flex-col gap-6 pl-5">
+            <div className="flex flex-col gap-6 items-center">
               {/* Featured Destination Card */}
               {isLoading ? (
                 <div className="flex-shrink-0 w-full max-w-md mx-auto h-64 rounded-2xl overflow-hidden bg-gray-50">
