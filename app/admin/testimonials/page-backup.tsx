@@ -435,6 +435,7 @@ export default function TestimonialsPage() {
                   )}
                 </div>
               </div>
+              </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                   Cancel
