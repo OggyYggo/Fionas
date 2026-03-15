@@ -1,5 +1,5 @@
 'use client'
-// JSX structure fixed - balanced div tags - final
+// JSX structure fixed - balanced div tags - final v2
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
