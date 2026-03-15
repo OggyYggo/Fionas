@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Header from '@/components/Landing Page/Header'
 import DestinationsHero from './components/DestinationsHero'
 import DestinationsGrid from './components/DestinationsGrid'
-import Footer from '@/components/Footer'
+import Footer from '@/components/Landing Page/Footer'
 
 export default function Destinations() {
   const [searchTerm, setSearchTerm] = useState('')

@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo, use } from 'react'
 import { SimpleTourService } from '@/lib/simpleTourService'
 import { Tour } from '@/types/tour'
 import Header from '@/components/Landing Page/Header'
-import Footer from '@/components/Footer'
+import Footer from '@/components/Landing Page/Footer'
 import Map from '@/components/ui/map'
 import {
   Table,

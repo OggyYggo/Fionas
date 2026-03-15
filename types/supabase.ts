@@ -4,6 +4,7 @@
 export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed'
 export type TourType = 'custom' | 'countryside' | 'island_hopping' | 'dolphin_watching' | 'diving' | 'firefly_watching'
 export type BudgetRange = 'standard' | 'premium' | 'luxury' | 'ultra_luxury'
+export type TestimonialStatus = 'approved' | 'pending' | 'rejected'
 
 // Main bookings table
 export interface Booking {
@@ -145,6 +146,23 @@ export interface BookingItem {
   status: BookingStatus
   
   // Timestamps
+  created_at: string
+  updated_at: string
+}
+
+// Testimonials table
+export interface Testimonial {
+  id: string
+  customer_name: string
+  email?: string
+  phone?: string
+  tour_name: string
+  booking_id?: string
+  rating: number
+  testimonial_text: string
+  status: TestimonialStatus
+  helpful_count: number
+  date: string
   created_at: string
   updated_at: string
 }
@@ -328,6 +346,11 @@ export type Database = {
         Row: BookingItem
         Insert: Omit<BookingItem, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<BookingItem, 'id' | 'created_at'>>
+      }
+      testimonials: {
+        Row: Testimonial
+        Insert: Omit<Testimonial, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<Testimonial, 'id' | 'created_at'>>
       }
       reviews: {
         Row: Review

@@ -1,7 +1,10 @@
+'use client';
+
 import React from 'react';
 
 const Footer: React.FC = () => {
   return (
+    <>
     <footer className="footer bg-gray-900 text-white py-16 pb-5">
       <div className="footer-container max-w-[1440px] mx-auto px-5">
         <div className="footer-content grid grid-cols-[2fr_1fr_1fr_1fr] gap-10 mb-10">
@@ -90,6 +93,107 @@ const Footer: React.FC = () => {
         </div>
       </div>
     </footer>
+    
+    <style jsx>{`
+      @media (max-width: 768px) {
+        .footer-container {
+          padding-left: 20px !important;
+          padding-right: 20px !important;
+        }
+        
+        .footer-content {
+          grid-template-columns: 1fr !important;
+          gap: 20px !important;
+          text-align: center !important;
+        }
+        
+        /* Hide Quick Links and Popular Tours sections on mobile */
+        .footer-content > div:nth-child(2),
+        .footer-content > div:nth-child(3) {
+          display: none !important;
+        }
+        
+        /* Make the remaining section (Company Info) take full width and center */
+        .footer-content > div:first-child {
+          text-align: center !important;
+          max-width: 100% !important;
+        }
+        
+        .footer-section {
+          text-align: center !important;
+        }
+        
+        .footer-logo {
+          justify-content: center !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          text-align: center !important;
+        }
+        
+        .footer-description {
+          max-width: 100% !important;
+          text-align: center !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
+        }
+        
+        .social-icons {
+          justify-content: center !important;
+          margin-top: 20px !important;
+        }
+        
+        .footer-heading {
+          text-align: center !important;
+        }
+        
+        .footer-links {
+          text-align: center !important;
+        }
+        
+        .footer-links li {
+          text-align: center !important;
+        }
+        
+        .contact-info {
+          align-items: center !important;
+          text-align: center !important;
+        }
+        
+        .contact-item {
+          justify-content: center !important;
+          text-align: center !important;
+        }
+        
+        .footer-bottom-content {
+          flex-direction: column !important;
+          gap: 15px !important;
+          text-align: center !important;
+        }
+        
+        .footer-bottom-links {
+          justify-content: center !important;
+          flex-wrap: wrap !important;
+        }
+        
+        .social-icon {
+          touch-action: manipulation !important;
+          min-width: 44px !important;
+          min-height: 44px !important;
+        }
+        
+        .footer-links a {
+          touch-action: manipulation !important;
+          padding: 5px 0 !important;
+          display: block !important;
+        }
+        
+        .footer-bottom-links a {
+          touch-action: manipulation !important;
+          padding: 5px !important;
+        }
+      }
+    `}</style>
+    </>
   );
 };
 

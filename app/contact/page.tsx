@@ -1,5 +1,5 @@
 import Header from '@/components/Landing Page/Header'
-import Footer from '@/components/Footer'
+import Footer from '@/components/Landing Page/Footer'
 
 export default function Contact() {
   return (

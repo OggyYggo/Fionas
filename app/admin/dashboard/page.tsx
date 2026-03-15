@@ -12,9 +12,10 @@ import {
   CardContent
 } from '@/components/ui/card'
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react'
-import { Calendar, Users, DollarSign, MapPin, TrendingUp, Activity, Clock, Star } from 'lucide-react'
+import { Calendar, Users, DollarSign, MapPin, TrendingUp, Activity, Clock, Star, MessageSquare } from 'lucide-react'
 import { BookingService, TourPackageService, DestinationService } from '@/lib/supabase'
 import { Booking } from '@/types/supabase'
+import TestimonialsComponent from '@/components/admin/Testimonials'
 
 interface DashboardStats {
   totalRevenue: number
@@ -311,6 +312,24 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* Testimonials Section */}
+      <div className='grid grid-cols-1 gap-8 lg:grid-cols-1'>
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-600">
+                <MessageSquare className="h-5 w-5" />
+              </div>
+              Customer Reviews
+            </CardTitle>
+            <CardDescription className="text-gray-600">Latest feedback from our valued customers</CardDescription>
+          </CardHeader>
+          <CardContent className='p-6'>
+            <TestimonialsComponent />
+          </CardContent>
+        </Card>
       </div>
 
       {/* Quick Actions */}
